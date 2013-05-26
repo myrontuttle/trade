@@ -6,7 +6,7 @@ import java.util.Arrays;
  * An indicator that a symbol has met a certain condition with certain parameters
  * @author Myron Tuttle
  */
-public abstract class SelectedAlert {
+public class SelectedAlert {
 
 	private final int id;
 	private final String condition;

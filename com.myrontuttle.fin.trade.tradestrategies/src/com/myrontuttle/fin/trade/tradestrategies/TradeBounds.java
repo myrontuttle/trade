@@ -1,10 +1,10 @@
-package com.myrontuttle.fin.trade.api;
+package com.myrontuttle.fin.trade.tradestrategies;
 
 /**
  * Limits of opening, adjusting and closing a trade
  * @author Myron Tuttle
  */
-public abstract class TradeBounds {
+public class TradeBounds {
 
 	private final String symbol;
 	

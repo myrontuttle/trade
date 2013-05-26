@@ -1,24 +1,28 @@
-package com.myrontuttle.fin.trade.api;
+package com.myrontuttle.fin.trade.tradestrategies;
 
 import java.util.concurrent.ScheduledFuture;
+
+import com.myrontuttle.fin.trade.api.AlertReceiverService;
+import com.myrontuttle.fin.trade.api.AlertService;
+import com.myrontuttle.fin.trade.api.Order;
 
 /**
  * Defines when and how to start, adjust and stop trading a symbol on a portfolio
  * @author Myron Tuttle
  */
-public abstract class Trade {
+public class Trade {
 
 	private final TradeBounds tradeBounds;
 	private final String portfolioId;
 	
 	private final Order openOrder;
-	private AlertAction stopLoss;
+	private AlertOrder stopLoss;
 	private ScheduledFuture<?> timeInTrade;
-	private AlertAction adjustment;
+	private AlertTradeAdjustment adjustment;
 	
 	public Trade(TradeBounds tradeBounds, String portfolioId, 
-				Order openOrder, AlertAction stopLoss, 
-			ScheduledFuture<?> timeInTrade, AlertAction adjustment) {
+				Order openOrder, AlertOrder stopLoss, 
+			ScheduledFuture<?> timeInTrade, AlertTradeAdjustment adjustment) {
 		this.tradeBounds = tradeBounds;
 		this.portfolioId = portfolioId;
 		this.openOrder = openOrder;
@@ -47,11 +51,11 @@ public abstract class Trade {
 		return openOrder;
 	}
 	
-	public AlertAction getStopLoss() {
+	public AlertOrder getStopLoss() {
 		return stopLoss;
 	}
 
-	public void setStopLoss(AlertAction stopLoss, AlertService alertService, 
+	public void setStopLoss(AlertOrder stopLoss, AlertService alertService, 
 								AlertReceiverService alertReceiver) throws Exception {
 		alertService.setupAlerts(stopLoss.getAlert());
 		alertService.removeAlert(this.stopLoss.getAlert());
@@ -71,11 +75,11 @@ public abstract class Trade {
 		this.timeInTrade = timeInTrade;
 	}
 
-	public AlertAction getAdjustment() {
+	public AlertTradeAdjustment getAdjustment() {
 		return adjustment;
 	}
 
-	public void setAdjustment(AlertAction adjustment, AlertService alertService, 
+	public void setAdjustment(AlertTradeAdjustment adjustment, AlertService alertService, 
 			AlertReceiverService alertReceiver) throws Exception {
 		alertService.setupAlerts(adjustment.getAlert());
 		alertService.removeAlert(this.adjustment.getAlert());

@@ -6,7 +6,7 @@ import java.util.Arrays;
  * An indicator that a symbol has met a certain condition with potential parameter limits
  * @author Myron Tuttle
  */
-public abstract class AvailableAlert {
+public class AvailableAlert {
 	
 	public static final String DOUBLE = "DOUBLE";
 	public static final String LIST = "LIST";

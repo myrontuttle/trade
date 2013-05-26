@@ -4,7 +4,7 @@ package com.myrontuttle.fin.trade.api;
  * Used to place an order
  * @author Myron Tuttle
  */
-public abstract class Order {
+public class Order {
 	
 	private final String tradeId;
 	private final String orderType;

@@ -4,7 +4,7 @@ package com.myrontuttle.fin.trade.api;
  * A criteria by which an equity can by screened
  * @author Myron Tuttle
  */
-public abstract class SelectedScreenCriteria {
+public class SelectedScreenCriteria {
 
 	private final String name;
 	private final String selectedValue;

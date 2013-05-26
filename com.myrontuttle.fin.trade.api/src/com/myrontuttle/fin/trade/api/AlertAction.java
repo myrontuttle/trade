@@ -25,6 +25,8 @@ public abstract class AlertAction implements Serializable  {
 	public String getPortfolioId() {
 		return portfolioId;
 	}
+	
+	public abstract String getActionType();
 
 	/**
 	 * Checks if the condition contains the condition in the alert

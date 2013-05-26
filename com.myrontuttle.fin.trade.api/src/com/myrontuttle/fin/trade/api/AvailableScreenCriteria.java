@@ -4,7 +4,7 @@ package com.myrontuttle.fin.trade.api;
  * A criteria by which an equity can by screened
  * @author Myron Tuttle
  */
-public abstract class AvailableScreenCriteria {
+public class AvailableScreenCriteria {
 	
 	public final static String AND = "AND";
 	public final static String OR = "OR";

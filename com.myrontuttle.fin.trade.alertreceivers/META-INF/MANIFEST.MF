@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Alert Receivers
+Bundle-SymbolicName: com.myrontuttle.fin.trade.alertreceivers
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Myron Tuttle
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Import-Package: com.myrontuttle.fin.trade.api,
+ javax.mail,
+ javax.mail.search

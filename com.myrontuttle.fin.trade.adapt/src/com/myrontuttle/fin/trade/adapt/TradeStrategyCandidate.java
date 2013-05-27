@@ -1,26 +1,31 @@
 package com.myrontuttle.fin.trade.adapt;
 
-import java.util.Arrays;
-
 import com.myrontuttle.evolve.ExpressedCandidate;
+import com.myrontuttle.fin.trade.api.SelectedScreenCriteria;
+import com.myrontuttle.fin.trade.tradestrategies.AlertTradeBounds;
 
 /**
  * A candidate which expresses a trading strategy
  * @author Myron Tuttle
  */
-public class TradeCandidate implements ExpressedCandidate<int[]> {
-	
-	private final static String GENOME_MARKER = ":G=";
-	private final static String PORTFOLIO_MARKER = ":P=";
-	private final static String CASH_MARKER = ":C=";
+public class TradeStrategyCandidate implements ExpressedCandidate<int[]> {
 	
 	private final int[] genome;
+	private final SelectedScreenCriteria[] screenCriteria;
+	private final String[] symbols;
 	private final String portfolioId;
+	private final AlertTradeBounds[] alerts;
 	private final double startingCash;
 	
-	TradeCandidate(int[] genome, String portfolioId, double startingCash) {
+	TradeStrategyCandidate(int[] genome, 
+					SelectedScreenCriteria[] screenCriteria,
+					String[] symbols, String portfolioId, 
+					AlertTradeBounds[] alerts, double startingCash) {
 		this.genome = genome;
+		this.screenCriteria = screenCriteria;
+		this.symbols = symbols;
 		this.portfolioId = portfolioId;
+		this.alerts = alerts;
 		this.startingCash = startingCash;
 	}
 
@@ -29,10 +34,22 @@ public class TradeCandidate implements ExpressedCandidate<int[]> {
 		return genome;
 	}
 	
+	public SelectedScreenCriteria[] getScreenCriteria() {
+		return screenCriteria;
+	}
+
+	public String[] getSymbols() {
+		return symbols;
+	}
+
 	public String getPortfolioId() {
 		return portfolioId;
 	}
 	
+	public AlertTradeBounds[] getAlerts() {
+		return alerts;
+	}
+
 	public double getStartingCash() {
 		return startingCash;
 	}
@@ -61,33 +78,4 @@ public class TradeCandidate implements ExpressedCandidate<int[]> {
 			return 0;
 		}
 	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return GENOME_MARKER + Arrays.toString(genome)
-				+ PORTFOLIO_MARKER + portfolioId + CASH_MARKER
-				+ startingCash;
-	}
-	
-	public static TradeCandidate fromString(String rep) {
-		String g = rep.substring(rep.indexOf(GENOME_MARKER) + GENOME_MARKER.length(), 
-									rep.indexOf(PORTFOLIO_MARKER));
-		String[] gStrings = g.replace("[", "").replace("]", "").split(", ");
-		int[] genome = new int[gStrings.length];
-		for (int i=0; i<gStrings.length; i++) {
-			genome[i] = Integer.parseInt(gStrings[i]);
-		}
-
-		String portfolioId = rep.substring(rep.indexOf(PORTFOLIO_MARKER) + PORTFOLIO_MARKER.length(), 
-											rep.indexOf(CASH_MARKER));
-		
-		String c = rep.substring(rep.indexOf(CASH_MARKER) + CASH_MARKER.length());
-		double startingCash = Double.parseDouble(c);
-		
-		return new TradeCandidate(genome, portfolioId, startingCash);
-	}
-
 }

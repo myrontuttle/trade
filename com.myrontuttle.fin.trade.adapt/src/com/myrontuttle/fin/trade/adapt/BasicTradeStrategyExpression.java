@@ -3,17 +3,8 @@
  */
 package com.myrontuttle.fin.trade.adapt;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
-import java.util.List;
 
-import com.myrontuttle.evolve.ExpressedCandidate;
 import com.myrontuttle.evolve.ExpressedPopulation;
 import com.myrontuttle.evolve.ExpressionStrategy;
 
@@ -28,14 +19,6 @@ import com.myrontuttle.fin.trade.tradestrategies.TradeBounds;
  * @param <T> The candidate to be expressed
  */
 public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]> {
-
-	private static final String SAVE_DIR = "./workspace/";
-	private static final String FILE_EXT = ".atf";
-	private static final String TIME_MARKER = "T";
-	private static final String GEN_MARKER = "G";
-	private static final String SIZE_MARKER = ":Size=";
-	private static final String FIT_MARKER = ":NaturalFitness=";
-	private static final String ELITE_MARKER = ":Elites=";
 
 	private static final int SCREEN_SORT_POSITION = 0;
 	private static final int SCREEN_GENE_LENGTH = 2;
@@ -53,8 +36,6 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 									MAX_SYMBOLS_PER_SCREEN * ALERT_GENE_LENGTH * ALERTS_PER_SYMBOL +
 									MAX_SYMBOLS_PER_SCREEN * ALERTS_PER_SYMBOL * TRADE_GENE_LENGTH;
 	public static final int UPPER_BOUND = 100;
-	//public static final double STARTING_CASH = 10000.00;
-	//public static final int LARGEST_WAGER_PERCENTAGE = 30;
 	
 	private final ScreenerService screenerService;
 	private final WatchlistService watchlistService;
@@ -66,8 +47,8 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 	private final AvailableScreenCriteria[] availableScreenCriteria;
 	private final AvailableAlert[] availableAlerts;
 	
-	private String portNamePrefix;
-	private String watchNamePrefix;
+	private final String portNamePrefix;
+	private final String watchNamePrefix;
 	private int counter;
 	
 	BasicTradeStrategyExpression(ScreenerService screenerService, 
@@ -107,18 +88,10 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 		}
 		this.availableAlerts = alerts;
 		
-		
-		
-		File dir = new File(SAVE_DIR);
-		if (!dir.exists()) {
-			if (!dir.mkdir()) {
-				System.out.println("Error creating save dir: " + SAVE_DIR);
-			}
-		}
 	}
 	
 	@Override
-	public TradeCandidate express(int[] candidate) {
+	public TradeStrategyCandidate express(int[] candidate) {
 		
 		// Initialize position of counter along genome
 		int position = SCREEN_SORT_POSITION;
@@ -126,10 +99,12 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 		// Get a list of symbols from the Screener Service
 		String[] symbols = null;
 		int sortBy = transpose(candidate[position], 0, SCREEN_GENES);
+		SelectedScreenCriteria[] screenCriteria = null;
 		position++;
 		try {
+			screenCriteria = expressScreenerGenes(candidate, position);
 			String[] screenSymbols = screenerService.screen(
-											expressScreenerGenes(candidate, position),
+											screenCriteria,
 											sortBy,
 											MAX_SYMBOLS_PER_SCREEN);
 			if (screenSymbols.length > MAX_SYMBOLS_PER_SCREEN) {
@@ -206,11 +181,10 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 		}
 
 		// Get portfolio total gains
-		TradeCandidate strat = new TradeCandidate(candidate, 
-													portfolioId, 
-													basicTradeStrategy.getStartingCash());
-		
-		return strat;
+		return new TradeStrategyCandidate(candidate, screenCriteria, 
+									symbols, portfolioId, 
+									alertTradeBounds, 
+									basicTradeStrategy.getStartingCash());
 	}
 
 	/**
@@ -368,10 +342,9 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 	}
 
 	@Override
-	public void populationExpressed(
-			List<ExpressedCandidate<int[]>> expressedPopulation,
-			ExpressedPopulation<int[]> stats) {
-
+	public void populationExpressed(ExpressedPopulation<int[]> expressedPopulation) {
+		//TODO: Save to database
+/*
 		// Create a file for the population
 		String fileName = SAVE_DIR + "S" + stats.getStartTime() + 
 							"G" + stats.getGenerationNumber() + FILE_EXT;
@@ -402,11 +375,14 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 	    }
 		
 		// Add a satisfied termination condition
+		 * 
+		 */
 	}
 
 	@Override
-	public ExpressedPopulation<int[]> importPopulation(String fileName) {
-
+	public ExpressedPopulation<int[]> importPopulation(String populationId) {
+		//TODO: Retrieve from database
+/*
 		long startTime = Long.parseLong(fileName.substring(
 											fileName.indexOf(TIME_MARKER) 
 											+ TIME_MARKER.length(), 
@@ -462,6 +438,8 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 		    catch (IOException ex){
 		      ex.printStackTrace();
 		    }
+		    
+		*/
 		return null;
 	}
 

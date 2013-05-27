@@ -12,13 +12,19 @@ import com.myrontuttle.evolve.operators.EvolutionPipeline;
 import com.myrontuttle.evolve.selection.RouletteWheelSelection;
 import com.myrontuttle.evolve.termination.*;
 
-public class TradeGroup {
+public class TradeStrategyEvolver {
+	
+	private static final double MUTATION_FACTOR = 0.02;
+	private static final int STAGNATION_GENERATIONS = 20;
 	
 	private final EvolutionEngine<int[]> engine;
 	private final TerminationCondition[] terminationConditions;
 	
-	TradeGroup(BasicTradeStrategyExpression<int[]> traderExpression, 
-				TradeCandidateEvaluator strategyEvaluator) {
+	private final ExpressionStrategy<int[]> traderExpression;
+	
+	TradeStrategyEvolver(ExpressionStrategy<int[]> traderExpression, 
+				TradeStrategyEvaluator strategyEvaluator) {
+		this.traderExpression = traderExpression;
 
 		// Setup how strategy candidates are created
 		IntArrayFactory candidateFactory = 
@@ -28,7 +34,7 @@ public class TradeGroup {
 		// Setup how strategies are evolved
 		List<EvolutionaryOperator<int[]>> operators = new LinkedList<EvolutionaryOperator<int[]>>();
 		operators.add(new IntArrayCrossover());
-		operators.add(new IntArrayMutation(candidateFactory, 0.02));
+		operators.add(new IntArrayMutation(candidateFactory, MUTATION_FACTOR));
 		EvolutionaryOperator<int[]> pipeline = new EvolutionPipeline<int[]>(operators);
 		SelectionStrategy<Object> selection = new RouletteWheelSelection();
 
@@ -41,8 +47,10 @@ public class TradeGroup {
 		                                              RNG.getRNG(RNG.MARSENNETWISTER));
 		
 		// Create evolution termination conditions
-		this.terminationConditions = new TerminationCondition[1];
-		terminationConditions[0] = new Stagnation(20, strategyEvaluator.isNatural());
+		this.terminationConditions = new TerminationCondition[]{
+			new UserAbort(),
+			new Stagnation(STAGNATION_GENERATIONS, strategyEvaluator.isNatural())
+		};
 		
 		// Add observer for the evolution
 		engine.addEvolutionObserver(new EvolutionObserver<int[]>() {
@@ -54,21 +62,14 @@ public class TradeGroup {
 		});
 	}
 	
-	/**
-	 * @param args
-	 *
-	 */
-	public static void main(String[] args) {
-		// Check if there are any existing populations on disk and evaluate them
-		// Start any new populations
-		// Close out
-		
-		
-		TradeGroup tradeGroup = new TradeGroup(null, null);
-		
-		int[] result = tradeGroup.engine.evolve(10, 
-				2, tradeGroup.terminationConditions);
-		
-		System.out.println(Arrays.toString(result));
+	public void evolveOnce(String groupId) {
+		ExpressedPopulation<int[]> pop = traderExpression.importPopulation(groupId);
+		int eliteCount = pop.getEliteCount();
+		int size = pop.getPopulationSize();
+		engine.evolveToExpression(pop, size, eliteCount, terminationConditions);
+	}
+	
+	public void abort(String groupId) {
+		((UserAbort)terminationConditions[0]).abort();
 	}
 }

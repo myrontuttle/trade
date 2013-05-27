@@ -70,11 +70,15 @@ public class EmailAlertReceiver implements AlertReceiverService {
 	@Override
 	public boolean stopReceiving() {
 
-        // Close scheduled service
-        sf.cancel(true);
-        ses.shutdown();
-        
-		return false;
+		try {
+	        // Close scheduled service
+	        sf.cancel(true);
+	        ses.shutdown();
+		} catch (SecurityException se) {
+			System.out.println("Unable to stop receiving email. " + se.getMessage());
+			return false;
+		}
+		return true;
 	}
 	
 	/* (non-Javadoc)

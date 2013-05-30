@@ -12,9 +12,10 @@ public interface AlertService {
 	
 	/**
 	 * Gets the alerts that are available from this service
+	 * @param userId
 	 * @return Array of alerts
 	 */
-	public AvailableAlert[] getAvailableAlerts() throws Exception;
+	public AvailableAlert[] getAvailableAlerts(String userId) throws Exception;
 	
 	/**
 	 * Gets a specific available alert given their id
@@ -48,21 +49,23 @@ public interface AlertService {
 
 	/**
 	 * Returns the potentially calculated lower bound for a condition and criteriaIndex
+	 * @param userId
 	 * @param id The id of the alert
 	 * @param symbol The symbol to get a limit for
 	 * @param criteriaIndex The number of the criteria to get the bound for
 	 * @return The lower bound
 	 */
-	public double getLowerDouble(int id, String symbol, int criteriaIndex);
+	public double getLowerDouble(String userId, int id, String symbol, int criteriaIndex);
 
 	/**
 	 * Returns the potentially calculated upper bound for a condition and criteriaIndex
+	 * @param userId
 	 * @param id The id of the alert
 	 * @param symbol The symbol to get a limit for
 	 * @param criteriaIndex The number of the criteria to get the bound for
 	 * @return The upper bound
 	 */
-	public double getUpperDouble(int id, String symbol, int criteriaIndex);
+	public double getUpperDouble(String userId, int id, String symbol, int criteriaIndex);
 	
 	/**
 	 * Returns the length of a list criteria
@@ -74,29 +77,33 @@ public interface AlertService {
 	
 	/**
 	 * Sets up selected alerts to be triggered (potentially)
+	 * @param userId
 	 * @return Indicates if the alert was set up successfully
 	 */
-	public boolean setupAlerts(SelectedAlert... alerts) throws Exception;
+	public boolean setupAlerts(String userId, SelectedAlert... alerts) throws Exception;
 	
 	/**
 	 * Returns the alerts that have been setup
+	 * @param userId
 	 * @return Array of active alerts
 	 * @throws Exception
 	 */
-	public SelectedAlert[] getActiveAlerts() throws Exception;
+	public SelectedAlert[] getActiveAlerts(String userId) throws Exception;
 	
 	/**
 	 * Removes a specific alert
+	 * @param userId
 	 * @param alert to be removed
 	 * @return true if the alert was removed
 	 * @throws Exception
 	 */
-	public boolean removeAlert(SelectedAlert alert) throws Exception;
+	public boolean removeAlert(String userId, SelectedAlert alert) throws Exception;
 	
 	/**
 	 * Remove all alerts
+	 * @param userId
 	 * @return Indicates if alerts were removed successfully
 	 */
-	public boolean removeAllAlerts() throws Exception;
+	public boolean removeAllAlerts(String userId) throws Exception;
 
 }

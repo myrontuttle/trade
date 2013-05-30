@@ -8,8 +8,9 @@ public interface QuoteService {
 
 	/**
 	 * Provides the last price of a symbol
-	 * @param symbol
+	 * @param userId ID of user to get price for
+	 * @param symbol Of security to get price for
 	 * @return Last price of the symbol
 	 */
-	public double getLast(String symbol) throws Exception;
+	public double getLast(String userId, String symbol) throws Exception;
 }

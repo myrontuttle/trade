@@ -10,10 +10,11 @@ public interface AlertReceiverService {
 
 	/**
 	 * Starts the receiver receiving alerts
+	 * @param userId
 	 * @param connectionDetails Name-value pairs that provide details necessary to start receiving
 	 * @return true if the start was successful
 	 */
-	public boolean startReceiving(HashMap<String, String> connectionDetails);
+	public boolean startReceiving(String userId, HashMap<String, String> connectionDetails);
 	
 	/**
 	 * Stops the receiver from receiving alerts
@@ -36,8 +37,9 @@ public interface AlertReceiverService {
 	
 	/**
 	 * Tries to match a condition received with an existing alert
+	 * @param userId
 	 * @param condition The triggered condition to match against.
 	 * @return The number of times the condition matched an alert
 	 */
-	public int matchAlert(String condition);
+	public int matchAlert(String userId, String condition);
 }

@@ -37,7 +37,7 @@ public class EmailAlertReceiver implements AlertReceiverService {
 	 * @see com.myrontuttle.adaptivetrader.AlertReceiver#startReceiving(HashMap<String, String>)
 	 */
 	@Override
-	public boolean startReceiving(HashMap<String, String> connectionDetails) {
+	public boolean startReceiving(String userId, HashMap<String, String> connectionDetails) {
 		String host = connectionDetails.get("host");
 		String user = connectionDetails.get("user");
 		String password = connectionDetails.get("password");
@@ -56,7 +56,7 @@ public class EmailAlertReceiver implements AlertReceiverService {
 			} catch (NumberFormatException nfe) {
 				port = IMAPS_PORT;
 			}
-	    	MailRetriever mailRetriever = new MailRetriever(this, host, port, user, password);
+	    	MailRetriever mailRetriever = new MailRetriever(userId, this, host, port, user, password);
 	        this.sf = ses.scheduleAtFixedRate(mailRetriever, 0, period, TimeUnit.SECONDS);
 
 	        this.ses = Executors.newScheduledThreadPool(NUM_THREADS);
@@ -103,17 +103,18 @@ public class EmailAlertReceiver implements AlertReceiverService {
 	 * Tests an incoming message to see if it matches one of the existing alert conditions
 	 * If it does, tells the MoneyManager to execute the associated trade or order on the 
 	 * portfolio with portfolioId
+	 * @param userId
 	 * @param condition The alert condition to match
 	 * @return The number of time the condition matched an existing alert's condition
 	 */
 	@Override
-	public int matchAlert(String condition) {
+	public int matchAlert(String userId, String condition) {
 		int matches = 0;
 		for (AlertAction action : alertActionList) {
 			if (action.alertMatches(condition)) {
 				System.out.println("Alert Matched");
 				try {
-					tradeStrategy.takeAction(action);
+					tradeStrategy.takeAction(userId, action);
 				} catch (Exception e) {
 					System.out.println("Unable to affect trade." + e.getMessage());
 				}

@@ -23,6 +23,7 @@ import com.icegreen.greenmail.util.ServerSetupTest;
 
 public class MailRetrieverTest {
 	
+	String userId;
 	GreenMail greenMail;
 	EmailAlertReceiver mockedReceiver;
 	
@@ -39,6 +40,7 @@ public class MailRetrieverTest {
 	public void testRunMatchesAlert() throws Exception {
 
 	    // Setup mail server and user
+		final String userId = "testUser";
 	    final String user = "test@localhost";
 	    final String password = "testpass";
 	    final String host = "localhost";
@@ -54,10 +56,10 @@ public class MailRetrieverTest {
 	    assertTrue(greenMail.waitForIncomingEmail(5000, 1));
 	    
 	    // Arrange mock
-	    when(mockedReceiver.matchAlert(subject)).thenReturn(1);
+	    when(mockedReceiver.matchAlert(userId, subject)).thenReturn(1);
 	    
 	    // Run
-	    MailRetriever mailRetriever = new MailRetriever(mockedReceiver, host, port, user, password);
+	    MailRetriever mailRetriever = new MailRetriever(userId, mockedReceiver, host, port, user, password);
 	    mailRetriever.run();
 	    
 	    // Assert

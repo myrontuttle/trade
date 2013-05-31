@@ -25,6 +25,7 @@ import com.myrontuttle.fin.trade.api.AlertReceiverService;
  */
 public class MailRetriever implements Runnable {
 	
+	private final String userId;
 	private final AlertReceiverService alertReceiver;
 	private final String host;
 	private final int port;
@@ -34,8 +35,9 @@ public class MailRetriever implements Runnable {
 	private final Properties props;
 
 	// Constructor of the class.
-	public MailRetriever(AlertReceiverService alertReceiver, String host, int port, String user, 
-							String password) {
+	public MailRetriever(String userId, AlertReceiverService alertReceiver, String host, 
+					int port, String user, String password) {
+		this.userId = userId;
 		this.alertReceiver = alertReceiver;
 		this.host = host;
 		this.port = port;
@@ -89,7 +91,7 @@ public class MailRetriever implements Runnable {
 				}
 
 				System.out.println("Retrieved email: " + subject);
-				if (alertReceiver.matchAlert(subject) > 0) {
+				if (alertReceiver.matchAlert(userId, subject) > 0) {
 					System.out.println("Email matched!");
 					inbox.setFlags(new Message[] {message}, new Flags(Flags.Flag.SEEN), true);
 				} else {

@@ -31,11 +31,11 @@ public class Trade {
 		this.adjustment = adjustment;
 	}
 	
-	public void closeTrade(AlertService alertService, AlertReceiverService alertReceiver) throws Exception {
-		alertService.removeAlert(stopLoss.getAlert());
+	public void closeTrade(String userId, AlertService alertService, AlertReceiverService alertReceiver) throws Exception {
+		alertService.removeAlert(userId, stopLoss.getAlert());
 		alertReceiver.stopWatchingFor(stopLoss);
 		timeInTrade.cancel(false);
-		alertService.removeAlert(adjustment.getAlert());
+		alertService.removeAlert(userId, adjustment.getAlert());
 		alertReceiver.stopWatchingFor(adjustment);
 	}
 
@@ -55,10 +55,10 @@ public class Trade {
 		return stopLoss;
 	}
 
-	public void setStopLoss(AlertOrder stopLoss, AlertService alertService, 
+	public void setStopLoss(String userId, AlertOrder stopLoss, AlertService alertService, 
 								AlertReceiverService alertReceiver) throws Exception {
-		alertService.setupAlerts(stopLoss.getAlert());
-		alertService.removeAlert(this.stopLoss.getAlert());
+		alertService.setupAlerts(userId, stopLoss.getAlert());
+		alertService.removeAlert(userId, this.stopLoss.getAlert());
 		
 		alertReceiver.watchFor(stopLoss);
 		alertReceiver.stopWatchingFor(this.stopLoss);
@@ -79,10 +79,10 @@ public class Trade {
 		return adjustment;
 	}
 
-	public void setAdjustment(AlertTradeAdjustment adjustment, AlertService alertService, 
+	public void setAdjustment(String userId, AlertTradeAdjustment adjustment, AlertService alertService, 
 			AlertReceiverService alertReceiver) throws Exception {
-		alertService.setupAlerts(adjustment.getAlert());
-		alertService.removeAlert(this.adjustment.getAlert());
+		alertService.setupAlerts(userId, adjustment.getAlert());
+		alertService.removeAlert(userId, this.adjustment.getAlert());
 		
 		alertReceiver.watchFor(adjustment);
 		alertReceiver.stopWatchingFor(this.adjustment);

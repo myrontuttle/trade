@@ -166,33 +166,33 @@ public class BasicTradeStrategy implements TradeStrategy {
 	 * @see com.myrontuttle.fin.trade.api.TradeStrategy#takeAction(com.myrontuttle.fin.trade.api.AlertAction)
 	 */
 	@Override
-	public String takeAction(AlertAction alertAction) throws Exception {
+	public String takeAction(String userId, AlertAction alertAction) throws Exception {
 		String actionType = alertAction.getActionType();
 		if (actionType.equals(ActionType.TRADE_BOUNDS.toString())) {
 			AlertTradeBounds atb = (AlertTradeBounds)alertAction;
-			return openTrade(atb.getTradeBounds(), atb.getPortfolioId());
+			return openTrade(userId, atb.getTradeBounds(), atb.getPortfolioId());
 		} else if (actionType.equals(ActionType.TRADE_ADJUSTMENT.toString())) {
 			AlertTradeAdjustment ata = (AlertTradeAdjustment)alertAction;
-			return adjustTrade(ata.getTradeId());
+			return adjustTrade(userId, ata.getTradeId());
 		} else if (actionType.equals(ActionType.ORDER.toString())) {
 			AlertOrder ao = (AlertOrder)alertAction;
-			return closeTrade(ao.getOrder(), ao.getPortfolioId());
+			return closeTrade(userId, ao.getOrder(), ao.getPortfolioId());
 		}
 		return null;
 	}
 
-	private String openTrade(TradeBounds tradeBounds, String portfolioId) throws Exception {
-		if (portfolioService.openOrderTypesAvailable().length != 
-				portfolioService.closeOrderTypesAvailable().length) {
+	private String openTrade(String userId, TradeBounds tradeBounds, String portfolioId) throws Exception {
+		if (portfolioService.openOrderTypesAvailable(userId).length != 
+				portfolioService.closeOrderTypesAvailable(userId).length) {
 			throw new Exception("Open and close order types must match.  Trade not made.");
 		}
-		String openOrderType = portfolioService.openOrderTypesAvailable()[tradeBounds.getOpenOrderType()];
-		String closeOrderType = portfolioService.closeOrderTypesAvailable()[tradeBounds.getOpenOrderType()];
+		String openOrderType = portfolioService.openOrderTypesAvailable(userId)[tradeBounds.getOpenOrderType()];
+		String closeOrderType = portfolioService.closeOrderTypesAvailable(userId)[tradeBounds.getOpenOrderType()];
 		
 		try {
-			double portfolioBalance = portfolioService.getAvailableBalance(portfolioId);
+			double portfolioBalance = portfolioService.getAvailableBalance(userId, portfolioId);
 			double maxTradeAmount = portfolioBalance * (tradeBounds.getTradeAllocation() / 100.0);
-			double currentPrice = quoteService.getLast(tradeBounds.getSymbol());
+			double currentPrice = quoteService.getLast(userId, tradeBounds.getSymbol());
 
 			if (currentPrice <= maxTradeAmount) {
 				String tradeId = UUID.randomUUID().toString();
@@ -200,19 +200,19 @@ public class BasicTradeStrategy implements TradeStrategy {
 				// Open position
 				int quantity = (int)Math.floor(maxTradeAmount / currentPrice);
 				Order openOrder = new Order(tradeId, openOrderType, tradeBounds.getSymbol(), quantity);
-				portfolioService.openPosition(portfolioId, openOrder);
+				portfolioService.openPosition(userId, portfolioId, openOrder);
 
 				Order closeOrder = new Order(tradeId, closeOrderType, tradeBounds.getSymbol(), quantity);
 				
 				// stop loss
-				AlertOrder stopLoss = createStopLoss(tradeBounds, currentPrice, closeOrder, tradeId);
+				AlertOrder stopLoss = createStopLoss(userId, tradeBounds, currentPrice, closeOrder, tradeId);
 				
 				// time in trade
-				ScheduledFuture<?> timeInTrade = createTimeInTrade(closeOrder, portfolioId, 
+				ScheduledFuture<?> timeInTrade = createTimeInTrade(userId, closeOrder, portfolioId, 
 																	tradeBounds.getTimeInTrade());
 				
 				// adjustment at
-				AlertTradeAdjustment adjustment = createAdjustment(tradeBounds, currentPrice, 
+				AlertTradeAdjustment adjustment = createAdjustment(userId, tradeBounds, currentPrice, 
 															tradeId, portfolioId);
 				
 				openTrades.put(tradeId, new Trade(tradeBounds, portfolioId, openOrder, stopLoss, 
@@ -228,11 +228,11 @@ public class BasicTradeStrategy implements TradeStrategy {
 		}
 	}
 
-	private String closeTrade(Order order, String portfolioId) throws Exception {
+	private String closeTrade(String userId, Order order, String portfolioId) throws Exception {
 		if (openTrades.containsKey(order.getTradeId())) {
 			try {
-				portfolioService.closePosition(portfolioId, order);
-				openTrades.get(order.getTradeId()).closeTrade(alertService, alertReceiver);
+				portfolioService.closePosition(userId, portfolioId, order);
+				openTrades.get(order.getTradeId()).closeTrade(userId, alertService, alertReceiver);
 				openTrades.remove(order.getTradeId());
 				return order.getTradeId();
 			} catch (Exception e) {
@@ -243,7 +243,7 @@ public class BasicTradeStrategy implements TradeStrategy {
 		}
 	}
 
-	private String adjustTrade(String tradeId) throws Exception {
+	private String adjustTrade(String userId, String tradeId) throws Exception {
 		if (openTrades.containsKey(tradeId)) {
 
 			Trade trade = openTrades.get(tradeId);
@@ -254,22 +254,22 @@ public class BasicTradeStrategy implements TradeStrategy {
 			Order closeOrder = new Order(tradeId, closeOrderType, symbol, quantity);
 
 			try {
-				double currentPrice = quoteService.getLast(symbol);
+				double currentPrice = quoteService.getLast(userId, symbol);
 				
 				// stop loss
-				AlertOrder stopLoss = createStopLoss(tradeBounds, currentPrice, 
+				AlertOrder stopLoss = createStopLoss(userId, tradeBounds, currentPrice, 
 														closeOrder, tradeId);
-				trade.setStopLoss(stopLoss, alertService, alertReceiver);
+				trade.setStopLoss(userId, stopLoss, alertService, alertReceiver);
 				
 				// time in trade
-				ScheduledFuture<?> timeInTrade = createTimeInTrade(closeOrder, trade.getPortfolioId(), 
+				ScheduledFuture<?> timeInTrade = createTimeInTrade(userId, closeOrder, trade.getPortfolioId(), 
 																	tradeBounds.getTimeInTrade());
 				trade.setTimeInTrade(timeInTrade);
 				
 				// adjustment at
-				AlertTradeAdjustment adjustment = createAdjustment(tradeBounds, currentPrice, 
+				AlertTradeAdjustment adjustment = createAdjustment(userId, tradeBounds, currentPrice, 
 															tradeId, trade.getPortfolioId());
-				trade.setAdjustment(adjustment, alertService, alertReceiver);
+				trade.setAdjustment(userId, adjustment, alertService, alertReceiver);
 				
 				return tradeId;
 			} catch (Exception e) {
@@ -280,7 +280,7 @@ public class BasicTradeStrategy implements TradeStrategy {
 		}
 	}
 	
-	private AlertOrder createStopLoss(TradeBounds tradeBounds, double currentPrice, 
+	private AlertOrder createStopLoss(String userId, TradeBounds tradeBounds, double currentPrice, 
 							Order closeOrder, String portfolioId) throws Exception {
 
 		AvailableAlert priceBelowAlert = alertService.getPriceBelowAlert();
@@ -289,21 +289,21 @@ public class BasicTradeStrategy implements TradeStrategy {
 														priceBelowAlert.getCondition(),
 														tradeBounds.getSymbol(), 
 														loss);
-		alertService.setupAlerts(stopLossAlert);
+		alertService.setupAlerts(userId, stopLossAlert);
 		AlertOrder stopLoss = new AlertOrder(stopLossAlert, portfolioId, closeOrder);
 		alertReceiver.watchFor(stopLoss);
 		
 		return stopLoss;
 	}
 	
-	private ScheduledFuture<?> createTimeInTrade(final Order closeOrder, 
+	private ScheduledFuture<?> createTimeInTrade(final String userId, final Order closeOrder, 
 													final String portfolioId, 
 													int time) {
 		return ses.schedule(new Runnable () {
 			@Override
 			public void run() {
 				try {
-					closeTrade(closeOrder, portfolioId);
+					closeTrade(userId, closeOrder, portfolioId);
 				} catch (Exception e) {
 					System.out.println("Unable to close trade." + e.getMessage());
 				}
@@ -311,7 +311,7 @@ public class BasicTradeStrategy implements TradeStrategy {
 		}, time, TIME_IN_TRADE_UNIT);
 	}
 
-	private AlertTradeAdjustment createAdjustment(TradeBounds tradeBounds, double currentPrice, 
+	private AlertTradeAdjustment createAdjustment(String userId, TradeBounds tradeBounds, double currentPrice, 
 											String tradeId, String portfolioId) throws Exception {
 		AvailableAlert priceAboveAlert = alertService.getPriceAboveAlert();
 		double adjustmentPrice = currentPrice + (tradeBounds.getAdjustAt() / 100) * currentPrice;
@@ -319,7 +319,7 @@ public class BasicTradeStrategy implements TradeStrategy {
 											priceAboveAlert.getCondition(),
 											tradeBounds.getSymbol(),
 											adjustmentPrice);
-		alertService.setupAlerts(adjustmentAlert);
+		alertService.setupAlerts(userId, adjustmentAlert);
 		AlertTradeAdjustment adjustment = new AlertTradeAdjustment(adjustmentAlert, portfolioId, tradeId);
 		alertReceiver.watchFor(adjustment);
 		

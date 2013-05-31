@@ -21,9 +21,10 @@ public interface TradeStrategy {
 	
 	/**
 	 * Opens, adjusts, or closes a trade based on the action
+	 * @param userId
 	 * @param alertAction The action to take
 	 * @return tradeId if trade was successful, otherwise null
 	 * @throws Exception
 	 */
-	public String takeAction(AlertAction alertAction) throws Exception;
+	public String takeAction(String userId, AlertAction alertAction) throws Exception;
 }

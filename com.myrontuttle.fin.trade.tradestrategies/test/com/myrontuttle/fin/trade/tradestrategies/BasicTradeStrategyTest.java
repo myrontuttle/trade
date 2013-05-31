@@ -25,6 +25,7 @@ public class BasicTradeStrategyTest {
 	
 	private BasicTradeStrategy bts;
 	
+	private final String userId = "testuser";
 	private final String richPortfolio = "rich";
 	private final String poorPortfolio = "poor";
 	private final String avgSymbol = "MSFT.O";
@@ -46,13 +47,13 @@ public class BasicTradeStrategyTest {
 		alertReceiverService = mock(AlertReceiverService.class);
 
 	    // Arrange mocks
-		when(portfolioService.openOrderTypesAvailable()).thenReturn(new String[]{"buy", "short sell"});
-		when(portfolioService.closeOrderTypesAvailable()).thenReturn(new String[]{"sell", "buy to cover"});
-		when(portfolioService.getAvailableBalance(richPortfolio)).thenReturn(richBalance);
-		when(quoteService.getLast(avgSymbol)).thenReturn(avgPrice);
-		when(portfolioService.getAvailableBalance(poorPortfolio)).thenReturn(poorBalance);
-		when(quoteService.getLast(expensiveSymbol)).thenReturn(expensivePrice);
-		when(portfolioService.closePosition(richPortfolio, any(Order.class))).thenReturn(true);
+		when(portfolioService.openOrderTypesAvailable(userId)).thenReturn(new String[]{"buy", "short sell"});
+		when(portfolioService.closeOrderTypesAvailable(userId)).thenReturn(new String[]{"sell", "buy to cover"});
+		when(portfolioService.getAvailableBalance(userId, richPortfolio)).thenReturn(richBalance);
+		when(quoteService.getLast(userId, avgSymbol)).thenReturn(avgPrice);
+		when(portfolioService.getAvailableBalance(userId, poorPortfolio)).thenReturn(poorBalance);
+		when(quoteService.getLast(userId, expensiveSymbol)).thenReturn(expensivePrice);
+		when(portfolioService.closePosition(userId, richPortfolio, any(Order.class))).thenReturn(true);
 		
 		bts = new BasicTradeStrategy(portfolioService, quoteService, 
 										alertService, alertReceiverService);
@@ -73,20 +74,20 @@ public class BasicTradeStrategyTest {
 		AlertTradeBounds atb = new AlertTradeBounds(openAlert, richPortfolio, tradeMsft);
 				
 		// Test
-		String openTradeId = bts.takeAction(atb);
+		String openTradeId = bts.takeAction(userId, atb);
 		assertTrue(openTradeId != null);
 
 		SelectedAlert adjustAlert = new SelectedAlert(1, "Price went up again", avgSymbol, null);
 		AlertTradeAdjustment ata = new AlertTradeAdjustment(adjustAlert, richPortfolio, openTradeId);
 		
-		String adjustTradeId = bts.takeAction(ata);
+		String adjustTradeId = bts.takeAction(userId, ata);
 		assertEquals(openTradeId, adjustTradeId);
 		
 		SelectedAlert closeAlert = new SelectedAlert(0, "Price went down", avgSymbol, null);
 		Order closeOrder = new Order(openTradeId, "sell", avgSymbol, 10);
 		AlertOrder ao = new AlertOrder(closeAlert, richPortfolio, closeOrder);
 		
-		assertEquals(bts.takeAction(ao), openTradeId);
+		assertEquals(bts.takeAction(userId, ao), openTradeId);
 	}
 
 	@Test
@@ -105,7 +106,7 @@ public class BasicTradeStrategyTest {
 
 		// Test
 		exception.expect(Exception.class);
-		String openTradeId = bts.takeAction(atb);
+		String openTradeId = bts.takeAction(userId, atb);
 		assertTrue(openTradeId == null);
 	}
 

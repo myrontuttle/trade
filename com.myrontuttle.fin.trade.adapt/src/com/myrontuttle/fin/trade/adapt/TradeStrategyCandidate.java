@@ -10,6 +10,8 @@ import com.myrontuttle.fin.trade.tradestrategies.AlertTradeBounds;
  */
 public class TradeStrategyCandidate implements ExpressedCandidate<int[]> {
 	
+	private final String individualUserId;
+	private final String groupUserId;
 	private final int[] genome;
 	private final SelectedScreenCriteria[] screenCriteria;
 	private final String[] symbols;
@@ -17,16 +19,26 @@ public class TradeStrategyCandidate implements ExpressedCandidate<int[]> {
 	private final AlertTradeBounds[] alerts;
 	private final double startingCash;
 	
-	TradeStrategyCandidate(int[] genome, 
+	TradeStrategyCandidate(String individualUserId, String groupUserId, int[] genome, 
 					SelectedScreenCriteria[] screenCriteria,
 					String[] symbols, String portfolioId, 
 					AlertTradeBounds[] alerts, double startingCash) {
+		this.individualUserId = individualUserId;
+		this.groupUserId = groupUserId;
 		this.genome = genome;
 		this.screenCriteria = screenCriteria;
 		this.symbols = symbols;
 		this.portfolioId = portfolioId;
 		this.alerts = alerts;
 		this.startingCash = startingCash;
+	}
+
+	public String getIndividualUserId() {
+		return individualUserId;
+	}
+
+	public String getGroupUserId() {
+		return groupUserId;
 	}
 
 	@Override

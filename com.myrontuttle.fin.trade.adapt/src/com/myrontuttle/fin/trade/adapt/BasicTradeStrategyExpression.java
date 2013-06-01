@@ -44,9 +44,6 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 	private final BasicTradeStrategy basicTradeStrategy;
 	private final AlertReceiverService alertReceiver;
 	
-	private final AvailableScreenCriteria[] availableScreenCriteria;
-	private final AvailableAlert[] availableAlerts;
-	
 	private final String portNamePrefix;
 	private final String watchNamePrefix;
 	private int counter;
@@ -67,31 +64,16 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 		this.counter = 0;
 		this.portNamePrefix = "Port";
 		this.watchNamePrefix = "Watch";
-		
-		// Get screener possibilities
-		AvailableScreenCriteria[] screenCriteria = null;
-		try {
-			screenCriteria = screenerService.getAvailableCriteria();
-		} catch (Exception e) {
-			System.out.println("Error getting screener criteria: " + e.getMessage());
-			e.printStackTrace();
-		}
-		this.availableScreenCriteria = screenCriteria;
-
-		// Get alert possibilities
-		AvailableAlert[] alerts = null;
-		try {
-			alerts = alertService.getAvailableAlerts();
-		} catch (Exception e) {
-			System.out.println("Error getting alerts available: " + e.getMessage());
-			e.printStackTrace();
-		}
-		this.availableAlerts = alerts;
-		
 	}
+	
+	
 	
 	@Override
 	public TradeStrategyCandidate express(int[] candidate) {
+		
+		//TODO: Get user id's
+		String indUserId = null;
+		String groupUserId = null;
 		
 		// Initialize position of counter along genome
 		int position = SCREEN_SORT_POSITION;
@@ -102,8 +84,9 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 		SelectedScreenCriteria[] screenCriteria = null;
 		position++;
 		try {
-			screenCriteria = expressScreenerGenes(candidate, position);
+			screenCriteria = expressScreenerGenes(groupUserId, candidate, position);
 			String[] screenSymbols = screenerService.screen(
+											groupUserId,
 											screenCriteria,
 											sortBy,
 											MAX_SYMBOLS_PER_SCREEN);
@@ -124,7 +107,7 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 		counter++;
 		String watchlistId = null;
 		try {
-			watchlistId = watchlistService.create(watchNamePrefix + counter);
+			watchlistId = watchlistService.create(indUserId, watchNamePrefix + counter);
 		} catch (Exception e1) {
 			System.out.println("Error creating watchlist: " + e1.getMessage());
 			e1.printStackTrace();
@@ -133,7 +116,7 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 		// Add stocks to a watchlist
 		for (int i=0; i<symbols.length; i++) {
 			try {
-				watchlistService.addHolding(watchlistId, symbols[i]);
+				watchlistService.addHolding(indUserId, watchlistId, symbols[i]);
 			} catch (Exception e) {
 				System.out.println("Error adding " + symbols[i] + " to watchlist: " + e.getMessage());
 				e.printStackTrace();
@@ -143,8 +126,8 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 		// Prepare portfolio
 		String portfolioId = null;
 		try {
-			portfolioId = portfolioService.create(portNamePrefix + counter);
-			portfolioService.addCashTransaction(portfolioId, 
+			portfolioId = portfolioService.create(indUserId, portNamePrefix + counter);
+			portfolioService.addCashTransaction(indUserId, portfolioId, 
 												basicTradeStrategy.getStartingCash(), 
 												true, true);
 		} catch (Exception e) {
@@ -154,9 +137,9 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 
 		// Create alerts for stocks
 		SelectedAlert[] openAlerts = 
-				expressAlertGenes(candidate, position, symbols);
+				expressAlertGenes(groupUserId, candidate, position, symbols);
 		try {
-			alertService.setupAlerts(openAlerts);
+			alertService.setupAlerts(groupUserId, openAlerts);
 		} catch (Exception e) {
 			System.out.println("Error creating alerts: " + e.getMessage());
 			e.printStackTrace();
@@ -165,7 +148,7 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 		
 		// Create trades to be made when alerts are triggered
 		TradeBounds[] tradesToMake = 
-				expressTradeGenes(candidate, position, symbols);
+				expressTradeGenes(indUserId, candidate, position, symbols);
 		
 		// Create listener for alerts to move stocks to portfolio
 		AlertTradeBounds[] alertTradeBounds = new AlertTradeBounds[openAlerts.length];
@@ -181,10 +164,9 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 		}
 
 		// Get portfolio total gains
-		return new TradeStrategyCandidate(candidate, screenCriteria, 
-									symbols, portfolioId, 
-									alertTradeBounds, 
-									basicTradeStrategy.getStartingCash());
+		return new TradeStrategyCandidate(indUserId, groupUserId, candidate, 
+									screenCriteria, symbols, portfolioId, 
+									alertTradeBounds, basicTradeStrategy.getStartingCash());
 	}
 
 	/**
@@ -197,8 +179,17 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 	 * @param position Where in the candidate's genome to start reading screener genes
 	 * @return A set of screener criteria selected by this candidate
 	 */
-	private SelectedScreenCriteria[] expressScreenerGenes(int[] candidate, 
+	private SelectedScreenCriteria[] expressScreenerGenes(String userId, int[] candidate, 
 															int position) {
+
+		// Get screener possibilities
+		AvailableScreenCriteria[] availableScreenCriteria = null;
+		try {
+			availableScreenCriteria = screenerService.getAvailableCriteria(userId);
+		} catch (Exception e) {
+			System.out.println("Error getting screener criteria: " + e.getMessage());
+			e.printStackTrace();
+		}
 
 		ArrayList<SelectedScreenCriteria> selected = new ArrayList<SelectedScreenCriteria>();
 		for (int i=0; i<SCREEN_GENES; i++) {
@@ -229,14 +220,24 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 	 * 3. parameter2 (list index or double value)
 	 * 4. parameter3 (list index or double value)
 	 * 
+	 * @param userId
 	 * @param candidate A candidates genome
 	 * @param position Where in the candidate's genome to start reading alert genes
 	 * @return A set of alert criteria selected by this candidate
 	 */
-	private SelectedAlert[] expressAlertGenes(int[] candidate, 
+	private SelectedAlert[] expressAlertGenes(String userId, int[] candidate, 
 												int position, 
 												String[] symbols) {
 
+		// Get alert possibilities
+		AvailableAlert[] availableAlerts = null;
+		try {
+			availableAlerts = alertService.getAvailableAlerts(userId);
+		} catch (Exception e) {
+			System.out.println("Error getting alerts available: " + e.getMessage());
+			return null;
+		}
+		
 		SelectedAlert[] selected = new SelectedAlert[symbols.length * ALERTS_PER_SYMBOL];
 		
 		for (int i=0; i<symbols.length; i++) {
@@ -249,8 +250,8 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 				double[] params = new double[criteriaTypes.length];
 				for (int k=0; k<criteriaTypes.length; k++) {
 					if (criteriaTypes[k].equals(AvailableAlert.DOUBLE)) {
-						double upper = alertService.getUpperDouble(id, symbols[i], k);
-						double lower = alertService.getLowerDouble(id, symbols[i], k);
+						double upper = alertService.getUpperDouble(userId, id, symbols[i], k);
+						double lower = alertService.getLowerDouble(userId, id, symbols[i], k);
 						params[k] = transpose(candidate[position + 1], lower, upper);
 					} else if (criteriaTypes[k].equals(AvailableAlert.LIST)) {
 						int upper = alertService.getListLength(id, k);
@@ -273,13 +274,13 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 	 * Creates a set of Trades based on a candidate's trade genes
 	 * 
 	 * Order Gene Data Map
-	 * 
+	 * @param userId
 	 * @param candidate A candidates genome
 	 * @param position Where in the candidate's genome to start reading order genes
 	 * @param symbols The symbols found during screening
 	 * @return A set of alert criteria selected by this candidate
 	 */
-	private TradeBounds[] expressTradeGenes(int[] candidate, 
+	private TradeBounds[] expressTradeGenes(String userId, int[] candidate, 
 										int position, 
 										String[] symbols) {
 
@@ -287,7 +288,7 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 		
 		for (int i=0; i<symbols.length; i++) {
 			int open = transpose(candidate[position], 0, 
-								portfolioService.openOrderTypesAvailable().length - 1);
+								portfolioService.openOrderTypesAvailable(userId).length - 1);
 			
 			int allocation = transpose(candidate[position + 1],
 											basicTradeStrategy.tradeAllocationLower(), 

@@ -21,21 +21,21 @@ public interface AlertService {
 	 * Gets a specific available alert given their id
 	 * @return AvailableAlert
 	 */
-	public AvailableAlert getAlert(int id) throws Exception;
+	public AvailableAlert getAlert(String userId, int id) throws Exception;
 
 	/**
 	 * Gets the alert that indicates the price has gone below a value
 	 * @return Alert for a price moving below a certain value
 	 * @throws Exception
 	 */
-	public AvailableAlert getPriceBelowAlert() throws Exception;
+	public AvailableAlert getPriceBelowAlert(String userId) throws Exception;
 	
 	/**
 	 * Gets the alert that indicates the price has gone above a value
 	 * @return Alert for a price moving above a certain value alert
 	 * @throws Exception
 	 */
-	public AvailableAlert getPriceAboveAlert() throws Exception;
+	public AvailableAlert getPriceAboveAlert(String userId) throws Exception;
 	
 	/**
 	 * Parses a condition from the generic condition that's available to the actual

@@ -111,7 +111,7 @@ public class EmailAlertReceiver implements AlertReceiverService {
 	public int matchAlert(String userId, String condition) {
 		int matches = 0;
 		for (AlertAction action : alertActionList) {
-			if (action.alertMatches(condition)) {
+			if (action.getAlert().getCondition().matches(condition)) {
 				System.out.println("Alert Matched");
 				try {
 					tradeStrategy.takeAction(userId, action);

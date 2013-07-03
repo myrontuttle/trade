@@ -73,7 +73,7 @@ public interface AlertService {
 	 * @param criteriaIndex The number of the criteria to get the bound for
 	 * @return The upper bound
 	 */
-	public int getListLength(int id, int criteriaIndex);
+	public int getListLength(String userId, int id, int criteriaIndex);
 	
 	/**
 	 * Sets up selected alerts to be triggered (potentially)

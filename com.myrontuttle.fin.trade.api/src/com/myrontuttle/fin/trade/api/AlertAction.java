@@ -27,17 +27,4 @@ public abstract class AlertAction implements Serializable  {
 	}
 	
 	public abstract String getActionType();
-
-	/**
-	 * Checks if the condition contains the condition in the alert
-	 * @param condition The condition indicated in the alert
-	 * @return True if the condition contains the condition in the alert 
-	 */
-	public boolean alertMatches(String condition) {
-		if (condition.contains(alert.getCondition())) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 }

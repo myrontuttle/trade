@@ -283,7 +283,7 @@ public class BasicTradeStrategy implements TradeStrategy {
 	private AlertOrder createStopLoss(String userId, TradeBounds tradeBounds, double currentPrice, 
 							Order closeOrder, String portfolioId) throws Exception {
 
-		AvailableAlert priceBelowAlert = alertService.getPriceBelowAlert();
+		AvailableAlert priceBelowAlert = alertService.getPriceBelowAlert(userId);
 		double loss = currentPrice - (tradeBounds.getAcceptableLoss() / 100) * currentPrice;
 		SelectedAlert stopLossAlert = new SelectedAlert(priceBelowAlert.getId(),
 														priceBelowAlert.getCondition(),
@@ -313,7 +313,7 @@ public class BasicTradeStrategy implements TradeStrategy {
 
 	private AlertTradeAdjustment createAdjustment(String userId, TradeBounds tradeBounds, double currentPrice, 
 											String tradeId, String portfolioId) throws Exception {
-		AvailableAlert priceAboveAlert = alertService.getPriceAboveAlert();
+		AvailableAlert priceAboveAlert = alertService.getPriceAboveAlert(userId);
 		double adjustmentPrice = currentPrice + (tradeBounds.getAdjustAt() / 100) * currentPrice;
 		SelectedAlert adjustmentAlert = new SelectedAlert(priceAboveAlert.getId(),
 											priceAboveAlert.getCondition(),

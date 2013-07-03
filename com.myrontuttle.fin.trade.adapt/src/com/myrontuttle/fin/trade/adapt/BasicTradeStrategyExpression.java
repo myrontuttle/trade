@@ -254,7 +254,7 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 						double lower = alertService.getLowerDouble(userId, id, symbols[i], k);
 						params[k] = transpose(candidate[position + 1], lower, upper);
 					} else if (criteriaTypes[k].equals(AvailableAlert.LIST)) {
-						int upper = alertService.getListLength(id, k);
+						int upper = alertService.getListLength(userId, id, k);
 						params[k] = transpose(candidate[position + 1], 0, upper);
 					}
 				}

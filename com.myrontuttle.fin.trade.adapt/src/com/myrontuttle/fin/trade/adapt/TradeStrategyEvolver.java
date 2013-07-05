@@ -63,10 +63,79 @@ public class TradeStrategyEvolver {
 	}
 	
 	public void evolveOnce(String groupId) {
-		ExpressedPopulation<int[]> pop = traderExpression.importPopulation(groupId);
+		//TODO: Check if groupId exists, if not, create new group
+		ExpressedPopulation<int[]> pop = importPopulation(groupId);
 		int eliteCount = pop.getEliteCount();
 		int size = pop.getPopulationSize();
-		engine.evolveToExpression(pop, size, eliteCount, terminationConditions);
+		engine.evolveToExpression(pop, groupId, size, eliteCount, terminationConditions);
+	}
+	
+	public static String getAlertAddress(String userId) {
+		//TODO Get the email associated with this userId from the database
+		return null;
+	}
+
+	public ExpressedPopulation<int[]> importPopulation(String populationId) {
+		//TODO: Retrieve population from database
+/*
+		long startTime = Long.parseLong(fileName.substring(
+											fileName.indexOf(TIME_MARKER) 
+											+ TIME_MARKER.length(), 
+											fileName.indexOf(GEN_MARKER)));
+
+		int iterationNumber = Integer.parseInt(fileName.substring(
+											fileName.indexOf(GEN_MARKER) 
+											+ GEN_MARKER.length(), 
+											fileName.indexOf(FILE_EXT)));
+		
+		try {
+			// Open file to read in population
+			BufferedReader input =  new BufferedReader(new FileReader(fileName));
+			try {
+
+				// Read in population info
+				String line = input.readLine();
+
+				int size = Integer.parseInt(line.substring(
+												line.indexOf(SIZE_MARKER) 
+													+ SIZE_MARKER.length()), 
+													line.indexOf(FIT_MARKER));
+				
+				boolean naturalFitness = Boolean.parseBoolean(line.substring(
+												line.indexOf(FIT_MARKER) 
+													+ FIT_MARKER.length(), 
+												line.indexOf(ELITE_MARKER)));
+
+				int eliteCount = Integer.parseInt(line.substring(
+												line.indexOf(ELITE_MARKER) 
+													+ ELITE_MARKER.length()));
+
+				// Create list of expressed candidates based on file
+				List<ExpressedCandidate<int[]>> expressedPopulation = 
+						new ArrayList<ExpressedCandidate<int[]>>(size);
+		        while (( line = input.readLine()) != null){
+		        	expressedPopulation.add(TradeCandidate.fromString(line));
+		        }
+
+				// Create new Expressed Population Stats
+		        return new ExpressedPopulation<int[]>(
+						 						expressedPopulation,
+						 						naturalFitness,
+						 						expressedPopulation.size(),
+						 						eliteCount,
+						 						iterationNumber,
+						 						startTime);
+		      }
+		      finally {
+		        input.close();
+		      }
+		    }
+		    catch (IOException ex){
+		      ex.printStackTrace();
+		    }
+		    
+		*/
+		return null;
 	}
 	
 	public void abort(String groupId) {

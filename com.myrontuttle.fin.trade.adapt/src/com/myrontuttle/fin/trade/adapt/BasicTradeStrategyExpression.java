@@ -69,11 +69,12 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 	
 	
 	@Override
-	public TradeStrategyCandidate express(int[] candidate) {
+	public TradeStrategyCandidate express(int[] candidate, String populationId) {
 		
-		//TODO: Get user id's
+		//TODO: Get user id's and match with email address
 		String indUserId = null;
-		String groupUserId = null;
+		
+		String populationEmail = TradeStrategyEvolver.getAlertAddress(populationId);
 		
 		// Initialize position of counter along genome
 		int position = SCREEN_SORT_POSITION;
@@ -84,9 +85,9 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 		SelectedScreenCriteria[] screenCriteria = null;
 		position++;
 		try {
-			screenCriteria = expressScreenerGenes(groupUserId, candidate, position);
+			screenCriteria = expressScreenerGenes(populationId, candidate, position);
 			String[] screenSymbols = screenerService.screen(
-											groupUserId,
+											populationId,
 											screenCriteria,
 											sortBy,
 											MAX_SYMBOLS_PER_SCREEN);
@@ -137,9 +138,15 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 
 		// Create alerts for stocks
 		SelectedAlert[] openAlerts = 
-				expressAlertGenes(groupUserId, candidate, position, symbols);
+				expressAlertGenes(populationId, candidate, position, symbols);
 		try {
-			alertService.setupAlerts(groupUserId, openAlerts);
+			alertService.addAlertDestination(populationId, populationEmail, "EMAIL");
+		} catch (Exception e) {
+			System.out.println("Unable to add alert profile. " + e.getMessage());
+			e.printStackTrace();
+		}
+		try {
+			alertService.setupAlerts(populationId, openAlerts);
 		} catch (Exception e) {
 			System.out.println("Error creating alerts: " + e.getMessage());
 			e.printStackTrace();
@@ -164,7 +171,7 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 		}
 
 		// Get portfolio total gains
-		return new TradeStrategyCandidate(indUserId, groupUserId, candidate, 
+		return new TradeStrategyCandidate(indUserId, populationId, populationEmail, candidate, 
 									screenCriteria, symbols, portfolioId, 
 									alertTradeBounds, basicTradeStrategy.getStartingCash());
 	}
@@ -379,69 +386,4 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 		 * 
 		 */
 	}
-
-	@Override
-	public ExpressedPopulation<int[]> importPopulation(String populationId) {
-		//TODO: Retrieve from database
-/*
-		long startTime = Long.parseLong(fileName.substring(
-											fileName.indexOf(TIME_MARKER) 
-											+ TIME_MARKER.length(), 
-											fileName.indexOf(GEN_MARKER)));
-
-		int iterationNumber = Integer.parseInt(fileName.substring(
-											fileName.indexOf(GEN_MARKER) 
-											+ GEN_MARKER.length(), 
-											fileName.indexOf(FILE_EXT)));
-		
-		try {
-			// Open file to read in population
-			BufferedReader input =  new BufferedReader(new FileReader(fileName));
-			try {
-
-				// Read in population info
-				String line = input.readLine();
-
-				int size = Integer.parseInt(line.substring(
-												line.indexOf(SIZE_MARKER) 
-													+ SIZE_MARKER.length()), 
-													line.indexOf(FIT_MARKER));
-				
-				boolean naturalFitness = Boolean.parseBoolean(line.substring(
-												line.indexOf(FIT_MARKER) 
-													+ FIT_MARKER.length(), 
-												line.indexOf(ELITE_MARKER)));
-
-				int eliteCount = Integer.parseInt(line.substring(
-												line.indexOf(ELITE_MARKER) 
-													+ ELITE_MARKER.length()));
-
-				// Create list of expressed candidates based on file
-				List<ExpressedCandidate<int[]>> expressedPopulation = 
-						new ArrayList<ExpressedCandidate<int[]>>(size);
-		        while (( line = input.readLine()) != null){
-		        	expressedPopulation.add(TradeCandidate.fromString(line));
-		        }
-
-				// Create new Expressed Population Stats
-		        return new ExpressedPopulation<int[]>(
-						 						expressedPopulation,
-						 						naturalFitness,
-						 						expressedPopulation.size(),
-						 						eliteCount,
-						 						iterationNumber,
-						 						startTime);
-		      }
-		      finally {
-		        input.close();
-		      }
-		    }
-		    catch (IOException ex){
-		      ex.printStackTrace();
-		    }
-		    
-		*/
-		return null;
-	}
-
 }

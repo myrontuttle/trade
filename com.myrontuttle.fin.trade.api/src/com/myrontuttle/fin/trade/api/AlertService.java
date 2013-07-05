@@ -12,19 +12,22 @@ public interface AlertService {
 	
 	/**
 	 * Gets the alerts that are available from this service
-	 * @param userId
+	 * @param userId User to receive alerts
 	 * @return Array of alerts
 	 */
 	public AvailableAlert[] getAvailableAlerts(String userId) throws Exception;
 	
 	/**
 	 * Gets a specific available alert given their id
+	 * @param userId User to receive alerts
+	 * @param id The id of the alert
 	 * @return AvailableAlert
 	 */
 	public AvailableAlert getAlert(String userId, int id) throws Exception;
 
 	/**
 	 * Gets the alert that indicates the price has gone below a value
+	 * @param userId User to receive alerts
 	 * @return Alert for a price moving below a certain value
 	 * @throws Exception
 	 */
@@ -32,6 +35,7 @@ public interface AlertService {
 	
 	/**
 	 * Gets the alert that indicates the price has gone above a value
+	 * @param userId User to receive alerts
 	 * @return Alert for a price moving above a certain value alert
 	 * @throws Exception
 	 */
@@ -49,7 +53,7 @@ public interface AlertService {
 
 	/**
 	 * Returns the potentially calculated lower bound for a condition and criteriaIndex
-	 * @param userId
+	 * @param userId User to receive alerts
 	 * @param id The id of the alert
 	 * @param symbol The symbol to get a limit for
 	 * @param criteriaIndex The number of the criteria to get the bound for
@@ -59,7 +63,7 @@ public interface AlertService {
 
 	/**
 	 * Returns the potentially calculated upper bound for a condition and criteriaIndex
-	 * @param userId
+	 * @param userId User to receive alerts
 	 * @param id The id of the alert
 	 * @param symbol The symbol to get a limit for
 	 * @param criteriaIndex The number of the criteria to get the bound for
@@ -69,6 +73,7 @@ public interface AlertService {
 	
 	/**
 	 * Returns the length of a list criteria
+	 * @param userId User to receive alerts
 	 * @param id The id of the alert
 	 * @param criteriaIndex The number of the criteria to get the bound for
 	 * @return The upper bound
@@ -76,15 +81,26 @@ public interface AlertService {
 	public int getListLength(String userId, int id, int criteriaIndex);
 	
 	/**
+	 * Adds the customer email and delivery format if it isn't already there
+	 * @param userId User to receive alerts
+	 * @param alertAddress To deliver alerts to
+	 * @return boolean True if the action was successful
+	 * @throws Exception
+	 */
+	public boolean addAlertDestination(String userId, String alertAddress, 
+										String alertType) throws Exception;
+
+	/**
 	 * Sets up selected alerts to be triggered (potentially)
-	 * @param userId
+	 * @param userId User to receive alerts
+	 * @param SelectedAlert Alerts to setup
 	 * @return Indicates if the alert was set up successfully
 	 */
 	public boolean setupAlerts(String userId, SelectedAlert... alerts) throws Exception;
 	
 	/**
 	 * Returns the alerts that have been setup
-	 * @param userId
+	 * @param userId User to receive alerts
 	 * @return Array of active alerts
 	 * @throws Exception
 	 */
@@ -92,7 +108,7 @@ public interface AlertService {
 	
 	/**
 	 * Removes a specific alert
-	 * @param userId
+	 * @param userId User to remove alerts from
 	 * @param alert to be removed
 	 * @return true if the alert was removed
 	 * @throws Exception
@@ -101,7 +117,7 @@ public interface AlertService {
 	
 	/**
 	 * Remove all alerts
-	 * @param userId
+	 * @param userId User to remove alerts from
 	 * @return Indicates if alerts were removed successfully
 	 */
 	public boolean removeAllAlerts(String userId) throws Exception;

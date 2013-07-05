@@ -12,6 +12,7 @@ public class TradeStrategyCandidate implements ExpressedCandidate<int[]> {
 	
 	private final String individualUserId;
 	private final String groupUserId;
+	private final String alertAddress;
 	private final int[] genome;
 	private final SelectedScreenCriteria[] screenCriteria;
 	private final String[] symbols;
@@ -19,12 +20,14 @@ public class TradeStrategyCandidate implements ExpressedCandidate<int[]> {
 	private final AlertTradeBounds[] alerts;
 	private final double startingCash;
 	
-	TradeStrategyCandidate(String individualUserId, String groupUserId, int[] genome, 
+	TradeStrategyCandidate(String individualUserId, String groupUserId, 
+					String alertAddress, int[] genome, 
 					SelectedScreenCriteria[] screenCriteria,
 					String[] symbols, String portfolioId, 
 					AlertTradeBounds[] alerts, double startingCash) {
 		this.individualUserId = individualUserId;
 		this.groupUserId = groupUserId;
+		this.alertAddress = alertAddress;
 		this.genome = genome;
 		this.screenCriteria = screenCriteria;
 		this.symbols = symbols;
@@ -66,7 +69,11 @@ public class TradeStrategyCandidate implements ExpressedCandidate<int[]> {
 		return startingCash;
 	}
 
-    /**
+    public String getAlertAddress() {
+		return alertAddress;
+	}
+
+	/**
      * Compares this candidate's genome with that of the specified
      * expressed candidate.
      * @param expressedCandidate The candidate to compare genome with.

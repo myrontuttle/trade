@@ -12,7 +12,7 @@ import com.myrontuttle.evolve.operators.EvolutionPipeline;
 import com.myrontuttle.evolve.selection.RouletteWheelSelection;
 import com.myrontuttle.evolve.termination.*;
 
-public class TradeStrategyEvolver {
+public class Evolver {
 	
 	private static final double MUTATION_FACTOR = 0.02;
 	private static final int STAGNATION_GENERATIONS = 20;
@@ -22,14 +22,14 @@ public class TradeStrategyEvolver {
 	
 	private final ExpressionStrategy<int[]> traderExpression;
 	
-	TradeStrategyEvolver(ExpressionStrategy<int[]> traderExpression, 
-				TradeStrategyEvaluator strategyEvaluator) {
+	Evolver(ExpressionStrategy<int[]> traderExpression, 
+				Evaluator strategyEvaluator) {
 		this.traderExpression = traderExpression;
 
 		// Setup how strategy candidates are created
 		IntArrayFactory candidateFactory = 
-				new IntArrayFactory(BasicTradeStrategyExpression.TOTAL_GENE_LENGTH, 
-									BasicTradeStrategyExpression.UPPER_BOUND);
+				new IntArrayFactory(BasicExpression.TOTAL_GENE_LENGTH, 
+									BasicExpression.UPPER_BOUND);
 		
 		// Setup how strategies are evolved
 		List<EvolutionaryOperator<int[]>> operators = new LinkedList<EvolutionaryOperator<int[]>>();
@@ -64,18 +64,29 @@ public class TradeStrategyEvolver {
 	
 	public void evolveOnce(String groupId) {
 		//TODO: Check if groupId exists, if not, create new group
-		ExpressedPopulation<int[]> pop = importPopulation(groupId);
-		int eliteCount = pop.getEliteCount();
-		int size = pop.getPopulationSize();
-		engine.evolveToExpression(pop, groupId, size, eliteCount, terminationConditions);
+		List<ExpressedCandidate<int[]>> candidates = null;
+		int eliteCount = 0;
+		int size = 10;
+		if (groupId != null) {
+			candidates = importCandidates(groupId);
+			eliteCount = importEliteCount(groupId);
+			size = candidates.size();
+		}
+		
+		engine.evolveToExpression(candidates, groupId, size, eliteCount, terminationConditions);
 	}
 	
 	public static String getAlertAddress(String userId) {
 		//TODO Get the email associated with this userId from the database
 		return null;
 	}
+	
+	public int importEliteCount(String groupId) {
+		//TODO: Retrieve elite count for population
+		return 0;
+	}
 
-	public ExpressedPopulation<int[]> importPopulation(String populationId) {
+	public List<ExpressedCandidate<int[]>> importCandidates(String groupId) {
 		//TODO: Retrieve population from database
 /*
 		long startTime = Long.parseLong(fileName.substring(

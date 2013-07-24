@@ -11,11 +11,11 @@ import com.myrontuttle.fin.trade.api.PortfolioService;
  * Setup how strategies are evaluated
  * @author Myron Tuttle
  */
-public class TradeStrategyEvaluator implements ExpressedFitnessEvaluator<int[]> {
+public class Evaluator implements ExpressedFitnessEvaluator<int[]> {
 
 	private final PortfolioService portfolioService;
 	
-	TradeStrategyEvaluator(PortfolioService portfolioService) {
+	Evaluator(PortfolioService portfolioService) {
 		this.portfolioService = portfolioService;
 	}
 
@@ -31,12 +31,12 @@ public class TradeStrategyEvaluator implements ExpressedFitnessEvaluator<int[]> 
 	public double getFitness(ExpressedCandidate<int[]> candidate,
 			List<ExpressedCandidate<int[]>> population) {
 		
-		TradeStrategyCandidate tradeCandidate = (TradeStrategyCandidate)candidate;
+		Candidate tradeCandidate = (Candidate)candidate;
 		
 		// Fitness is simply realized gain
 		double balance = 0;
 		try {
-			balance = portfolioService.closeAllPositions(tradeCandidate.getIndividualUserId(),
+			balance = portfolioService.closeAllPositions(tradeCandidate.getIndividualId(),
 														tradeCandidate.getPortfolioId());
 		} catch (Exception e) {
 			System.out.println("Error getting portfolio balance: " + e.getMessage());

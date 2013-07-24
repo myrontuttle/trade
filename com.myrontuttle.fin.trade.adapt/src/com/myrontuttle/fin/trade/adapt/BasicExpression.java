@@ -4,8 +4,9 @@
 package com.myrontuttle.fin.trade.adapt;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import com.myrontuttle.evolve.ExpressedPopulation;
+import com.myrontuttle.evolve.ExpressedCandidate;
 import com.myrontuttle.evolve.ExpressionStrategy;
 
 import com.myrontuttle.fin.trade.api.*;
@@ -18,7 +19,7 @@ import com.myrontuttle.fin.trade.tradestrategies.TradeBounds;
  * @author Myron Tuttle
  * @param <T> The candidate to be expressed
  */
-public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]> {
+public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 	private static final int SCREEN_SORT_POSITION = 0;
 	private static final int SCREEN_GENE_LENGTH = 2;
@@ -48,7 +49,7 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 	private final String watchNamePrefix;
 	private int counter;
 	
-	BasicTradeStrategyExpression(ScreenerService screenerService, 
+	BasicExpression(ScreenerService screenerService, 
 							WatchlistService watchlistService,
 							AlertService alertService, 
 							PortfolioService portfolioService,
@@ -69,12 +70,12 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 	
 	
 	@Override
-	public TradeStrategyCandidate express(int[] candidate, String populationId) {
+	public Candidate express(int[] candidate, String populationId) {
 		
-		//TODO: Get user id's and match with email address
+		//TODO: Generate user id
 		String indUserId = null;
 		
-		String populationEmail = TradeStrategyEvolver.getAlertAddress(populationId);
+		String populationEmail = Evolver.getAlertAddress(populationId);
 		
 		// Initialize position of counter along genome
 		int position = SCREEN_SORT_POSITION;
@@ -171,7 +172,7 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 		}
 
 		// Get portfolio total gains
-		return new TradeStrategyCandidate(indUserId, populationId, populationEmail, candidate, 
+		return new Candidate(indUserId, populationId, populationEmail, candidate, 
 									screenCriteria, symbols, portfolioId, 
 									alertTradeBounds, basicTradeStrategy.getStartingCash());
 	}
@@ -348,42 +349,10 @@ public class BasicTradeStrategyExpression<T> implements ExpressionStrategy<int[]
 			return lower + (value / UPPER_BOUND) * (upper - lower);
 		}
 	}
-
+	
 	@Override
-	public void populationExpressed(ExpressedPopulation<int[]> expressedPopulation) {
-		//TODO: Save to database
-/*
-		// Create a file for the population
-		String fileName = SAVE_DIR + "S" + stats.getStartTime() + 
-							"G" + stats.getGenerationNumber() + FILE_EXT;
-		
-		Writer out = null;
-		try {
-			out = new BufferedWriter(new FileWriter(fileName));
-
-			// Write the population info to the first line
-			out.write(SIZE_MARKER + stats.getPopulationSize() + 
-					FIT_MARKER + stats.isNaturalFitness() + 
-					ELITE_MARKER + stats.getEliteCount());
-			
-			for (ExpressedCandidate<int[]> candidate : expressedPopulation) {
-				TradeCandidate strategy = (TradeCandidate)candidate;
-				
-				// Write each candidate to a line in the file
-				out.write(strategy.toString());
-			}
-		} catch (Exception e) {
-	    	e.printStackTrace();
-	    } finally {
-	      try {
-			out.close();
-	      } catch (IOException e) {
-			e.printStackTrace();
-	      }
-	    }
-		
-		// Add a satisfied termination condition
-		 * 
-		 */
+	public void candidatesExpressed(
+			List<ExpressedCandidate<int[]>> expressedCandidates) {
+		// TODO Save candidates to db
 	}
 }

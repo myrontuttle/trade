@@ -67,7 +67,13 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		this.watchNamePrefix = "Watch";
 	}
 	
-	
+	private List<Integer> arrayToList(int[] array) {
+		List<Integer> list = new ArrayList<Integer>(array.length);
+		for (int i=0; i<array.length; i++) {
+			list.set(i, array[i]);
+		}
+		return list;
+	}
 	
 	@Override
 	public Candidate express(int[] candidate, String populationId) {
@@ -172,7 +178,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		}
 
 		// Get portfolio total gains
-		return new Candidate(indUserId, populationId, populationEmail, candidate, 
+		return new Candidate(indUserId, populationId, populationEmail, arrayToList(candidate), 
 									screenCriteria, symbols, portfolioId, 
 									alertTradeBounds, basicTradeStrategy.getStartingCash());
 	}

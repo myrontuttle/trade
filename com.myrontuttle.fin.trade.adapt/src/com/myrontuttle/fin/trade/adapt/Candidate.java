@@ -1,5 +1,7 @@
 package com.myrontuttle.fin.trade.adapt;
 
+import java.util.List;
+
 import com.myrontuttle.evolve.ExpressedCandidate;
 import com.myrontuttle.fin.trade.api.SelectedScreenCriteria;
 import com.myrontuttle.fin.trade.tradestrategies.AlertTradeBounds;
@@ -10,8 +12,10 @@ import com.myrontuttle.fin.trade.tradestrategies.AlertTradeBounds;
  */
 public class Candidate implements ExpressedCandidate<int[]> {
 	
-	private String individualId;
+	private List<Integer> genomeList;
 	private int[] genome;
+
+	private String individualId;
 	private String portfolioId;
 	private double startingCash;
 	
@@ -25,19 +29,28 @@ public class Candidate implements ExpressedCandidate<int[]> {
 	}
 	
 	Candidate(String individualId, String groupId, 
-					String alertAddress, int[] genome, 
+					String alertAddress, List<Integer> genomeList, 
 					SelectedScreenCriteria[] screenCriteria,
 					String[] symbols, String portfolioId, 
 					AlertTradeBounds[] alerts, double startingCash) {
 		this.individualId = individualId;
 		this.groupId = groupId;
 		this.alertAddress = alertAddress;
-		this.genome = genome;
+		this.genomeList = genomeList;
+		this.genome = listToArray(genomeList);
 		this.screenCriteria = screenCriteria;
 		this.symbols = symbols;
 		this.portfolioId = portfolioId;
 		this.alerts = alerts;
 		this.startingCash = startingCash;
+	}
+	
+	private int[] listToArray(List<Integer> list) {
+		int[] array = new int[list.size()];
+		for (int i=0; i<array.length; i++) {
+			array[i] = list.get(i);
+		}
+		return array;
 	}
 
 	/**
@@ -49,15 +62,15 @@ public class Candidate implements ExpressedCandidate<int[]> {
      */
 	@Override
 	public int compareTo(ExpressedCandidate<int[]> expressedCandidate) {
-		if (this.genome.length > expressedCandidate.getGenome().length) {
+		if (this.genomeList.size() > expressedCandidate.getGenome().length) {
 			return 1;
-		} else if (this.genome.length < expressedCandidate.getGenome().length) {
+		} else if (this.genomeList.size() < expressedCandidate.getGenome().length) {
 			return -1;
 		} else {
-			for (int i=0; i<this.genome.length; i++) {
-				if (this.genome[i] > expressedCandidate.getGenome()[i]) {
+			for (int i=0; i<this.genomeList.size(); i++) {
+				if (this.genomeList.get(i) > expressedCandidate.getGenome()[i]) {
 					return 1;
-				} else if (this.genome[i] > expressedCandidate.getGenome()[i]) {
+				} else if (this.genomeList.get(i) > expressedCandidate.getGenome()[i]) {
 					return -1;
 				}
 			}
@@ -65,12 +78,23 @@ public class Candidate implements ExpressedCandidate<int[]> {
 		}
 	}
 
+	/**
+	 * @return the genomeList
+	 */
+	public List<Integer> getGenomeList() {
+		return genomeList;
+	}
+
+	/**
+	 * @param genomeList the genomeList to set
+	 */
+	public void setGenomeList(List<Integer> genomeList) {
+		this.genomeList = genomeList;
+	}
+
 	@Override
 	public int[] getGenome() {
 		return genome;
-	}
-	public void setGenome(int[] genome) {
-		this.genome = genome;
 	}
 
 	public String getIndividualId() {

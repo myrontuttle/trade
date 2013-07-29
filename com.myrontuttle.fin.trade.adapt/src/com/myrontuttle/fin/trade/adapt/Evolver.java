@@ -55,6 +55,8 @@ public class Evolver {
 		// Add observer for the evolution
 		engine.addEvolutionObserver(new EvolutionObserver<int[]>() {
 			public void populationUpdate(PopulationStats<? extends int[]> data) {
+				//TODO: Use data to update group
+				//TODO: Save group to database
 				System.out.printf("Generation %d: %s\n",
 				                   data.getGenerationNumber(),
 				                   Arrays.toString(data.getBestCandidate()));
@@ -76,13 +78,14 @@ public class Evolver {
 		engine.evolveToExpression(candidates, groupId, size, eliteCount, terminationConditions);
 	}
 	
-	public static String getAlertAddress(String userId) {
-		//TODO Get the email associated with this userId from the database
+	public static String getAlertAddress(String groupId) {
+		//TODO Get the email associated with this groupId from the database
 		return null;
 	}
 	
 	public int importEliteCount(String groupId) {
-		//TODO: Retrieve elite count for population
+		//TODO: Retrieve elite count for a group
+		// SELECT * FROM Candidate WHERE groupId=groupId
 		return 0;
 	}
 

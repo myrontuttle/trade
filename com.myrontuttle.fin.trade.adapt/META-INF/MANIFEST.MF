@@ -11,5 +11,6 @@ Import-Package: com.myrontuttle.evolve,
  com.myrontuttle.evolve.selection,
  com.myrontuttle.evolve.termination,
  com.myrontuttle.fin.trade.api,
- com.myrontuttle.fin.trade.tradestrategies
+ com.myrontuttle.fin.trade.tradestrategies,
+ javax.persistence
 Export-Package: com.myrontuttle.fin.trade.adapt

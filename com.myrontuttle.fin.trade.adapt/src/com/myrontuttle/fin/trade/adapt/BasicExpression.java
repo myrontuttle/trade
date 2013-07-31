@@ -6,6 +6,9 @@ package com.myrontuttle.fin.trade.adapt;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+
 import com.myrontuttle.evolve.ExpressedCandidate;
 import com.myrontuttle.evolve.ExpressionStrategy;
 
@@ -45,6 +48,8 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	private final BasicTradeStrategy basicTradeStrategy;
 	private final AlertReceiverService alertReceiver;
 	
+	private final EntityManager em;
+	
 	private final String portNamePrefix;
 	private final String watchNamePrefix;
 	private int counter;
@@ -54,13 +59,16 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 							AlertService alertService, 
 							PortfolioService portfolioService,
 							BasicTradeStrategy basicTradeStrategy,
-							AlertReceiverService alertReceiver) {
+							AlertReceiverService alertReceiver,
+							EntityManager em) {
 		this.screenerService = screenerService;
 		this.watchlistService = watchlistService;
 		this.alertService = alertService;
 		this.portfolioService = portfolioService;
 		this.basicTradeStrategy = basicTradeStrategy;
 		this.alertReceiver = alertReceiver;
+		
+		this.em = em;
 		
 		this.counter = 0;
 		this.portNamePrefix = "Port";
@@ -178,9 +186,9 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		}
 
 		// Get portfolio total gains
-		return new Candidate(indUserId, populationId, populationEmail, arrayToList(candidate), 
-									screenCriteria, symbols, portfolioId, 
-									alertTradeBounds, basicTradeStrategy.getStartingCash());
+		return new Candidate(indUserId, populationId, arrayToList(candidate), 
+							portfolioId, basicTradeStrategy.getStartingCash()/*,
+							screenCriteria, symbols, alertTradeBounds*/);
 	}
 
 	/**
@@ -359,6 +367,13 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	@Override
 	public void candidatesExpressed(
 			List<ExpressedCandidate<int[]>> expressedCandidates) {
+
 		// TODO Save candidates to db
+		EntityTransaction userTransaction = em.getTransaction();
+		userTransaction.begin();
+		for (ExpressedCandidate<int[]> candidate : expressedCandidates) {
+			em.persist(candidate);
+		}
+		userTransaction.commit();
 	}
 }

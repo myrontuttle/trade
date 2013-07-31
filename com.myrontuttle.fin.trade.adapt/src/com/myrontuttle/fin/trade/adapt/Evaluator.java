@@ -36,7 +36,7 @@ public class Evaluator implements ExpressedFitnessEvaluator<int[]> {
 		// Fitness is simply realized gain
 		double balance = 0;
 		try {
-			balance = portfolioService.closeAllPositions(tradeCandidate.getIndividualId(),
+			balance = portfolioService.closeAllPositions(tradeCandidate.getCandidateId(),
 														tradeCandidate.getPortfolioId());
 		} catch (Exception e) {
 			System.out.println("Error getting portfolio balance: " + e.getMessage());

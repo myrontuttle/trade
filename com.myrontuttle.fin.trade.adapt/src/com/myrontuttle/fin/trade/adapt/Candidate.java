@@ -2,46 +2,103 @@ package com.myrontuttle.fin.trade.adapt;
 
 import java.util.List;
 
+import javax.persistence.*;
+
 import com.myrontuttle.evolve.ExpressedCandidate;
+/*
 import com.myrontuttle.fin.trade.api.SelectedScreenCriteria;
 import com.myrontuttle.fin.trade.tradestrategies.AlertTradeBounds;
-
+*/
 /**
  * A candidate which expresses a trading strategy
  * @author Myron Tuttle
  */
+@Entity(name = "Candidates")
 public class Candidate implements ExpressedCandidate<int[]> {
-	
-	private List<Integer> genomeList;
-	private int[] genome;
 
-	private String individualId;
+	@Id
+	@Column(name = "CandidateId", nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+	private String candidateId;
+
+	@Column(name = "GroupId")
+	private String groupId;
+	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "GroupId", referencedColumnName = "GroupId")
+	private Group group;
+	
+	@ElementCollection
+	@Column(name = "GenomeList")
+	private List<Integer> genomeList;
+
+	@Column(name = "PortfolioId")
 	private String portfolioId;
+
+	@Column(name = "StartingCash")
 	private double startingCash;
 	
-	private String groupId;
-	private String alertAddress;
+	/*
 	private SelectedScreenCriteria[] screenCriteria;
 	private String[] symbols;
 	private AlertTradeBounds[] alerts;
+	*/
 	
-	Candidate(){
-	}
+	Candidate(){ }
 	
-	Candidate(String individualId, String groupId, 
-					String alertAddress, List<Integer> genomeList, 
-					SelectedScreenCriteria[] screenCriteria,
-					String[] symbols, String portfolioId, 
-					AlertTradeBounds[] alerts, double startingCash) {
-		this.individualId = individualId;
+	Candidate(String candidateId, String groupId, List<Integer> genomeList, 
+			String portfolioId, double startingCash/*,
+			SelectedScreenCriteria[] screenCriteria,
+			String[] symbols, AlertTradeBounds[] alerts*/) {
+		this.candidateId = candidateId;
 		this.groupId = groupId;
-		this.alertAddress = alertAddress;
 		this.genomeList = genomeList;
-		this.genome = listToArray(genomeList);
+		this.portfolioId = portfolioId;
+		this.startingCash = startingCash;
+		/*
 		this.screenCriteria = screenCriteria;
 		this.symbols = symbols;
-		this.portfolioId = portfolioId;
 		this.alerts = alerts;
+		*/
+	}
+
+	public String getCandidateId() {
+		return candidateId;
+	}
+	public void setCandidateId(String candidateId) {
+		this.candidateId = candidateId;
+	}
+	
+	public String getGroupId() {
+		return groupId;
+	}	
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
+	}
+
+	public List<Integer> getGenomeList() {
+		return genomeList;
+	}
+	public void setGenomeList(List<Integer> genomeList) {
+		this.genomeList = genomeList;
+	}
+
+	@Override
+	public int[] getGenome() {
+		return listToArray(genomeList);
+	}
+	
+	public String getPortfolioId() {
+		return portfolioId;
+	}
+	public void setPortfolioId(String portfolioId) {
+		this.portfolioId = portfolioId;
+	}
+
+	public double getStartingCash() {
+		return startingCash;
+	}
+	public void setStartingCash(double startingCash) {
 		this.startingCash = startingCash;
 	}
 	
@@ -78,60 +135,7 @@ public class Candidate implements ExpressedCandidate<int[]> {
 		}
 	}
 
-	/**
-	 * @return the genomeList
-	 */
-	public List<Integer> getGenomeList() {
-		return genomeList;
-	}
-
-	/**
-	 * @param genomeList the genomeList to set
-	 */
-	public void setGenomeList(List<Integer> genomeList) {
-		this.genomeList = genomeList;
-	}
-
-	@Override
-	public int[] getGenome() {
-		return genome;
-	}
-
-	public String getIndividualId() {
-		return individualId;
-	}
-	public void setIndividualId(String individualId) {
-		this.individualId = individualId;
-	}
-	
-	public String getPortfolioId() {
-		return portfolioId;
-	}
-	public void setPortfolioId(String portfolioId) {
-		this.portfolioId = portfolioId;
-	}
-
-	public double getStartingCash() {
-		return startingCash;
-	}
-	public void setStartingCash(double startingCash) {
-		this.startingCash = startingCash;
-	}
 /*
-	public String getGroupId() {
-		return groupId;
-	}	
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
-
-    public String getAlertAddress() {
-		return alertAddress;
-	}
-	public void setAlertAddress(String alertAddress) {
-		this.alertAddress = alertAddress;
-	}
-	
 	public AlertTradeBounds[] getAlerts() {
 		return alerts;
 	}

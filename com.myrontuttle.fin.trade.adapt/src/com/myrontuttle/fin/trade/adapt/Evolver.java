@@ -1,8 +1,13 @@
 package com.myrontuttle.fin.trade.adapt;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 import com.myrontuttle.evolve.*;
 import com.myrontuttle.evolve.factories.IntArrayFactory;
@@ -19,12 +24,13 @@ public class Evolver {
 	
 	private final EvolutionEngine<int[]> engine;
 	private final TerminationCondition[] terminationConditions;
-	
-	private final ExpressionStrategy<int[]> traderExpression;
+
+	private final EntityManager em;
 	
 	Evolver(ExpressionStrategy<int[]> traderExpression, 
-				Evaluator strategyEvaluator) {
-		this.traderExpression = traderExpression;
+				BasicEvaluator strategyEvaluator,
+				final EntityManager em) {
+		this.em = em;
 
 		// Setup how strategy candidates are created
 		IntArrayFactory candidateFactory = 
@@ -55,101 +61,74 @@ public class Evolver {
 		// Add observer for the evolution
 		engine.addEvolutionObserver(new EvolutionObserver<int[]>() {
 			public void populationUpdate(PopulationStats<? extends int[]> data) {
-				//TODO: Use data to update group
-				//TODO: Save group to database
+				// Use data to update group
+				em.getTransaction().begin();
+				Group group = em.find(Group.class, data.getPopulationId());
+				group.setBestCandidateId(
+						findCandidateByGenome(data.getBestCandidate()).getCandidateId());
+				group.setBestCandidateFitness(data.getBestCandidateFitness());
+				group.setMeanFitness(data.getMeanFitness());
+				group.setFitnessStandardDeviation(data.getFitnessStandardDeviation());
+				group.setGenerationNumber(data.getGenerationNumber());
+				
+				// Save group to database
+				em.persist(group);
+				em.getTransaction().commit();
+				
 				System.out.printf("Generation %d: %s\n",
 				                   data.getGenerationNumber(),
-				                   Arrays.toString(data.getBestCandidate()));
+				                   data.getBestCandidateFitness());
 			}
 		});
 	}
 	
-	public void evolveOnce(String groupId) {
-		//TODO: Check if groupId exists, if not, create new group
-		List<ExpressedCandidate<int[]>> candidates = null;
-		int eliteCount = 0;
-		int size = 10;
-		if (groupId != null) {
-			candidates = importCandidates(groupId);
-			eliteCount = importEliteCount(groupId);
-			size = candidates.size();
+	private Candidate findCandidateByGenome(int[] genome) {
+		return em.createQuery(
+				"SELECT c FROM Candidates c WHERE genomeString = :genomeString", 
+					Candidate.class).
+				setParameter("genomeString", Candidate.generateGenomeString(genome)).
+				getSingleResult();
+	}
+	
+	public void evolveExistingOnce(String groupId) throws Exception {
+		Group group = em.find(Group.class, groupId);
+		if (group != null) {
+			List<ExpressedCandidate<int[]>> candidates = findCandidatesInGroup(groupId);
+			int size = candidates.size();
+			int eliteCount = group.getEliteCount();
+
+			engine.evolveToExpression(candidates, groupId, size, eliteCount, 
+										terminationConditions);
+		} else {
+			throw new Exception("Group '" + groupId + "' doesn't exist");
 		}
-		
-		engine.evolveToExpression(candidates, groupId, size, eliteCount, terminationConditions);
 	}
 	
-	public static String getAlertAddress(String groupId) {
-		//TODO Get the email associated with this groupId from the database
-		return null;
-	}
 	
-	public int importEliteCount(String groupId) {
-		//TODO: Retrieve elite count for a group
-		// SELECT * FROM Candidate WHERE groupId=groupId
-		return 0;
+	public Group newTradeGroup(String alertAddress, int size, int eliteCount) {
+
+		em.getTransaction().begin();
+		Group group = new Group();
+		group.setSize(size);
+		group.setEliteCount(eliteCount);
+		group.setAlertAddress(alertAddress);
+		em.persist(group);
+		em.getTransaction().commit();
+		
+		OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
+		Object objId = oem.getObjectId(group);
+		
+		return em.find(Group.class, objId);
 	}
 
-	public List<ExpressedCandidate<int[]>> importCandidates(String groupId) {
-		//TODO: Retrieve population from database
-/*
-		long startTime = Long.parseLong(fileName.substring(
-											fileName.indexOf(TIME_MARKER) 
-											+ TIME_MARKER.length(), 
-											fileName.indexOf(GEN_MARKER)));
-
-		int iterationNumber = Integer.parseInt(fileName.substring(
-											fileName.indexOf(GEN_MARKER) 
-											+ GEN_MARKER.length(), 
-											fileName.indexOf(FILE_EXT)));
+	@SuppressWarnings("unchecked")
+	// Retrieve candidates from database
+	public List<ExpressedCandidate<int[]>> findCandidatesInGroup(String groupId) {
+		Query query = em.createQuery(
+				"SELECT c FROM Candidates c WHERE groupId = :groupId", 
+				Candidate.class).setParameter("groupId", groupId);
 		
-		try {
-			// Open file to read in population
-			BufferedReader input =  new BufferedReader(new FileReader(fileName));
-			try {
-
-				// Read in population info
-				String line = input.readLine();
-
-				int size = Integer.parseInt(line.substring(
-												line.indexOf(SIZE_MARKER) 
-													+ SIZE_MARKER.length()), 
-													line.indexOf(FIT_MARKER));
-				
-				boolean naturalFitness = Boolean.parseBoolean(line.substring(
-												line.indexOf(FIT_MARKER) 
-													+ FIT_MARKER.length(), 
-												line.indexOf(ELITE_MARKER)));
-
-				int eliteCount = Integer.parseInt(line.substring(
-												line.indexOf(ELITE_MARKER) 
-													+ ELITE_MARKER.length()));
-
-				// Create list of expressed candidates based on file
-				List<ExpressedCandidate<int[]>> expressedPopulation = 
-						new ArrayList<ExpressedCandidate<int[]>>(size);
-		        while (( line = input.readLine()) != null){
-		        	expressedPopulation.add(TradeCandidate.fromString(line));
-		        }
-
-				// Create new Expressed Population Stats
-		        return new ExpressedPopulation<int[]>(
-						 						expressedPopulation,
-						 						naturalFitness,
-						 						expressedPopulation.size(),
-						 						eliteCount,
-						 						iterationNumber,
-						 						startTime);
-		      }
-		      finally {
-		        input.close();
-		      }
-		    }
-		    catch (IOException ex){
-		      ex.printStackTrace();
-		    }
-		    
-		*/
-		return null;
+		return (List<ExpressedCandidate<int[]>>) query.getResultList();
 	}
 	
 	public void abort(String groupId) {

@@ -1,6 +1,6 @@
 package com.myrontuttle.fin.trade.adapt;
 
-import java.util.List;
+import java.util.Arrays;
 
 import javax.persistence.*;
 
@@ -15,6 +15,8 @@ import com.myrontuttle.fin.trade.tradestrategies.AlertTradeBounds;
  */
 @Entity(name = "Candidates")
 public class Candidate implements ExpressedCandidate<int[]> {
+	
+	public static final String GENE_SEPARATOR = "|";
 
 	@Id
 	@Column(name = "CandidateId", nullable = false)
@@ -28,9 +30,11 @@ public class Candidate implements ExpressedCandidate<int[]> {
 	@JoinColumn(name = "GroupId", referencedColumnName = "GroupId")
 	private Group group;
 	
-	@ElementCollection
-	@Column(name = "GenomeList")
-	private List<Integer> genomeList;
+	@Transient
+	private int[] genome;
+	
+	@Column(name = "GenomeString")
+	private String genomeString;
 
 	@Column(name = "PortfolioId")
 	private String portfolioId;
@@ -46,13 +50,14 @@ public class Candidate implements ExpressedCandidate<int[]> {
 	
 	Candidate(){ }
 	
-	Candidate(String candidateId, String groupId, List<Integer> genomeList, 
+	Candidate(String candidateId, String groupId, int[] genome, 
 			String portfolioId, double startingCash/*,
 			SelectedScreenCriteria[] screenCriteria,
 			String[] symbols, AlertTradeBounds[] alerts*/) {
 		this.candidateId = candidateId;
 		this.groupId = groupId;
-		this.genomeList = genomeList;
+		this.genome = genome;
+		this.genomeString = Arrays.toString(genome);
 		this.portfolioId = portfolioId;
 		this.startingCash = startingCash;
 		/*
@@ -76,16 +81,16 @@ public class Candidate implements ExpressedCandidate<int[]> {
 		this.groupId = groupId;
 	}
 
-	public List<Integer> getGenomeList() {
-		return genomeList;
+	public String getGenomeString() {
+		return genomeString;
 	}
-	public void setGenomeList(List<Integer> genomeList) {
-		this.genomeList = genomeList;
+	public void setGenomeString(String genomeString) {
+		this.genomeString = genomeString;
 	}
 
 	@Override
 	public int[] getGenome() {
-		return listToArray(genomeList);
+		return genome;
 	}
 	
 	public String getPortfolioId() {
@@ -102,12 +107,27 @@ public class Candidate implements ExpressedCandidate<int[]> {
 		this.startingCash = startingCash;
 	}
 	
-	private int[] listToArray(List<Integer> list) {
-		int[] array = new int[list.size()];
+	public static int[] parseGenomeString(String genomeString) {
+		String[] asStrings = genomeString.split(GENE_SEPARATOR);
+		int[] array = new int[asStrings.length];
 		for (int i=0; i<array.length; i++) {
-			array[i] = list.get(i);
+			array[i] = Integer.parseInt(asStrings[i]);
 		}
 		return array;
+	}
+	
+	public static String generateGenomeString(int[] genome) {
+		int k = genome.length;
+		if (k == 0) {
+		    return null;
+		}
+		StringBuilder out = new StringBuilder();
+		out.append(genome[0]);
+		for (int i = 1; i < k; i++) {
+			out.append(GENE_SEPARATOR).append(genome[i]);
+		}
+
+		return out.toString();
 	}
 
 	/**
@@ -119,15 +139,15 @@ public class Candidate implements ExpressedCandidate<int[]> {
      */
 	@Override
 	public int compareTo(ExpressedCandidate<int[]> expressedCandidate) {
-		if (this.genomeList.size() > expressedCandidate.getGenome().length) {
+		if (this.genome.length > expressedCandidate.getGenome().length) {
 			return 1;
-		} else if (this.genomeList.size() < expressedCandidate.getGenome().length) {
+		} else if (this.genome.length < expressedCandidate.getGenome().length) {
 			return -1;
 		} else {
-			for (int i=0; i<this.genomeList.size(); i++) {
-				if (this.genomeList.get(i) > expressedCandidate.getGenome()[i]) {
+			for (int i=0; i<this.genome.length; i++) {
+				if (this.genome[i] > expressedCandidate.getGenome()[i]) {
 					return 1;
-				} else if (this.genomeList.get(i) > expressedCandidate.getGenome()[i]) {
+				} else if (this.genome[i] > expressedCandidate.getGenome()[i]) {
 					return -1;
 				}
 			}

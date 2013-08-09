@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
+
+import org.apache.openjpa.persistence.OpenJPAEntityManager;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 import com.myrontuttle.evolve.ExpressedCandidate;
 import com.myrontuttle.evolve.ExpressionStrategy;
@@ -24,16 +26,15 @@ import com.myrontuttle.fin.trade.tradestrategies.TradeBounds;
  */
 public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
-	private static final int SCREEN_SORT_POSITION = 0;
-	private static final int SCREEN_GENE_LENGTH = 2;
-	private static final int ALERT_GENE_LENGTH = 4;
-	private static final int TRADE_GENE_LENGTH = 5;
+	public static final int SCREEN_SORT_POSITION = 0;
+	public static final int SCREEN_GENE_LENGTH = 3;
+	public static final int ALERT_GENE_LENGTH = 4;
+	public static final int TRADE_GENE_LENGTH = 5;
 	
 	// These can be adjusted
-	private static final int SCREEN_GENES = 5;
-	private static final int SCREEN_USED_PROB = 50;	// 50% chance that each screen will be used
-	private static final int MAX_SYMBOLS_PER_SCREEN = 10;
-	private static final int ALERTS_PER_SYMBOL = 1;
+	public static final int SCREEN_GENES = 3;
+	public static final int MAX_SYMBOLS_PER_SCREEN = 10;
+	public static final int ALERTS_PER_SYMBOL = 1;
 	// TRADES_PER_CANDIDATE or TRADES_PER_ALERT
 	
 	public static final int TOTAL_GENE_LENGTH = SCREEN_GENE_LENGTH * SCREEN_GENES +
@@ -74,37 +75,49 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		this.portNamePrefix = "Port";
 		this.watchNamePrefix = "Watch";
 	}
+
+	// Create a record in the database for the candidate to get a fresh id
+	Candidate newCandidateRecord(int[] genome, String populationId) {
+		em.getTransaction().begin();
+		Candidate cand = new Candidate();
+		cand.setGenomeString(Candidate.generateGenomeString(genome));
+		cand.setGroupId(populationId);
+		em.persist(cand);
+		em.getTransaction().commit();
+		
+		OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
+		Object objId = oem.getObjectId(cand);
+		return em.find(Candidate.class, objId);
+	}
 	
-	private List<Integer> arrayToList(int[] array) {
-		List<Integer> list = new ArrayList<Integer>(array.length);
-		for (int i=0; i<array.length; i++) {
-			list.set(i, array[i]);
-		}
-		return list;
+	// Get the alert address based on a groupId
+	String findAlertAddress(String groupId) {
+		return em.createQuery(
+				"SELECT g.AlertAddress FROM Groups g WHERE groupId = :groupId", 
+				String.class).setParameter("groupId", groupId).getSingleResult();
 	}
 	
 	@Override
-	public Candidate express(int[] candidate, String populationId) {
+	public Candidate express(int[] genome, String groupId) {
 		
-		//TODO: Generate user id
-		String indUserId = null;
+		Candidate candidate = newCandidateRecord(genome, groupId);
 		
-		String populationEmail = Evolver.getAlertAddress(populationId);
+		String populationEmail = findAlertAddress(groupId);
 		
 		// Initialize position of counter along genome
 		int position = SCREEN_SORT_POSITION;
 
 		// Get a list of symbols from the Screener Service
 		String[] symbols = null;
-		int sortBy = transpose(candidate[position], 0, SCREEN_GENES);
+		int sortGene = transpose(genome[position], 0, SCREEN_GENES);
 		SelectedScreenCriteria[] screenCriteria = null;
 		position++;
 		try {
-			screenCriteria = expressScreenerGenes(populationId, candidate, position);
+			screenCriteria = expressScreenerGenes(groupId, genome, position);
 			String[] screenSymbols = screenerService.screen(
-											populationId,
+											groupId,
 											screenCriteria,
-											sortBy,
+											screenCriteria[sortGene].getName(),
 											MAX_SYMBOLS_PER_SCREEN);
 			if (screenSymbols.length > MAX_SYMBOLS_PER_SCREEN) {
 				symbols = new String[MAX_SYMBOLS_PER_SCREEN];
@@ -123,7 +136,8 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		counter++;
 		String watchlistId = null;
 		try {
-			watchlistId = watchlistService.create(indUserId, watchNamePrefix + counter);
+			watchlistId = watchlistService.create(candidate.getCandidateId(), 
+													watchNamePrefix + counter);
 		} catch (Exception e1) {
 			System.out.println("Error creating watchlist: " + e1.getMessage());
 			e1.printStackTrace();
@@ -132,7 +146,8 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		// Add stocks to a watchlist
 		for (int i=0; i<symbols.length; i++) {
 			try {
-				watchlistService.addHolding(indUserId, watchlistId, symbols[i]);
+				watchlistService.addHolding(candidate.getCandidateId(), watchlistId, 
+											symbols[i]);
 			} catch (Exception e) {
 				System.out.println("Error adding " + symbols[i] + " to watchlist: " + e.getMessage());
 				e.printStackTrace();
@@ -142,8 +157,9 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		// Prepare portfolio
 		String portfolioId = null;
 		try {
-			portfolioId = portfolioService.create(indUserId, portNamePrefix + counter);
-			portfolioService.addCashTransaction(indUserId, portfolioId, 
+			portfolioId = portfolioService.create(candidate.getCandidateId(), 
+													portNamePrefix + counter);
+			portfolioService.addCashTransaction(candidate.getCandidateId(), portfolioId, 
 												basicTradeStrategy.getStartingCash(), 
 												true, true);
 		} catch (Exception e) {
@@ -153,15 +169,15 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 		// Create alerts for stocks
 		SelectedAlert[] openAlerts = 
-				expressAlertGenes(populationId, candidate, position, symbols);
+				expressAlertGenes(groupId, genome, position, symbols);
 		try {
-			alertService.addAlertDestination(populationId, populationEmail, "EMAIL");
+			alertService.addAlertDestination(groupId, populationEmail, "EMAIL");
 		} catch (Exception e) {
 			System.out.println("Unable to add alert profile. " + e.getMessage());
 			e.printStackTrace();
 		}
 		try {
-			alertService.setupAlerts(populationId, openAlerts);
+			alertService.setupAlerts(groupId, openAlerts);
 		} catch (Exception e) {
 			System.out.println("Error creating alerts: " + e.getMessage());
 			e.printStackTrace();
@@ -170,7 +186,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		
 		// Create trades to be made when alerts are triggered
 		TradeBounds[] tradesToMake = 
-				expressTradeGenes(indUserId, candidate, position, symbols);
+				expressTradeGenes(candidate.getCandidateId(), genome, position, symbols);
 		
 		// Create listener for alerts to move stocks to portfolio
 		AlertTradeBounds[] alertTradeBounds = new AlertTradeBounds[openAlerts.length];
@@ -185,23 +201,27 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			e.printStackTrace();
 		}
 
-		// Get portfolio total gains
-		return new Candidate(indUserId, populationId, arrayToList(candidate), 
-							portfolioId, basicTradeStrategy.getStartingCash()/*,
-							screenCriteria, symbols, alertTradeBounds*/);
+		// Save remaining candidate fields, save them in database, and return
+		candidate.setPortfolioId(portfolioId);
+		candidate.setStartingCash(basicTradeStrategy.getStartingCash());
+		em.persist(candidate);
+		em.getTransaction().commit();
+		
+		return candidate;
 	}
 
 	/**
 	 * Creates a set of SelectedScreenCriteria based on a candidate's screener genes
 	 * Screen Gene Data Map
-	 * 1. Criteria name
-	 * 2. Criteria list index
+	 * 1. Is screen criteria active?
+	 * 2. Criteria to use
+	 * 3. Criteria value
 	 * 
 	 * @param candidate A candidate's genome
 	 * @param position Where in the candidate's genome to start reading screener genes
 	 * @return A set of screener criteria selected by this candidate
 	 */
-	private SelectedScreenCriteria[] expressScreenerGenes(String userId, int[] candidate, 
+	SelectedScreenCriteria[] expressScreenerGenes(String userId, int[] candidate, 
 															int position) {
 
 		// Get screener possibilities
@@ -215,14 +235,13 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 		ArrayList<SelectedScreenCriteria> selected = new ArrayList<SelectedScreenCriteria>();
 		for (int i=0; i<SCREEN_GENES; i++) {
-			int lower = ((100/SCREEN_USED_PROB) - 1) * availableScreenCriteria.length;
-			int cIndex = transpose(candidate[position], lower, availableScreenCriteria.length - 1);
-			if (cIndex >= 0) {
-				String name = availableScreenCriteria[cIndex].getName();
-				int vIndex = transpose(candidate[position + 1], 0, 
-								availableScreenCriteria[cIndex].getAcceptedValues().length);
-				String value = availableScreenCriteria[cIndex].getAcceptedValue(vIndex);
-				String argOp = availableScreenCriteria[cIndex].getArgsOperator();
+			if (transpose(candidate[position], 0, 1) == 1) {
+				int criteriaIndex = transpose(candidate[position + 1], 0, availableScreenCriteria.length - 1);
+				String name = availableScreenCriteria[criteriaIndex].getName();
+				int valueIndex = transpose(candidate[position + 2], 0, 
+								availableScreenCriteria[criteriaIndex].getAcceptedValues().length - 1);
+				String value = availableScreenCriteria[criteriaIndex].getAcceptedValue(valueIndex);
+				String argOp = availableScreenCriteria[criteriaIndex].getArgsOperator();
 				selected.add(new SelectedScreenCriteria(name, value, argOp));
 			}
 			position += SCREEN_GENE_LENGTH;
@@ -247,7 +266,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	 * @param position Where in the candidate's genome to start reading alert genes
 	 * @return A set of alert criteria selected by this candidate
 	 */
-	private SelectedAlert[] expressAlertGenes(String userId, int[] candidate, 
+	SelectedAlert[] expressAlertGenes(String userId, int[] candidate, 
 												int position, 
 												String[] symbols) {
 
@@ -302,7 +321,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	 * @param symbols The symbols found during screening
 	 * @return A set of alert criteria selected by this candidate
 	 */
-	private TradeBounds[] expressTradeGenes(String userId, int[] candidate, 
+	TradeBounds[] expressTradeGenes(String userId, int[] candidate, 
 										int position, 
 										String[] symbols) {
 
@@ -335,15 +354,18 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	}
 	
 	/**
-	 * Transpose the genes to the the proper value within the required range
-	 * @param value The gene value
+	 * Transpose the genes to the the proper value within the required range [inclusive]
+	 * @param value The gene value (less than UPPER_BOUND)
 	 * @param lower The lower bound of the range to transpose into
 	 * @param upper The upper bound of the range to transpose into
 	 * @return The transposed value between the lower and upper bounds of the gene
 	 */
 	private int transpose(int value, int lower, int upper) {
 		if (upper - lower < UPPER_BOUND) {
-			return lower + (int)Math.floor((value * (upper - lower)) / UPPER_BOUND);
+			if (value == UPPER_BOUND) {
+				return upper;
+			}
+			return lower + (int)Math.floor((value / UPPER_BOUND) * (upper - lower + 1));
 		} else {
 			return lower + (int)Math.floor((value / UPPER_BOUND) * (upper - lower));
 		}
@@ -368,12 +390,5 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	public void candidatesExpressed(
 			List<ExpressedCandidate<int[]>> expressedCandidates) {
 
-		// TODO Save candidates to db
-		EntityTransaction userTransaction = em.getTransaction();
-		userTransaction.begin();
-		for (ExpressedCandidate<int[]> candidate : expressedCandidates) {
-			em.persist(candidate);
-		}
-		userTransaction.commit();
 	}
 }

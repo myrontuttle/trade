@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence>
-	<persistence-unit name="testjpa" transaction-type="RESOURCE_LOCAL">
-		<provider>
-			org.apache.openjpa.persistence.PersistenceProviderImpl
-		</provider>
-		<class>entity.Candidate</class>
-		<class>entity.Group</class>
-		<properties>
-			<property name="openjpa.ConnectionURL" 
-				value="jdbc:derby://localhost:1527/D:\OpenJPA\Derby\testdb;create=true"/>
-			<property name="openjpa.ConnectionDriverName" 
-				value="org.apache.derby.jdbc.ClientDriver"/>
-			<property name="openjpa.ConnectionUserName" value="admin"/>
-			<property name="openjpa.ConnectionPassword" value="admin"/>
-			<property name="openjpa.Log" value="SQL=TRACE"/>
-		</properties>
-	</persistence-unit>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    version="1.0">
+
+    <persistence-unit name="tradecandidates" transaction-type="JTA">
+        <jta-data-source>osgi:service/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/h2ds)</jta-data-source>
+        <class>com.myrontuttle.fin.trade.adapt.Candidate</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+       
+        <properties>
+<!--             <property name="openjpa.BrokerImpl" value="non-finalizing" />  -->
+<!--             <property name="openjpa.Sequence" value="table(Table=OPENJPASEQ, Increment=100)"/> -->
+<!--             <property name="openjpa.jdbc.UpdateManager" value="org.apache.openjpa.jdbc.kernel.BatchingConstraintUpdateManager"/> -->
+            <!-- These properties are creating the database on the fly. We are using them to avoid users having
+            to create a database to run the sample. This is not something that should be used in production.
+            See also the create=true line in the ariestrader-derby-ds blueprint meta data -->
+            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema"/>
+            <property name="openjpa.jdbc.DBDictionary" value="org.apache.openjpa.jdbc.sql.H2Dictionary"/>
+            <property name="openjpa.Multithreaded" value="true"/>
+        </properties>
+    </persistence-unit>
+
 </persistence>

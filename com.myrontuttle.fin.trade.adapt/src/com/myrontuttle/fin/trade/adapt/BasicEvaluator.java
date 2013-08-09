@@ -11,11 +11,11 @@ import com.myrontuttle.fin.trade.api.PortfolioService;
  * Setup how strategies are evaluated
  * @author Myron Tuttle
  */
-public class Evaluator implements ExpressedFitnessEvaluator<int[]> {
+public class BasicEvaluator implements ExpressedFitnessEvaluator<int[]> {
 
 	private final PortfolioService portfolioService;
 	
-	Evaluator(PortfolioService portfolioService) {
+	BasicEvaluator(PortfolioService portfolioService) {
 		this.portfolioService = portfolioService;
 	}
 

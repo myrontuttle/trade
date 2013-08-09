@@ -12,5 +12,6 @@ Import-Package: com.myrontuttle.evolve,
  com.myrontuttle.evolve.termination,
  com.myrontuttle.fin.trade.api,
  com.myrontuttle.fin.trade.tradestrategies,
- javax.persistence
+ javax.persistence,
+ org.apache.openjpa.persistence
 Export-Package: com.myrontuttle.fin.trade.adapt

@@ -25,6 +25,6 @@ public interface ScreenerService {
 	 * @param maxSymbols The maximum number of symbols to return
 	 * @return A list of financial instruments
 	 */
-	public String[] screen(String userId, SelectedScreenCriteria[] selectedCriteria, int sortBy, int maxSymbols) 
+	public String[] screen(String userId, SelectedScreenCriteria[] selectedCriteria, String sortBy, int maxSymbols) 
 			throws Exception;
 }

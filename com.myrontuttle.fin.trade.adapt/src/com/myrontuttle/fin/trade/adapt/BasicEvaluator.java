@@ -32,6 +32,10 @@ public class BasicEvaluator implements ExpressedFitnessEvaluator<int[]> {
 			List<ExpressedCandidate<int[]>> population) {
 		
 		Candidate tradeCandidate = (Candidate)candidate;
+
+		if (tradeCandidate.getPortfolioId() == null || tradeCandidate.getPortfolioId() == "") {
+			return 0;
+		}
 		
 		// Fitness is simply realized gain
 		double balance = 0;
@@ -41,6 +45,7 @@ public class BasicEvaluator implements ExpressedFitnessEvaluator<int[]> {
 		} catch (Exception e) {
 			System.out.println("Error getting portfolio balance: " + e.getMessage());
 			e.printStackTrace();
+			return 0;
 		}
 		return (balance >= tradeCandidate.getStartingCash()) ? 
 					balance - tradeCandidate.getStartingCash() : 0;

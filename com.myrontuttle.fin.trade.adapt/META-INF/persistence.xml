@@ -3,9 +3,11 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     version="1.0">
 
-    <persistence-unit name="tradecandidates" transaction-type="JTA">
+    <persistence-unit name="AdaptPersistanceUnit" transaction-type="JTA">
         <jta-data-source>osgi:service/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/h2ds)</jta-data-source>
         <class>com.myrontuttle.fin.trade.adapt.Candidate</class>
+        <class>com.myrontuttle.fin.trade.adapt.GroupStats</class>
+        <class>com.myrontuttle.fin.trade.adapt.Group</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
        
         <properties>

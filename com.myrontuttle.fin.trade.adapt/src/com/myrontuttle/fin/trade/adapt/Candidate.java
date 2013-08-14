@@ -36,6 +36,9 @@ public class Candidate implements ExpressedCandidate<int[]> {
 	@Column(name = "GenomeString")
 	private String genomeString;
 
+	@Column(name = "WatchlistId")
+	private String watchlistId;
+
 	@Column(name = "PortfolioId")
 	private String portfolioId;
 
@@ -93,6 +96,14 @@ public class Candidate implements ExpressedCandidate<int[]> {
 		return genome;
 	}
 	
+	public String getWatchlistId() {
+		return watchlistId;
+	}
+
+	public void setWatchlistId(String watchlistId) {
+		this.watchlistId = watchlistId;
+	}
+
 	public String getPortfolioId() {
 		return portfolioId;
 	}

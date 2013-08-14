@@ -5,6 +5,7 @@ Bundle-SymbolicName: com.myrontuttle.fin.trade.adapt
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Myron Tuttle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Meta-Persistence: META-INF/persistence.xml
 Import-Package: com.myrontuttle.evolve,
  com.myrontuttle.evolve.factories,
  com.myrontuttle.evolve.operators,

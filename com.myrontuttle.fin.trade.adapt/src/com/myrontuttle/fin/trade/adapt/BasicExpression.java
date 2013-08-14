@@ -26,20 +26,13 @@ import com.myrontuttle.fin.trade.tradestrategies.TradeBounds;
  */
 public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
-	public static final int SCREEN_SORT_POSITION = 0;
 	public static final int SCREEN_GENE_LENGTH = 3;
 	public static final int ALERT_GENE_LENGTH = 4;
 	public static final int TRADE_GENE_LENGTH = 5;
 	
-	// These can be adjusted
-	public static final int SCREEN_GENES = 3;
-	public static final int MAX_SYMBOLS_PER_SCREEN = 10;
-	public static final int ALERTS_PER_SYMBOL = 1;
-	// TRADES_PER_CANDIDATE or TRADES_PER_ALERT
+	// Genome positions
+	public static final int SCREEN_SORT_POSITION = 0;
 	
-	public static final int TOTAL_GENE_LENGTH = SCREEN_GENE_LENGTH * SCREEN_GENES +
-									MAX_SYMBOLS_PER_SCREEN * ALERT_GENE_LENGTH * ALERTS_PER_SYMBOL +
-									MAX_SYMBOLS_PER_SCREEN * ALERTS_PER_SYMBOL * TRADE_GENE_LENGTH;
 	public static final int UPPER_BOUND = 100;
 	
 	private final ScreenerService screenerService;
@@ -75,12 +68,30 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		this.portNamePrefix = "Port";
 		this.watchNamePrefix = "Watch";
 	}
+	
+	public int getTotalGeneLength(Group group) {
+		return 1 + SCREEN_GENE_LENGTH * group.getNumberOfScreens() +
+				group.getMaxSymbolsPerScreen() * ALERT_GENE_LENGTH * group.getAlertsPerSymbol() +
+				group.getMaxSymbolsPerScreen() * group.getAlertsPerSymbol() * TRADE_GENE_LENGTH;
+	}
+	
+	public int getValueUpperBound() {
+		return UPPER_BOUND;
+	}
+
+	// Get the group based on a groupId
+	Group findGroup(String groupId) {
+		return em.createQuery(
+				"SELECT g FROM Groups g WHERE groupId = :groupId", 
+				Group.class).setParameter("groupId", groupId).getSingleResult();
+	}
 
 	// Create a record in the database for the candidate to get a fresh id
 	Candidate newCandidateRecord(int[] genome, String populationId) {
 		em.getTransaction().begin();
 		Candidate cand = new Candidate();
 		cand.setGenomeString(Candidate.generateGenomeString(genome));
+		cand.setStartingCash(basicTradeStrategy.getStartingCash());
 		cand.setGroupId(populationId);
 		em.persist(cand);
 		em.getTransaction().commit();
@@ -88,126 +99,6 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
 		Object objId = oem.getObjectId(cand);
 		return em.find(Candidate.class, objId);
-	}
-	
-	// Get the alert address based on a groupId
-	String findAlertAddress(String groupId) {
-		return em.createQuery(
-				"SELECT g.AlertAddress FROM Groups g WHERE groupId = :groupId", 
-				String.class).setParameter("groupId", groupId).getSingleResult();
-	}
-	
-	@Override
-	public Candidate express(int[] genome, String groupId) {
-		
-		Candidate candidate = newCandidateRecord(genome, groupId);
-		
-		String populationEmail = findAlertAddress(groupId);
-		
-		// Initialize position of counter along genome
-		int position = SCREEN_SORT_POSITION;
-
-		// Get a list of symbols from the Screener Service
-		String[] symbols = null;
-		int sortGene = transpose(genome[position], 0, SCREEN_GENES);
-		SelectedScreenCriteria[] screenCriteria = null;
-		position++;
-		try {
-			screenCriteria = expressScreenerGenes(groupId, genome, position);
-			String[] screenSymbols = screenerService.screen(
-											groupId,
-											screenCriteria,
-											screenCriteria[sortGene].getName(),
-											MAX_SYMBOLS_PER_SCREEN);
-			if (screenSymbols.length > MAX_SYMBOLS_PER_SCREEN) {
-				symbols = new String[MAX_SYMBOLS_PER_SCREEN];
-				System.arraycopy(screenSymbols, 0, symbols, 0, MAX_SYMBOLS_PER_SCREEN);
-			} else {
-				symbols = new String[screenSymbols.length];
-				System.arraycopy(screenSymbols, 0, symbols, 0, symbols.length);
-			}
-		} catch (Exception e2) {
-			System.out.println("Error screening for symbols: " + e2.getMessage());
-			e2.printStackTrace();
-		}
-		position += SCREEN_GENES * SCREEN_GENE_LENGTH;
-		
-		// Create a watchlist
-		counter++;
-		String watchlistId = null;
-		try {
-			watchlistId = watchlistService.create(candidate.getCandidateId(), 
-													watchNamePrefix + counter);
-		} catch (Exception e1) {
-			System.out.println("Error creating watchlist: " + e1.getMessage());
-			e1.printStackTrace();
-		}
-
-		// Add stocks to a watchlist
-		for (int i=0; i<symbols.length; i++) {
-			try {
-				watchlistService.addHolding(candidate.getCandidateId(), watchlistId, 
-											symbols[i]);
-			} catch (Exception e) {
-				System.out.println("Error adding " + symbols[i] + " to watchlist: " + e.getMessage());
-				e.printStackTrace();
-			}
-		}
-		
-		// Prepare portfolio
-		String portfolioId = null;
-		try {
-			portfolioId = portfolioService.create(candidate.getCandidateId(), 
-													portNamePrefix + counter);
-			portfolioService.addCashTransaction(candidate.getCandidateId(), portfolioId, 
-												basicTradeStrategy.getStartingCash(), 
-												true, true);
-		} catch (Exception e) {
-			System.out.println("Error creating portfolio: " + e.getMessage());
-			e.printStackTrace();
-		}
-
-		// Create alerts for stocks
-		SelectedAlert[] openAlerts = 
-				expressAlertGenes(groupId, genome, position, symbols);
-		try {
-			alertService.addAlertDestination(groupId, populationEmail, "EMAIL");
-		} catch (Exception e) {
-			System.out.println("Unable to add alert profile. " + e.getMessage());
-			e.printStackTrace();
-		}
-		try {
-			alertService.setupAlerts(groupId, openAlerts);
-		} catch (Exception e) {
-			System.out.println("Error creating alerts: " + e.getMessage());
-			e.printStackTrace();
-		}
-		position += MAX_SYMBOLS_PER_SCREEN * ALERT_GENE_LENGTH * ALERTS_PER_SYMBOL;
-		
-		// Create trades to be made when alerts are triggered
-		TradeBounds[] tradesToMake = 
-				expressTradeGenes(candidate.getCandidateId(), genome, position, symbols);
-		
-		// Create listener for alerts to move stocks to portfolio
-		AlertTradeBounds[] alertTradeBounds = new AlertTradeBounds[openAlerts.length];
-		for (int i=0; i<openAlerts.length; i++) {
-			alertTradeBounds[i] = new AlertTradeBounds(openAlerts[i], portfolioId, tradesToMake[i]);
-		}
-		try {
-			alertReceiver.watchFor(alertTradeBounds);
-		} catch (Exception e) {
-			System.out.println("Error preparing to watch for alerts: " + 
-								e.getMessage());
-			e.printStackTrace();
-		}
-
-		// Save remaining candidate fields, save them in database, and return
-		candidate.setPortfolioId(portfolioId);
-		candidate.setStartingCash(basicTradeStrategy.getStartingCash());
-		em.persist(candidate);
-		em.getTransaction().commit();
-		
-		return candidate;
 	}
 
 	/**
@@ -221,8 +112,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	 * @param position Where in the candidate's genome to start reading screener genes
 	 * @return A set of screener criteria selected by this candidate
 	 */
-	SelectedScreenCriteria[] expressScreenerGenes(String userId, int[] candidate, 
-															int position) {
+	SelectedScreenCriteria[] expressScreenerGenes(String userId, int[] candidate, int screens) {
 
 		// Get screener possibilities
 		AvailableScreenCriteria[] availableScreenCriteria = null;
@@ -233,8 +123,9 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			e.printStackTrace();
 		}
 
+		int position = SCREEN_SORT_POSITION;
 		ArrayList<SelectedScreenCriteria> selected = new ArrayList<SelectedScreenCriteria>();
-		for (int i=0; i<SCREEN_GENES; i++) {
+		for (int i=0; i<screens; i++) {
 			if (transpose(candidate[position], 0, 1) == 1) {
 				int criteriaIndex = transpose(candidate[position + 1], 0, availableScreenCriteria.length - 1);
 				String name = availableScreenCriteria[criteriaIndex].getName();
@@ -247,6 +138,78 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			position += SCREEN_GENE_LENGTH;
 		}
 		return selected.toArray(new SelectedScreenCriteria[selected.size()]);
+	}
+	
+	String[] getScreenSymbols(int[] genome, String groupId, Group group) {
+		String[] symbols = null;
+
+		SelectedScreenCriteria[] screenCriteria = expressScreenerGenes(groupId, 
+																		genome, 
+																		group.getNumberOfScreens());
+		int sortGene = transpose(genome[SCREEN_SORT_POSITION], 0, group.getNumberOfScreens());
+		try {
+			String[] screenSymbols = screenerService.screen(
+											groupId,
+											screenCriteria,
+											screenCriteria[sortGene].getName(),
+											group.getMaxSymbolsPerScreen());
+			if (screenSymbols.length > group.getMaxSymbolsPerScreen()) {
+				symbols = new String[group.getMaxSymbolsPerScreen()];
+				System.arraycopy(screenSymbols, 0, symbols, 0, group.getMaxSymbolsPerScreen());
+			} else {
+				symbols = new String[screenSymbols.length];
+				System.arraycopy(screenSymbols, 0, symbols, 0, symbols.length);
+			}
+		} catch (Exception e2) {
+			System.out.println("Error screening for symbols: " + e2.getMessage());
+			e2.printStackTrace();
+		}
+		return symbols;
+	}
+	
+	String setupWatchlist(String candidateId, String[] symbols) {
+		counter++;
+		String watchlistId = null;
+		try {
+			watchlistId = watchlistService.create(candidateId, watchNamePrefix + counter);
+		} catch (Exception e1) {
+			System.out.println("Error creating watchlist: " + e1.getMessage());
+			e1.printStackTrace();
+		}
+
+		// Add stocks to a watchlist
+		for (int i=0; i<symbols.length; i++) {
+			try {
+				watchlistService.addHolding(candidateId, watchlistId, symbols[i]);
+			} catch (Exception e) {
+				System.out.println("Error adding " + symbols[i] + " to watchlist: " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		
+		return watchlistId;
+	}
+	
+	String setupPortfolio(String candidateId) {
+		String portfolioId = null;
+		
+		try {
+			portfolioId = portfolioService.create(candidateId, 
+													portNamePrefix + counter);
+			portfolioService.addCashTransaction(candidateId, portfolioId, 
+												basicTradeStrategy.getStartingCash(), 
+												true, true);
+		} catch (Exception e) {
+			System.out.println("Error creating portfolio: " + e.getMessage());
+			System.out.println("Portfolio Id: " + portfolioId);
+			e.printStackTrace();
+		}
+		
+		return portfolioId;
+	}
+	
+	private int getAlertStartPosition(Group group) {
+		return SCREEN_SORT_POSITION + SCREEN_GENE_LENGTH * group.getNumberOfScreens();
 	}
 	
 	/**
@@ -266,9 +229,8 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	 * @param position Where in the candidate's genome to start reading alert genes
 	 * @return A set of alert criteria selected by this candidate
 	 */
-	SelectedAlert[] expressAlertGenes(String userId, int[] candidate, 
-												int position, 
-												String[] symbols) {
+	SelectedAlert[] expressAlertGenes(String userId, int[] candidate, String[] symbols,
+										Group group) {
 
 		// Get alert possibilities
 		AvailableAlert[] availableAlerts = null;
@@ -279,10 +241,12 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			return null;
 		}
 		
-		SelectedAlert[] selected = new SelectedAlert[symbols.length * ALERTS_PER_SYMBOL];
+		SelectedAlert[] selected = new SelectedAlert[symbols.length * group.getAlertsPerSymbol()];
+		
+		int position = getAlertStartPosition(group);
 		
 		for (int i=0; i<symbols.length; i++) {
-			for (int j=0; j<ALERTS_PER_SYMBOL; j++) {
+			for (int j=0; j<group.getAlertsPerSymbol(); j++) {
 
 				AvailableAlert alert = availableAlerts[transpose(candidate[position], 
 																	0, availableAlerts.length - 1)];
@@ -309,24 +273,44 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		
 		return selected;
 	}
+	
+	void setupAlerts(String groupId, SelectedAlert[] openAlerts, String groupEmail) {
 
+		try {
+			alertService.addAlertDestination(groupId, groupEmail, "EMAIL");
+		} catch (Exception e) {
+			System.out.println("Unable to add alert profile. " + e.getMessage());
+			e.printStackTrace();
+		}
+		try {
+			alertService.setupAlerts(groupId, openAlerts);
+		} catch (Exception e) {
+			System.out.println("Error creating alerts: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Creates a set of Trades based on a candidate's trade genes
 	 * 
 	 * Order Gene Data Map
+	 * 1. Order Type
+	 * 2. Allocation
+	 * 3. Acceptable Loss
+	 * 4. Time in Trade
+	 * 5. Adjust At
 	 * @param userId
 	 * @param candidate A candidates genome
 	 * @param position Where in the candidate's genome to start reading order genes
 	 * @param symbols The symbols found during screening
 	 * @return A set of alert criteria selected by this candidate
 	 */
-	TradeBounds[] expressTradeGenes(String userId, int[] candidate, 
-										int position, 
-										String[] symbols) {
+	TradeBounds[] expressTradeGenes(String userId, int[] candidate, String[] symbols, Group group) {
 
 		TradeBounds[] trades = new TradeBounds[symbols.length];
 		
+		int position = getAlertStartPosition(group) + 
+				group.getMaxSymbolsPerScreen() * ALERT_GENE_LENGTH * group.getAlertsPerSymbol();
 		for (int i=0; i<symbols.length; i++) {
 			int open = transpose(candidate[position], 0, 
 								portfolioService.openOrderTypesAvailable(userId).length - 1);
@@ -351,6 +335,75 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			position += TRADE_GENE_LENGTH;
 		}
 		return trades;
+	}
+	
+	void setupAlertReceiver(SelectedAlert[] openAlerts, String portfolioId, TradeBounds[] tradesToMake) {
+		AlertTradeBounds[] alertTradeBounds = new AlertTradeBounds[openAlerts.length];
+		for (int i=0; i<openAlerts.length; i++) {
+			alertTradeBounds[i] = new AlertTradeBounds(openAlerts[i], portfolioId, tradesToMake[i]);
+		}
+		try {
+			alertReceiver.watchFor(alertTradeBounds);
+		} catch (Exception e) {
+			System.out.println("Error preparing to watch for alerts: " + 
+								e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public Candidate express(int[] genome, String groupId) {
+
+		// Create the candidate
+		Candidate candidate = newCandidateRecord(genome, groupId);
+		
+		// Find the associated group
+		Group group = findGroup(groupId);
+		
+		// Get a list of symbols from the Screener Service
+		String[] symbols = getScreenSymbols(genome, groupId, group);
+		
+		// If the screener didn't produce any symbols there's no point using the other services
+		if (symbols.length == 0) {
+			return candidate;
+		}
+		
+		// Create a watchlist
+		String watchlistId = setupWatchlist(candidate.getCandidateId(), symbols);
+		candidate.setWatchlistId(watchlistId);
+		
+		// Prepare portfolio
+		String portfolioId = setupPortfolio(candidate.getCandidateId());
+
+		// No point continuing if there's no portfolio to track trades
+		if (portfolioId == null || portfolioId == "") {
+			return candidate;
+		} else {
+			candidate.setPortfolioId(portfolioId);
+		}
+
+		// Create alerts for stocks
+		SelectedAlert[] openAlerts = expressAlertGenes(groupId, genome, symbols, group);
+		setupAlerts(groupId, openAlerts, group.getAlertAddress());
+		
+		// Create trades to be made when alerts are triggered
+		TradeBounds[] tradesToMake = expressTradeGenes(candidate.getCandidateId(), 
+														genome, symbols, group);
+		
+		// Create listener for alerts to move stocks to portfolio
+		setupAlertReceiver(openAlerts, portfolioId, tradesToMake);
+
+		// Save candidate to database, and return
+		em.persist(candidate);
+		em.getTransaction().commit();
+		
+		return candidate;
+	}
+
+	@Override
+	public void candidatesExpressed(
+			List<ExpressedCandidate<int[]>> expressedCandidates) {
+
 	}
 	
 	/**
@@ -384,11 +437,5 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		} else {
 			return lower + (value / UPPER_BOUND) * (upper - lower);
 		}
-	}
-	
-	@Override
-	public void candidatesExpressed(
-			List<ExpressedCandidate<int[]>> expressedCandidates) {
-
 	}
 }

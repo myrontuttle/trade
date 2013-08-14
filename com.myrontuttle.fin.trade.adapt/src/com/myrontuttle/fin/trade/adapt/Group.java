@@ -30,26 +30,23 @@ public class Group {
 	private int eliteCount;
 	
 	@Column(name = "StartTime")
-	private Date startTime;	
+	private Date startTime;
 	
-	@Column(name = "BestCandidateId")
-	private String bestCandidateId;
+	@Column(name = "MutationFactor")
+	private double mutationFactor;
 	
-	@OneToOne(optional = true)
-	@JoinColumn(name = "BestCandidateId")
-	private Candidate bestCandidate;
+	@Column(name = "NumberOfScreens")
+	private int numberOfScreens;
 	
-	@Column(name = "BestCandidateFitness")
-	private double bestCandidateFitness;
+	@Column(name = "MaxSymbolsPerScreen")
+	private int maxSymbolsPerScreen;
 	
-	@Column(name = "MeanFitness")
-    private double meanFitness;
+	@Column(name = "AlertsPerSymbol")
+	private int alertsPerSymbol;
 	
-	@Column(name = "FitnessStandardDeviation")
-    private double fitnessStandardDeviation;
-	
-	@Column(name = "GenerationNumber")
-    private int generationNumber;
+	// Group Stats
+	@OneToMany(mappedBy = "group", targetEntity = GroupStats.class, fetch = FetchType.LAZY)
+	private ArrayList<GroupStats> stats;
 	
 	@Version
     @Column(name = "LAST_UPDATED_TIME")
@@ -105,52 +102,36 @@ public class Group {
 		this.startTime = startTime;
 	}
 
-	public String getBestCandidateId() {
-		return bestCandidateId;
+	public double getMutationFactor() {
+		return mutationFactor;
 	}
 
-	public void setBestCandidateId(String bestCandidateId) {
-		this.bestCandidateId = bestCandidateId;
+	public void setMutationFactor(double mutationFactor) {
+		this.mutationFactor = mutationFactor;
 	}
 
-	public Candidate getBestCandidate() {
-		return bestCandidate;
+	public int getNumberOfScreens() {
+		return numberOfScreens;
 	}
 
-	public void setBestCandidate(Candidate bestCandidate) {
-		this.bestCandidate = bestCandidate;
+	public void setNumberOfScreens(int numberOfScreens) {
+		this.numberOfScreens = numberOfScreens;
 	}
 
-	public double getBestCandidateFitness() {
-		return bestCandidateFitness;
+	public int getMaxSymbolsPerScreen() {
+		return maxSymbolsPerScreen;
 	}
 
-	public void setBestCandidateFitness(double bestCandidateFitness) {
-		this.bestCandidateFitness = bestCandidateFitness;
+	public void setMaxSymbolsPerScreen(int maxSymbolsPerScreen) {
+		this.maxSymbolsPerScreen = maxSymbolsPerScreen;
 	}
 
-	public double getMeanFitness() {
-		return meanFitness;
+	public int getAlertsPerSymbol() {
+		return alertsPerSymbol;
 	}
 
-	public void setMeanFitness(double meanFitness) {
-		this.meanFitness = meanFitness;
-	}
-
-	public double getFitnessStandardDeviation() {
-		return fitnessStandardDeviation;
-	}
-
-	public void setFitnessStandardDeviation(double fitnessStandardDeviation) {
-		this.fitnessStandardDeviation = fitnessStandardDeviation;
-	}
-
-	public int getGenerationNumber() {
-		return generationNumber;
-	}
-
-	public void setGenerationNumber(int generationNumber) {
-		this.generationNumber = generationNumber;
+	public void setAlertsPerSymbol(int alertsPerSymbol) {
+		this.alertsPerSymbol = alertsPerSymbol;
 	}
 
 	public Date getUpdatedTime() {

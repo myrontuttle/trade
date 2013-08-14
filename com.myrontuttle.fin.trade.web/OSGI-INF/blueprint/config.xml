@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns:wicket="http://www.ops4j.org/schema/wicket">
+	<wicket:application id="fin.trade.web" 
+		class="com.myrontuttle.fin.trade.web.WicketApplication"
+		applicationName="fin.trade.web" mountPoint="fin/trade" />
+</blueprint>

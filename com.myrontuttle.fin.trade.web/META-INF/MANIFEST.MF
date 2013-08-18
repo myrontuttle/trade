@@ -5,8 +5,7 @@ Bundle-SymbolicName: com.myrontuttle.fin.trade.web
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Myron Tuttle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: org.apache.wicket.markup.html;version="6.9.1",
- org.apache.wicket.markup.html.basic;version="6.9.1",
- org.apache.wicket.protocol.http;version="6.9.1",
- org.apache.wicket.request;version="6.9.1",
- org.apache.wicket.util.convert;version="6.9.1"
+Import-Package: org.apache.wicket;version="1.5.10",
+ org.apache.wicket.markup.html;version="1.5.10",
+ org.apache.wicket.markup.html.basic;version="1.5.10",
+ org.apache.wicket.protocol.http;version="1.5.10"

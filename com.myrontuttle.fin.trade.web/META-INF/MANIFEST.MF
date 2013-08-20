@@ -6,7 +6,20 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.apache.wicket;version="1.5.10",
+ org.apache.wicket.ajax;version="1.5.10",
+ org.apache.wicket.event;version="1.5.10",
  org.apache.wicket.markup.html;version="1.5.10",
  org.apache.wicket.markup.html.basic;version="1.5.10",
- org.apache.wicket.protocol.http;version="1.5.10"
+ org.apache.wicket.page;version="1.5.10",
+ org.apache.wicket.protocol.http;version="1.5.10",
+ org.apache.wicket.request;version="1.5.10",
+ org.apache.wicket.request.cycle;version="1.5.10",
+ org.apache.wicket.request.http;version="1.5.10",
+ org.apache.wicket.request.mapper;version="1.5.10",
+ org.apache.wicket.request.resource;version="1.5.10",
+ org.apache.wicket.session;version="1.5.10",
+ org.apache.wicket.settings;version="1.5.10",
+ org.apache.wicket.util;version="1.5.10",
+ org.ops4j.pax.wicket.api;version="3.0.1",
+ org.ops4j.pax.wicket.api.support;version="3.0.1"
 Export-Package: com.myrontuttle.fin.trade.web

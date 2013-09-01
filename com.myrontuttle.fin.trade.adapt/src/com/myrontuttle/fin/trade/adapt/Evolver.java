@@ -17,9 +17,6 @@ import com.myrontuttle.fin.trade.adapt.express.NoExpression;
 
 public class Evolver {
 	
-	public static final String BASIC_EVALUATOR = "BasicEvaluator";
-	public static final String BASIC_EXPRESSION = "BasicExpression";
-	
 	StrategyDAO strategyDAO = null;
 	
 	private final TerminationCondition[] terminationConditions = new TerminationCondition[]{
@@ -69,14 +66,14 @@ public class Evolver {
 			int eliteCount = group.getEliteCount();
 
 			ExpressionStrategy<int[]> expressionStrategy = null;
-			if (group.getExpressionStrategy().equals(BASIC_EXPRESSION)) {
+			if (group.getExpressionStrategy().equals(Group.BASIC_EXPRESSION)) {
 				expressionStrategy = new BasicExpression<int[]>();
 			} else {
 				expressionStrategy = new NoExpression();
 			}
 			
 			ExpressedFitnessEvaluator<int[]> evaluator = null;
-			if (group.getEvaluationStrategy().equals(BASIC_EVALUATOR)) {
+			if (group.getEvaluationStrategy().equals(Group.BASIC_EVALUATOR)) {
 				evaluator = new BasicEvaluator();
 			} else {
 				evaluator = new RandomEvaluator();

@@ -11,6 +11,14 @@ import javax.persistence.*;
  */
 @Entity(name = "Groups")
 public class Group {
+	
+	public static final String DAILY = "DAILY";
+	public static final String WEEKLY = "WEEKLY";
+
+	public static final String RANDOM_EVALUATOR = "RandomEvaluator";
+	public static final String BASIC_EVALUATOR = "BasicEvaluator";
+	public static final String NO_EXPRESSION = "NoExpression";
+	public static final String BASIC_EXPRESSION = "BasicExpression";
 
 	@Id
 	@Column(name = "GroupId", nullable = false)
@@ -44,6 +52,9 @@ public class Group {
 	
 	@Column(name = "StartTime")
 	private Date startTime;
+	
+	@Column(name = "Frequency")
+	private String frequency;
 	
 	@Column(name = "MutationFactor")
 	private double mutationFactor;
@@ -146,6 +157,14 @@ public class Group {
 
 	public void setStartTime(Date startTime) {
 		this.startTime = startTime;
+	}
+
+	public String getFrequency() {
+		return frequency;
+	}
+
+	public void setFrequency(String frequency) {
+		this.frequency = frequency;
 	}
 
 	public double getMutationFactor() {

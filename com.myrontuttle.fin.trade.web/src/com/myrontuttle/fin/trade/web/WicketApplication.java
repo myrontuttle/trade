@@ -8,14 +8,14 @@ import javax.inject.Named;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.response.filter.ServerAndClientTimeFilter;
 
-import com.myrontuttle.fin.trade.adapt.Evolver;
+import com.myrontuttle.fin.trade.adapt.StrategyDAO;
 import com.myrontuttle.fin.trade.adapt.Group;
 
 public class WicketApplication extends WebApplication {
 
 	@Inject
-    @Named("defaultEvolve")
-    private Evolver evolver;
+    @Named("strategyDAO")
+    private StrategyDAO strategyDAO;
 	
 	public WicketApplication() {
     }
@@ -32,7 +32,7 @@ public class WicketApplication extends WebApplication {
 	}
 
 	public List<Group> getGroups() {
-		return evolver.findGroups();
+		return strategyDAO.findGroups();
 	}
 	
     @Override

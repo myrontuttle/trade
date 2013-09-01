@@ -1,19 +1,17 @@
 /**
  * 
  */
-package com.myrontuttle.fin.trade.adapt;
+package com.myrontuttle.fin.trade.adapt.express;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
-
 import com.myrontuttle.evolve.ExpressedCandidate;
 import com.myrontuttle.evolve.ExpressionStrategy;
 
+import com.myrontuttle.fin.trade.adapt.Candidate;
+import com.myrontuttle.fin.trade.adapt.Group;
+import com.myrontuttle.fin.trade.adapt.StrategyDAO;
 import com.myrontuttle.fin.trade.api.*;
 import com.myrontuttle.fin.trade.tradestrategies.AlertTradeBounds;
 import com.myrontuttle.fin.trade.tradestrategies.BasicTradeStrategy;
@@ -26,6 +24,7 @@ import com.myrontuttle.fin.trade.tradestrategies.TradeBounds;
  */
 public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
+	// Gene lengths
 	public static final int SCREEN_GENE_LENGTH = 3;
 	public static final int ALERT_GENE_LENGTH = 4;
 	public static final int TRADE_GENE_LENGTH = 5;
@@ -33,72 +32,85 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	// Genome positions
 	public static final int SCREEN_SORT_POSITION = 0;
 	
-	public static final int UPPER_BOUND = 100;
+	public static final String PORT_NAME_PREFIX = "PORT";
+	public static final String WATCH_NAME_PREFIX = "WATCH";
 	
-	private final ScreenerService screenerService;
-	private final WatchlistService watchlistService;
-	private final AlertService alertService;
-	private final PortfolioService portfolioService;
-	private final BasicTradeStrategy basicTradeStrategy;
-	private final AlertReceiverService alertReceiver;
+	// Managed by Blueprint
+	ScreenerService screenerService = null;
+	WatchlistService watchlistService = null;
+	AlertService alertService = null;
+	PortfolioService portfolioService = null;
+	BasicTradeStrategy basicTradeStrategy = null;
+	AlertReceiverService alertReceiver = null;
 	
-	private final EntityManager em;
+	StrategyDAO strategyDAO = null;
 	
-	private final String portNamePrefix;
-	private final String watchNamePrefix;
 	private int counter;
 	
-	BasicExpression(ScreenerService screenerService, 
-							WatchlistService watchlistService,
-							AlertService alertService, 
-							PortfolioService portfolioService,
-							BasicTradeStrategy basicTradeStrategy,
-							AlertReceiverService alertReceiver,
-							EntityManager em) {
+	public ScreenerService getScreenerService() {
+		return screenerService;
+	}
+
+	public void setScreenerService(ScreenerService screenerService) {
 		this.screenerService = screenerService;
+	}
+
+	public WatchlistService getWatchlistService() {
+		return watchlistService;
+	}
+
+	public void setWatchlistService(WatchlistService watchlistService) {
 		this.watchlistService = watchlistService;
+	}
+
+	public AlertService getAlertService() {
+		return alertService;
+	}
+
+	public void setAlertService(AlertService alertService) {
 		this.alertService = alertService;
+	}
+
+	public PortfolioService getPortfolioService() {
+		return portfolioService;
+	}
+
+	public void setPortfolioService(PortfolioService portfolioService) {
 		this.portfolioService = portfolioService;
+	}
+
+	public BasicTradeStrategy getBasicTradeStrategy() {
+		return basicTradeStrategy;
+	}
+
+	public void setBasicTradeStrategy(BasicTradeStrategy basicTradeStrategy) {
 		this.basicTradeStrategy = basicTradeStrategy;
+	}
+
+	public AlertReceiverService getAlertReceiver() {
+		return alertReceiver;
+	}
+
+	public void setAlertReceiver(AlertReceiverService alertReceiver) {
 		this.alertReceiver = alertReceiver;
-		
-		this.em = em;
-		
+	}
+
+	public StrategyDAO getStrategyDAO() {
+		return strategyDAO;
+	}
+
+	public void setStrategyDAO(StrategyDAO strategyDAO) {
+		this.strategyDAO = strategyDAO;
+	}
+
+	public void startUp() {
 		this.counter = 0;
-		this.portNamePrefix = "Port";
-		this.watchNamePrefix = "Watch";
 	}
 	
-	public int getTotalGeneLength(Group group) {
+	public static int calculateGenomeLength(Group group) {
 		return 1 + SCREEN_GENE_LENGTH * group.getNumberOfScreens() +
 				group.getMaxSymbolsPerScreen() * ALERT_GENE_LENGTH * group.getAlertsPerSymbol() +
 				group.getMaxSymbolsPerScreen() * group.getAlertsPerSymbol() * TRADE_GENE_LENGTH;
-	}
-	
-	public int getValueUpperBound() {
-		return UPPER_BOUND;
-	}
-
-	// Get the group based on a groupId
-	Group findGroup(String groupId) {
-		return em.createQuery(
-				"SELECT g FROM Groups g WHERE groupId = :groupId", 
-				Group.class).setParameter("groupId", groupId).getSingleResult();
-	}
-
-	// Create a record in the database for the candidate to get a fresh id
-	Candidate newCandidateRecord(int[] genome, String populationId) {
-		em.getTransaction().begin();
-		Candidate cand = new Candidate();
-		cand.setGenomeString(Candidate.generateGenomeString(genome));
-		cand.setStartingCash(basicTradeStrategy.getStartingCash());
-		cand.setGroupId(populationId);
-		em.persist(cand);
-		em.getTransaction().commit();
-		
-		OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
-		Object objId = oem.getObjectId(cand);
-		return em.find(Candidate.class, objId);
 	}
 
 	/**
@@ -112,7 +124,8 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	 * @param position Where in the candidate's genome to start reading screener genes
 	 * @return A set of screener criteria selected by this candidate
 	 */
-	SelectedScreenCriteria[] expressScreenerGenes(String userId, int[] candidate, int screens) {
+	SelectedScreenCriteria[] expressScreenerGenes(String userId, int[] candidate, 
+													int screens, int geneUpperValue) {
 
 		// Get screener possibilities
 		AvailableScreenCriteria[] availableScreenCriteria = null;
@@ -126,10 +139,11 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		int position = SCREEN_SORT_POSITION;
 		ArrayList<SelectedScreenCriteria> selected = new ArrayList<SelectedScreenCriteria>();
 		for (int i=0; i<screens; i++) {
-			if (transpose(candidate[position], 0, 1) == 1) {
-				int criteriaIndex = transpose(candidate[position + 1], 0, availableScreenCriteria.length - 1);
+			if (transpose(candidate[position], geneUpperValue, 0, 1) == 1) {
+				int criteriaIndex = transpose(candidate[position + 1], geneUpperValue, 
+												0, availableScreenCriteria.length - 1);
 				String name = availableScreenCriteria[criteriaIndex].getName();
-				int valueIndex = transpose(candidate[position + 2], 0, 
+				int valueIndex = transpose(candidate[position + 2], geneUpperValue, 0, 
 								availableScreenCriteria[criteriaIndex].getAcceptedValues().length - 1);
 				String value = availableScreenCriteria[criteriaIndex].getAcceptedValue(valueIndex);
 				String argOp = availableScreenCriteria[criteriaIndex].getArgsOperator();
@@ -145,8 +159,10 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 		SelectedScreenCriteria[] screenCriteria = expressScreenerGenes(groupId, 
 																		genome, 
-																		group.getNumberOfScreens());
-		int sortGene = transpose(genome[SCREEN_SORT_POSITION], 0, group.getNumberOfScreens());
+																		group.getNumberOfScreens(),
+																		group.getGeneUpperValue());
+		int sortGene = transpose(genome[SCREEN_SORT_POSITION], group.getGeneUpperValue(), 
+									0, group.getNumberOfScreens());
 		try {
 			String[] screenSymbols = screenerService.screen(
 											groupId,
@@ -171,7 +187,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		counter++;
 		String watchlistId = null;
 		try {
-			watchlistId = watchlistService.create(candidateId, watchNamePrefix + counter);
+			watchlistId = watchlistService.create(candidateId, WATCH_NAME_PREFIX + counter);
 		} catch (Exception e1) {
 			System.out.println("Error creating watchlist: " + e1.getMessage());
 			e1.printStackTrace();
@@ -195,7 +211,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		
 		try {
 			portfolioId = portfolioService.create(candidateId, 
-													portNamePrefix + counter);
+													PORT_NAME_PREFIX + counter);
 			portfolioService.addCashTransaction(candidateId, portfolioId, 
 												basicTradeStrategy.getStartingCash(), 
 												true, true);
@@ -248,7 +264,8 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		for (int i=0; i<symbols.length; i++) {
 			for (int j=0; j<group.getAlertsPerSymbol(); j++) {
 
-				AvailableAlert alert = availableAlerts[transpose(candidate[position], 
+				AvailableAlert alert = availableAlerts[transpose(candidate[position],  
+																	group.getGeneUpperValue(),
 																	0, availableAlerts.length - 1)];
 				int id = alert.getId();
 				String[] criteriaTypes = alert.getCriteriaTypes();
@@ -257,10 +274,12 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 					if (criteriaTypes[k].equals(AvailableAlert.DOUBLE)) {
 						double upper = alertService.getUpperDouble(userId, id, symbols[i], k);
 						double lower = alertService.getLowerDouble(userId, id, symbols[i], k);
-						params[k] = transpose(candidate[position + 1], lower, upper);
+						params[k] = transpose(candidate[position + 1], group.getGeneUpperValue(),
+												lower, upper);
 					} else if (criteriaTypes[k].equals(AvailableAlert.LIST)) {
 						int upper = alertService.getListLength(userId, id, k);
-						params[k] = transpose(candidate[position + 1], 0, upper);
+						params[k] = transpose(candidate[position + 1], group.getGeneUpperValue(), 
+												0, upper);
 					}
 				}
 				String selectedCondition = alertService.parseCondition(alert, symbols[i], 
@@ -312,22 +331,27 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		int position = getAlertStartPosition(group) + 
 				group.getMaxSymbolsPerScreen() * ALERT_GENE_LENGTH * group.getAlertsPerSymbol();
 		for (int i=0; i<symbols.length; i++) {
-			int open = transpose(candidate[position], 0, 
+			int open = transpose(candidate[position],
+								group.getGeneUpperValue(), 0, 
 								portfolioService.openOrderTypesAvailable(userId).length - 1);
 			
 			int allocation = transpose(candidate[position + 1],
+											group.getGeneUpperValue(),
 											basicTradeStrategy.tradeAllocationLower(), 
 											basicTradeStrategy.tradeAllocationUpper());
 
 			int loss = transpose(candidate[position + 2],
+											group.getGeneUpperValue(),
 											basicTradeStrategy.acceptableLossLower(), 
 											basicTradeStrategy.acceptableLossUpper());
 
 			int time = transpose(candidate[position + 3],
+											group.getGeneUpperValue(),
 											basicTradeStrategy.timeInTradeLower(), 
 											basicTradeStrategy.timeInTradeUpper());
 
 			int adjust = transpose(candidate[position + 4],
+											group.getGeneUpperValue(),
 											basicTradeStrategy.adjustAtLower(), 
 											basicTradeStrategy.adjustAtUpper());
 			
@@ -355,10 +379,10 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	public Candidate express(int[] genome, String groupId) {
 
 		// Create the candidate
-		Candidate candidate = newCandidateRecord(genome, groupId);
+		Candidate candidate = strategyDAO.newCandidateRecord(genome, groupId, basicTradeStrategy.getStartingCash());
 		
 		// Find the associated group
-		Group group = findGroup(groupId);
+		Group group = strategyDAO.findGroup(groupId);
 		
 		// Get a list of symbols from the Screener Service
 		String[] symbols = getScreenSymbols(genome, groupId, group);
@@ -394,8 +418,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		setupAlertReceiver(openAlerts, portfolioId, tradesToMake);
 
 		// Save candidate to database, and return
-		em.persist(candidate);
-		em.getTransaction().commit();
+		strategyDAO.saveCandidate(candidate);
 		
 		return candidate;
 	}
@@ -403,39 +426,44 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	@Override
 	public void candidatesExpressed(
 			List<ExpressedCandidate<int[]>> expressedCandidates) {
-
+		// All candidates for this generation expressed so reset counter to 0
+		counter = 0;
 	}
 	
 	/**
 	 * Transpose the genes to the the proper value within the required range [inclusive]
-	 * @param value The gene value (less than UPPER_BOUND)
-	 * @param lower The lower bound of the range to transpose into
-	 * @param upper The upper bound of the range to transpose into
+	 * @param geneValue The gene value
+	 * @param geneUpperValue The upper limit of what the geneValue is able to have
+	 * @param targetLower The lower bound of the range to transpose into
+	 * @param targetUpper The upper bound of the range to transpose into
 	 * @return The transposed value between the lower and upper bounds of the gene
 	 */
-	private int transpose(int value, int lower, int upper) {
-		if (upper - lower < UPPER_BOUND) {
-			if (value == UPPER_BOUND) {
-				return upper;
+	private int transpose(int geneValue, int geneUpperValue, int targetLower, int targetUpper) {
+		if (targetUpper - targetLower < geneUpperValue) {
+			if (geneValue == geneUpperValue) {
+				return targetUpper;
 			}
-			return lower + (int)Math.floor((value / UPPER_BOUND) * (upper - lower + 1));
+			return targetLower + (int)Math.floor((geneValue / geneUpperValue) * 
+									(targetUpper - targetLower + 1));
 		} else {
-			return lower + (int)Math.floor((value / UPPER_BOUND) * (upper - lower));
+			return targetLower + (int)Math.floor((geneValue / geneUpperValue) * 
+									(targetUpper - targetLower));
 		}
 	}
 
 	/**
 	 * Transpose the genes to the the proper value within the required range
-	 * @param value The gene value
-	 * @param lower The lower bound of the range to transpose into
-	 * @param upper The upper bound of the range to transpose into
+	 * @param geneValue The gene value
+	 * @param geneUpperValue The upper limit of what the geneValue is able to have
+	 * @param targetLower The lower bound of the range to transpose into
+	 * @param targetUpper The upper bound of the range to transpose into
 	 * @return The transposed value between the lower and upper bounds of the gene
 	 */
-	private double transpose(int value, double lower, double upper) {
-		if (upper - lower < UPPER_BOUND) {
-			return lower + (value * (upper - lower)) / UPPER_BOUND;
+	private double transpose(int geneValue, int geneUpperValue, double targetLower, double targetUpper) {
+		if (targetUpper - targetLower < geneUpperValue) {
+			return targetLower + (geneValue * (targetUpper - targetLower)) / geneUpperValue;
 		} else {
-			return lower + (value / UPPER_BOUND) * (upper - lower);
+			return targetLower + (geneValue / geneUpperValue) * (targetUpper - targetLower);
 		}
 	}
 }

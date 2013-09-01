@@ -1,10 +1,11 @@
-package com.myrontuttle.fin.trade.adapt;
+package com.myrontuttle.fin.trade.adapt.eval;
 
 import java.util.List;
 
 import com.myrontuttle.evolve.ExpressedCandidate;
 import com.myrontuttle.evolve.ExpressedFitnessEvaluator;
 
+import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.api.PortfolioService;
 
 /**
@@ -13,9 +14,13 @@ import com.myrontuttle.fin.trade.api.PortfolioService;
  */
 public class BasicEvaluator implements ExpressedFitnessEvaluator<int[]> {
 
-	private final PortfolioService portfolioService;
-	
-	BasicEvaluator(PortfolioService portfolioService) {
+	private PortfolioService portfolioService = null;
+
+	public PortfolioService getPortfolioService() {
+		return portfolioService;
+	}
+
+	public void setPortfolioService(PortfolioService portfolioService) {
 		this.portfolioService = portfolioService;
 	}
 

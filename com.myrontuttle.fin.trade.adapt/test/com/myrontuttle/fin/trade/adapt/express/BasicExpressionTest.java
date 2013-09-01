@@ -1,15 +1,15 @@
-package com.myrontuttle.fin.trade.adapt;
+package com.myrontuttle.fin.trade.adapt.express;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.TypedQuery;
-
 import org.junit.Before;
 import org.junit.Test;
 
+import com.myrontuttle.fin.trade.adapt.Candidate;
+import com.myrontuttle.fin.trade.adapt.Group;
+import com.myrontuttle.fin.trade.adapt.StrategyDAO;
+import com.myrontuttle.fin.trade.adapt.express.BasicExpression;
 import com.myrontuttle.fin.trade.api.AlertReceiverService;
 import com.myrontuttle.fin.trade.api.AlertService;
 import com.myrontuttle.fin.trade.api.AvailableAlert;
@@ -34,6 +34,7 @@ public class BasicExpressionTest {
 	private static final int SCREEN_GENES = 3;
 	private static final int MAX_SYMBOLS_PER_SCREEN = 5;
 	private static final int ALERTS_PER_SYMBOL = 1;
+	private static final int GENE_UPPER_VALUE = 100;
 	
 	private ScreenerService screenerService;
 	private WatchlistService watchlistService;
@@ -42,9 +43,7 @@ public class BasicExpressionTest {
 	private BasicTradeStrategy basicTradeStrategy;
 	private AlertReceiverService alertReceiver;
 
-	private EntityManager em;
-	private EntityTransaction transaction;
-	private TypedQuery<String> query;
+	private StrategyDAO strategyDAO;
 	
 	private BasicExpression<int[]> expression;
 	
@@ -117,8 +116,7 @@ public class BasicExpressionTest {
 		basicTradeStrategy = mock(BasicTradeStrategy.class);
 		alertReceiver = mock(AlertReceiverService.class);
 		
-		em = mock(EntityManager.class);
-		transaction = mock(EntityTransaction.class);
+		strategyDAO = mock(StrategyDAO.class);
 		
 		// Describe Mocks
 		when(screenerService.getAvailableCriteria(GID)).thenReturn(availableScreenCriteria);
@@ -134,9 +132,6 @@ public class BasicExpressionTest {
 		when(portfolioService.addCashTransaction(CID, PID, STARTING_CASH, 
 											true, true)).thenReturn(true);
 		
-		when(em.createQuery("SELECT g.AlertAddress FROM Groups g WHERE groupId = :groupId"))
-				.thenReturn(query);
-		when(query.getSingleResult()).thenReturn(EMAIL);
 		when(alertService.getAvailableAlerts(CID)).thenReturn(availableAlerts);
 		when(alertService.getUpperDouble(CID, alertId, screenSymbols[0], 0)).thenReturn(alertUpper);
 		when(alertService.getLowerDouble(CID, alertId, screenSymbols[0], 0)).thenReturn(alertLower);
@@ -156,19 +151,19 @@ public class BasicExpressionTest {
 		when(basicTradeStrategy.adjustAtLower()).thenReturn(BasicTradeStrategy.ADJUST_AT_LOWER);
 		when(basicTradeStrategy.adjustAtUpper()).thenReturn(BasicTradeStrategy.ADJUST_AT_UPPER);
 		
-		expression = new BasicExpression<int[]>(screenerService, 
-							watchlistService,
-							alertService, 
-							portfolioService,
-							basicTradeStrategy,
-							alertReceiver,
-							em);
+		expression = new BasicExpression<int[]>();
+		expression.setAlertReceiver(alertReceiver);
+		expression.setAlertService(alertService);
+		expression.setBasicTradeStrategy(basicTradeStrategy);
+		expression.setPortfolioService(portfolioService);
+		expression.setScreenerService(screenerService);
+		expression.setStrategyDAO(strategyDAO);
 	}
 
 	@Test
 	public void testExpressScreenerGenes() {
 		SelectedScreenCriteria[] screenCriteria = 
-				expression.expressScreenerGenes(GID, genomeA, SCREEN_GENES);
+				expression.expressScreenerGenes(GID, genomeA, SCREEN_GENES, GENE_UPPER_VALUE);
 		
 		assertTrue(screenCriteria.length > 0);
 		assertEquals("RCCAssetClass",screenCriteria[0].getName());

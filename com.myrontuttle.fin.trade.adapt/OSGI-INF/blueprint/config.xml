@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-  			xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.1.0">
+            xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.0.0"
+            xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0">
     
 	<reference id="ScreenerService" interface="com.myrontuttle.fin.trade.api.ScreenerService" />
 	<reference id="WatchlistService" interface="com.myrontuttle.fin.trade.api.WatchlistService" />
@@ -9,15 +10,28 @@
 	<reference id="TradeStrategy" interface="com.myrontuttle.fin.trade.api.TradeStrategy" />
 	<reference id="AlertReceiverService" interface="com.myrontuttle.fin.trade.api.AlertReceiverService" />
 	
-	<bean id="Evolver" class="com.myrontuttle.fin.trade.adapt.Evolver">
-		<argument ref="ScreenerService" />
-		<argument ref="WatchlistService" />
-		<argument ref="AlertService" />
-		<argument ref="PortfolioService" />
-		<argument ref="TradeStrategy" />
-		<argument ref="AlertReceiverService" />
-		
+	<bean id="StrategyDAO" class="com.myrontuttle.fin.trade.adapt.StrategyDAO" scope="singleton">
 		<jpa:context property="em" unitname="AdaptPersistanceUnit" />
+      	<tx:transaction method="*" value="Required"/>
+	</bean>
+	
+	<bean id="BasicEvaluator" class="com.myrontuttle.fin.trade.adapt.eval.BasicEvaluator">
+		<property name="portfolioService" ref="PortfolioService" />
+	</bean>
+	
+	<bean id="BasicExpression" class="com.myrontuttle.fin.trade.adapt.express.BasicExpression"
+			init-method="startUp" >
+		<property name="screenerService" ref="ScreenerService" />
+		<property name="watchlistService" ref="PortfolioService" />
+		<property name="alertService" ref="AlertService" />
+		<property name="portfolioService" ref="PortfolioService" />
+		<property name="basicTradeStrategy" ref="TradeStrategy" />
+		<property name="alertReceiver" ref="AlertReceiverService" />
+		<property name="strategyDAO" ref="StrategyDAO" />
+	</bean>
+	
+	<bean id="Evolver" class="com.myrontuttle.fin.trade.adapt.Evolver" scope="singleton">
+		<property name="strategyDAO" ref="StrategyDAO" />
 	</bean>
 	
 </blueprint>

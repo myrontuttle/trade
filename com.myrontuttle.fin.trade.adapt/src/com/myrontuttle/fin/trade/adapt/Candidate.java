@@ -53,7 +53,7 @@ public class Candidate implements ExpressedCandidate<int[]> {
 	
 	Candidate(){ }
 	
-	Candidate(String candidateId, String groupId, int[] genome, 
+	public Candidate(String candidateId, String groupId, int[] genome, 
 			String portfolioId, double startingCash/*,
 			SelectedScreenCriteria[] screenCriteria,
 			String[] symbols, AlertTradeBounds[] alerts*/) {

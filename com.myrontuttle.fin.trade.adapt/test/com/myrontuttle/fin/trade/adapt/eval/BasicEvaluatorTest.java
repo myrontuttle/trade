@@ -1,4 +1,4 @@
-package com.myrontuttle.fin.trade.adapt;
+package com.myrontuttle.fin.trade.adapt.eval;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -10,6 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.myrontuttle.evolve.ExpressedCandidate;
+import com.myrontuttle.fin.trade.adapt.Candidate;
+import com.myrontuttle.fin.trade.adapt.eval.BasicEvaluator;
 import com.myrontuttle.fin.trade.api.PortfolioService;
 
 public class BasicEvaluatorTest {
@@ -61,7 +63,8 @@ public class BasicEvaluatorTest {
 		when(portfolioService.closeAllPositions(CC, PC)).
 				thenReturn(5000.00);
 
-		evaluator = new BasicEvaluator(portfolioService);
+		evaluator = new BasicEvaluator();
+		evaluator.setPortfolioService(portfolioService);
 	}
 
 	@Test

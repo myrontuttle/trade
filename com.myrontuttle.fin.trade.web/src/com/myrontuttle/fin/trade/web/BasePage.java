@@ -16,8 +16,6 @@
  */
 package com.myrontuttle.fin.trade.web;
 
-import java.util.List;
-
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
@@ -25,9 +23,9 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.util.string.Strings;
 
 import com.myrontuttle.fin.trade.adapt.Group;
+import com.myrontuttle.fin.trade.adapt.StrategyDAO;
 
 /**
  * Base page
@@ -55,8 +53,7 @@ public class BasePage extends WebPage {
 	public BasePage(final PageParameters pageParameters) {
 		super(pageParameters);
 
-		final String packageName = getClass().getPackage().getName();
-		add(new Header("mainNavigation", Strings.afterLast(packageName, '.'), this));
+		add(new Header("mainNavigation", "Adaptive Trader", this));
 		explain();
 	}
 
@@ -85,8 +82,8 @@ public class BasePage extends WebPage {
 	 * 
 	 * @return The session
 	 */
-	public List<Group> getGroups() {
-		return ((WicketApplication)getApplication()).getGroups();
+	public StrategyDAO getDAO() {
+		return ((WicketApplication)getApplication()).getDAO();
 	}
 
 	/**
@@ -111,8 +108,7 @@ public class BasePage extends WebPage {
 	/**
 	 * @return selected contact
 	 */
-	public Group getSelected()
-	{
+	public Group getSelected() {
 		return selected;
 	}
 
@@ -121,8 +117,7 @@ public class BasePage extends WebPage {
 	 * 
 	 * @param selected
 	 */
-	public void setSelected(Group selected)
-	{
+	public void setSelected(Group selected) {
 		addStateChange();
 		this.selected = selected;
 	}

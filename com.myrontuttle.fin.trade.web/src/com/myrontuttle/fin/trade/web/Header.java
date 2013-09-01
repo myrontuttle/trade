@@ -22,7 +22,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 
 /**
- * Navigation panel for the examples project.
+ * Navigation panel
  * 
  * @author Eelco Hillenius
  */
@@ -31,19 +31,15 @@ public final class Header extends Panel
 	/**
 	 * Construct.
 	 * 
-	 * @param id
-	 *            id of the component
-	 * @param exampleTitle
-	 *            title of the example
-	 * @param page
-	 *            The example page
+	 * @param id id of the component
+	 * @param siteTitle title of the site
+	 * @param page The example page
 	 */
-	public Header(String id, String exampleTitle, WebPage page)
-	{
+	public Header(String id, String siteTitle, WebPage page) {
 		super(id);
 
 		add(new DebugBar("debug"));
-		add(new Label("exampleTitle", exampleTitle));
+		add(new Label("siteTitle", siteTitle));
 
 	}
 }

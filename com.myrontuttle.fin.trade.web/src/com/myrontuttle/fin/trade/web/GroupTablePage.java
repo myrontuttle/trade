@@ -55,7 +55,7 @@ public class GroupTablePage extends BasePage {
 			}
 		});
 
-		columns.add(new PropertyColumn(new Model<String>("ID"), "id") {
+		columns.add(new PropertyColumn(new Model<String>("ID"), "groupId") {
 			@Override
 			public String getCssClass() {
 				return "numeric";

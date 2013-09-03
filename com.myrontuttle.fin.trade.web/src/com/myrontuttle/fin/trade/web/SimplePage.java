@@ -42,6 +42,7 @@ public class SimplePage extends BasePage
 
 			@Override
 			protected void populateItem(final Item<Group> item) {
+				/*
 				Group group = item.getModelObject();
 				item.add(new ActionPanel("actions", item.getModel()));
 				item.add(new Label("groupid", String.valueOf(group.getGroupId())));
@@ -61,6 +62,7 @@ public class SimplePage extends BasePage
 						return (item.getIndex() % 2 == 1) ? "even" : "odd";
 					}
 				}));
+				*/
 			}
 		});
 	}

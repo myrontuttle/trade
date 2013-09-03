@@ -67,6 +67,18 @@ public class StrategyDAO {
 		em.remove(candidate);
 		em.getTransaction().commit();
 	}
+	
+	public Group newGroupRecord() {
+		em.getTransaction().begin();
+		Group group = new Group();
+
+		em.persist(group);
+		em.getTransaction().commit();
+		
+		OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
+		Object objId = oem.getObjectId(group);
+		return em.find(Group.class, objId);
+	}
 
 	// Get the group based on a groupId
 	public Group findGroup(String groupId) {

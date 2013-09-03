@@ -18,8 +18,8 @@ package com.myrontuttle.fin.trade.web;
 
 import java.util.Iterator;
 
-//import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
-import org.apache.wicket.markup.repeater.data.IDataProvider;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
+import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.IModel;
 
 import com.myrontuttle.fin.trade.adapt.Group;
@@ -27,23 +27,26 @@ import com.myrontuttle.fin.trade.adapt.StrategyDAO;
 
 
 /**
- * Implementation of IDataProvider that retrieves contacts from the contact database.
+ * implementation of IDataProvider for contacts that keeps track of sort information
  * 
  * @author igor
  * 
  */
-public class GroupDataProvider implements IDataProvider<Group> {
-	
-	private static final long serialVersionUID = 1L;
+public class SortableGroupDataProvider extends SortableDataProvider<Group>
+{
+	/**
+	 * constructor
+	 */
+	public SortableGroupDataProvider() {
+		// set default sort
+		setSort("id", SortOrder.ASCENDING);
+	}
 
 	protected StrategyDAO getDAO() {
 		return DBAccess.getDAO();
 	}
 
 	/**
-	 * retrieves groups from database starting with index <code>first</code> and ending with
-	 * <code>first+count</code>
-	 * 
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#iterator(int, int)
 	 */
 	public Iterator<Group> iterator(int first, int count) {
@@ -53,8 +56,6 @@ public class GroupDataProvider implements IDataProvider<Group> {
 	}
 
 	/**
-	 * returns total number of groups in the database
-	 * 
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#size()
 	 */
 	public int size() {
@@ -62,18 +63,11 @@ public class GroupDataProvider implements IDataProvider<Group> {
 	}
 
 	/**
-	 * wraps retrieved group pojo with a wicket model
-	 * 
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#model(java.lang.Object)
 	 */
-	public IModel<Group> model(Group object) {
+	public IModel<Group> model(Group object)
+	{
 		return new DetachableGroupModel(object);
-	}
-
-	/**
-	 * @see org.apache.wicket.model.IDetachable#detach()
-	 */
-	public void detach() {
 	}
 
 }

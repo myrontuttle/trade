@@ -62,18 +62,19 @@ public class GroupTablePage extends BasePage {
 			}
 		});
 
-		columns.add(new PropertyColumn(new Model<String>("First Name"), "firstName", "firstName"));
+		columns.add(new PropertyColumn(new Model<String>("Start Time"), "startTime", "startTime"));
 
-		columns.add(new PropertyColumn(new Model<String>("Last Name"), "lastName", "lastName") {
+		columns.add(new PropertyColumn(new Model<String>("Frequency"), "frequency", "frequency") {
 			@Override
 			public String getCssClass() {
 				return "last-name";
 			}
 		});
 
-		columns.add(new PropertyColumn(new Model<String>("Home Phone"), "homePhone"));
-		columns.add(new PropertyColumn(new Model<String>("Cell Phone"), "cellPhone"));
+		columns.add(new PropertyColumn(new Model<String>("Alert Address"), "alertAddress"));
+		columns.add(new PropertyColumn(new Model<String>("Expression"), "expressionStrategy"));
+		columns.add(new PropertyColumn(new Model<String>("Evaluation"), "evaluationStrategy"));
 
-		add(new DefaultDataTable("table", columns, null, 8));
+		add(new DefaultDataTable("table", columns, new SortableGroupDataProvider(), 8));
 	}
 }

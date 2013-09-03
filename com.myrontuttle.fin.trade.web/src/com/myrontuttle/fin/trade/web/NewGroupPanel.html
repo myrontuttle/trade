@@ -1,0 +1,16 @@
+<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    <form wicket:id="newGroupForm">
+        Alert Address: <input type="text" wicket:id="alertAddress"/>
+        Size: <input type="text" wicket:id="size"/>
+        Elite Count: <input type="text" wicket:id="eliteCount"/>
+        Upper Value of Genes: <input type="text" wicket:id="geneUpperValue"/>
+        Expression Strategy: <select wicket:id="expressionStrategy">
+        	<option>Strategy Option</option>
+        </select>
+        Evaluation Strategy: <select wicket:id="evaluationStrategy">
+        	<option>Strategy Option</option>
+        </select>
+        
+        <button wicket:id="create" type="submit">Create</button>
+    </form>
+</wicket:panel>

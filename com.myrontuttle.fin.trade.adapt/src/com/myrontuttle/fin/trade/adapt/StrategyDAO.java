@@ -8,8 +8,8 @@ import javax.persistence.Query;
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
-import com.myrontuttle.evolve.ExpressedCandidate;
-import com.myrontuttle.evolve.PopulationStats;
+import com.myrontuttle.sci.evolve.ExpressedCandidate;
+import com.myrontuttle.sci.evolve.PopulationStats;
 
 public class StrategyDAO {
 

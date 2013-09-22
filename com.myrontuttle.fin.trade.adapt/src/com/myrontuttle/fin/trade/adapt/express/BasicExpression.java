@@ -6,8 +6,6 @@ package com.myrontuttle.fin.trade.adapt.express;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.myrontuttle.evolve.ExpressedCandidate;
-import com.myrontuttle.evolve.ExpressionStrategy;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.Group;
@@ -16,6 +14,8 @@ import com.myrontuttle.fin.trade.api.*;
 import com.myrontuttle.fin.trade.tradestrategies.AlertTradeBounds;
 import com.myrontuttle.fin.trade.tradestrategies.BasicTradeStrategy;
 import com.myrontuttle.fin.trade.tradestrategies.TradeBounds;
+import com.myrontuttle.sci.evolve.ExpressedCandidate;
+import com.myrontuttle.sci.evolve.ExpressionStrategy;
 
 /**
  * Expresses a genome of int[] into a TradingStrategy

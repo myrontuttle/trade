@@ -3,17 +3,17 @@ package com.myrontuttle.fin.trade.adapt;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.myrontuttle.evolve.*;
-import com.myrontuttle.evolve.factories.IntArrayFactory;
-import com.myrontuttle.evolve.operators.IntArrayCrossover;
-import com.myrontuttle.evolve.operators.IntArrayMutation;
-import com.myrontuttle.evolve.operators.EvolutionPipeline;
-import com.myrontuttle.evolve.selection.RouletteWheelSelection;
-import com.myrontuttle.evolve.termination.*;
 import com.myrontuttle.fin.trade.adapt.eval.BasicEvaluator;
 import com.myrontuttle.fin.trade.adapt.eval.RandomEvaluator;
 import com.myrontuttle.fin.trade.adapt.express.BasicExpression;
 import com.myrontuttle.fin.trade.adapt.express.NoExpression;
+import com.myrontuttle.sci.evolve.*;
+import com.myrontuttle.sci.evolve.factories.IntArrayFactory;
+import com.myrontuttle.sci.evolve.operators.EvolutionPipeline;
+import com.myrontuttle.sci.evolve.operators.IntArrayCrossover;
+import com.myrontuttle.sci.evolve.operators.IntArrayMutation;
+import com.myrontuttle.sci.evolve.selection.RouletteWheelSelection;
+import com.myrontuttle.sci.evolve.termination.*;
 
 public class Evolver {
 	

@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import javax.persistence.*;
 
-import com.myrontuttle.evolve.ExpressedCandidate;
+import com.myrontuttle.sci.evolve.ExpressedCandidate;
 /*
 import com.myrontuttle.fin.trade.api.SelectedScreenCriteria;
 import com.myrontuttle.fin.trade.tradestrategies.AlertTradeBounds;

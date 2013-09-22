@@ -2,11 +2,11 @@ package com.myrontuttle.fin.trade.adapt.eval;
 
 import java.util.List;
 
-import com.myrontuttle.evolve.ExpressedCandidate;
-import com.myrontuttle.evolve.ExpressedFitnessEvaluator;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.api.PortfolioService;
+import com.myrontuttle.sci.evolve.ExpressedCandidate;
+import com.myrontuttle.sci.evolve.ExpressedFitnessEvaluator;
 
 /**
  * Setup how strategies are evaluated

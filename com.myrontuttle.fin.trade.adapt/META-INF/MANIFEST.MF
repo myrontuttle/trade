@@ -6,13 +6,15 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Myron Tuttle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Meta-Persistence: META-INF/persistence.xml
-Import-Package: com.myrontuttle.evolve,
- com.myrontuttle.evolve.factories,
- com.myrontuttle.evolve.operators,
- com.myrontuttle.evolve.selection,
- com.myrontuttle.evolve.termination,
- com.myrontuttle.fin.trade.api,
+Import-Package: com.myrontuttle.fin.trade.api,
  com.myrontuttle.fin.trade.tradestrategies,
+ com.myrontuttle.sci.evolve,
+ com.myrontuttle.sci.evolve.factories,
+ com.myrontuttle.sci.evolve.operators,
+ com.myrontuttle.sci.evolve.selection,
+ com.myrontuttle.sci.evolve.termination,
  javax.persistence,
  org.apache.openjpa.persistence
-Export-Package: com.myrontuttle.fin.trade.adapt
+Export-Package: com.myrontuttle.fin.trade.adapt,
+ com.myrontuttle.fin.trade.adapt.eval,
+ com.myrontuttle.fin.trade.adapt.express

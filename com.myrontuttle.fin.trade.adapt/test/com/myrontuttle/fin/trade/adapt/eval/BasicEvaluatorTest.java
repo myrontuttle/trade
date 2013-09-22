@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.myrontuttle.evolve.ExpressedCandidate;
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.eval.BasicEvaluator;
 import com.myrontuttle.fin.trade.api.PortfolioService;
+import com.myrontuttle.sci.evolve.ExpressedCandidate;
 
 public class BasicEvaluatorTest {
 	

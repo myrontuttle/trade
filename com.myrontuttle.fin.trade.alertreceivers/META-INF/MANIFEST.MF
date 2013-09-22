@@ -8,3 +8,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: com.myrontuttle.fin.trade.api,
  javax.mail,
  javax.mail.search
+Export-Package: com.myrontuttle.fin.trade.alertreceivers

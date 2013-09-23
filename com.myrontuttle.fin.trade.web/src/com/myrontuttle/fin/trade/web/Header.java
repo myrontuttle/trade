@@ -16,7 +16,6 @@
  */
 package com.myrontuttle.fin.trade.web;
 
-import org.apache.wicket.devutils.debugbar.DebugBar;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -38,7 +37,6 @@ public final class Header extends Panel
 	public Header(String id, String siteTitle, WebPage page) {
 		super(id);
 
-		add(new DebugBar("debug"));
 		add(new Label("siteTitle", siteTitle));
 
 	}

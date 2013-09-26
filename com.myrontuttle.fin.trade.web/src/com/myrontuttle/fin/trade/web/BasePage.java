@@ -42,7 +42,7 @@ public class BasePage extends WebPage {
 	public BasePage() {
 		this(new PageParameters());
 
-		add(new Label("selectedLabel", new PropertyModel<String>(this, "selectedGroupLabel")));
+		//add(new Label("selectedLabel", new PropertyModel<String>(this, "selectedGroupLabel")));
 	}
 
 	/**

@@ -3,6 +3,7 @@ package com.myrontuttle.fin.trade.web;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.wicket.Page;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.response.filter.ServerAndClientTimeFilter;
 
@@ -22,9 +23,9 @@ public class WicketApplication extends WebApplication {
 	 */
 	@Override
 	protected void init() {
-		getDebugSettings().setDevelopmentUtilitiesEnabled(true);
+		//getDebugSettings().setDevelopmentUtilitiesEnabled(true);
 
-		getRequestCycleSettings().addResponseFilter(new ServerAndClientTimeFilter());
+		//getRequestCycleSettings().addResponseFilter(new ServerAndClientTimeFilter());
 	}
 
 	public StrategyDAO getDAO() {
@@ -32,7 +33,7 @@ public class WicketApplication extends WebApplication {
 	}
 	
     @Override
-    public Class<BasePage> getHomePage() {
-        return BasePage.class;
+    public Class<? extends Page> getHomePage() {
+        return BasicPage.class;
     }
 }

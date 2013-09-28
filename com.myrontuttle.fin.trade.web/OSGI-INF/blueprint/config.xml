@@ -20,8 +20,8 @@
 
   <service interface="org.ops4j.pax.wicket.api.WebApplicationFactory" >
     <service-properties>
-      <entry key="pax.wicket.applicationname" value="fin.trade.web" />
-      <entry key="pax.wicket.mountpoint" value="fin/trade" />
+      <entry key="pax.wicket.applicationname" value="fin.trade.adapt" />
+      <entry key="pax.wicket.mountpoint" value="trade/adapt" />
     </service-properties>
     <bean class="org.ops4j.pax.wicket.api.support.SimpleWebApplicationFactory" >
       <property name="wicketApplication" value="com.myrontuttle.fin.trade.web.WicketApplication" />

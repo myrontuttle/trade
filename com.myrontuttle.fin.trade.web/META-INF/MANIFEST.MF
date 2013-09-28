@@ -43,3 +43,4 @@ Import-Package: com.myrontuttle.fin.trade.adapt,
  org.ops4j.pax.wicket.api.support;version="3.0.1",
  org.slf4j
 Export-Package: com.myrontuttle.fin.trade.web
+

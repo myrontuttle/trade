@@ -19,17 +19,18 @@ import com.myrontuttle.fin.trade.adapt.Group;
 public class NewGroupPanel extends Panel {
 
 	private static final long serialVersionUID = 1L;
-
-	public NewGroupPanel(String id, IModel<Group> model) {
-		super(id, model);
-		IModel<Group> compound = new CompoundPropertyModel<Group>(model);
+	
+	public NewGroupPanel(String id) {
+		super(id);
+		final IModel<Group> compound = new CompoundPropertyModel<Group>(new Group());
 		final Form<Group> form = new Form<Group>("newGroupForm", compound);
 		form.add(new TextField<String>("alertAddress")
-						.setRenderBodyOnly(true)
-						.add(EmailAddressValidator.getInstance()));
+					.add(EmailAddressValidator.getInstance()));
+		
 		form.add(new TextField<Integer>("size")
 						.setRequired(true)
 						.add(new RangeValidator<Integer>(1, Integer.MAX_VALUE)));
+		/**
 		form.add(new TextField<Integer>("eliteCount")
 						.setRequired(true)
 						.add(new RangeValidator<Integer>(0, Integer.MAX_VALUE)));
@@ -46,7 +47,7 @@ public class NewGroupPanel extends Panel {
 		
 		form.add(new Button("create") {
             public void onSubmit() {
-            	DBAccess.getDAO().saveGroup((Group)getParent().getDefaultModelObject());
+            	DBAccess.getDAO().saveGroup((Group)compound.getObject());
             }
         });
 
@@ -55,6 +56,7 @@ public class NewGroupPanel extends Panel {
             	setResponsePage(new GroupTablePage());
             }
         });
+        **/
 		add(form);
 	}
 

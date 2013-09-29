@@ -9,6 +9,8 @@ public class BasicPage extends WebPage {
 		add(new Header("mainNavigation", "Adaptive Trader", this));
 		
 		add(new Label("message", "Let's make a trade!"));
+		
+		add(new NewGroupPanel("newGroupPanel"));
 	}
 
 }

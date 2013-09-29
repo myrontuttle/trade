@@ -54,7 +54,6 @@ public class BasePage extends WebPage {
 		super(pageParameters);
 
 		add(new Header("mainNavigation", "Adaptive Trader", this));
-		explain();
 	}
 
 	/**
@@ -120,11 +119,5 @@ public class BasePage extends WebPage {
 	public void setSelected(Group selected) {
 		addStateChange();
 		this.selected = selected;
-	}
-	
-	/**
-	 * Override base method to provide an explanation
-	 */
-	protected void explain() {
 	}
 }

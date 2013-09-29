@@ -1,16 +1,30 @@
-<wicket:panel xmlns:wicket="http://wicket.apache.org">
-    <form wicket:id="newGroupForm">
-        Alert Address: <input type="text" wicket:id="alertAddress"/>
-        Size: <input type="text" wicket:id="size"/>
-        Elite Count: <input type="text" wicket:id="eliteCount"/>
-        Upper Value of Genes: <input type="text" wicket:id="geneUpperValue"/>
-        Expression Strategy: <select wicket:id="expressionStrategy">
-        	<option>Strategy Option</option>
-        </select>
-        Evaluation Strategy: <select wicket:id="evaluationStrategy">
-        	<option>Strategy Option</option>
-        </select>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+<html 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:wicket="http://wicket.sourceforge.net/" 
+	xml:lang="en" 
+	lang="en">  
+<body>
+	<wicket:panel xmlns:wicket="http://wicket.apache.org">
+    	<form wicket:id="newGroupForm">
+        	Alert Address: <input type="text" wicket:id="alertAddress"/>
+        	Size: <input type="text" wicket:id="size"/>
+        	<!-- 
+        	Elite Count: <input type="text" wicket:id="eliteCount"/>
+        	Upper Value of Genes: <input type="text" wicket:id="geneUpperValue"/>
+        	Expression Strategy: <select wicket:id="expressionStrategy">
+        		<option>Strategy Option</option>
+        	</select>
+        	Evaluation Strategy: <select wicket:id="evaluationStrategy">
+        		<option>Strategy Option</option>
+        	</select>
         
-        <button wicket:id="create" type="submit">Create</button>
+        	<button wicket:id="create" type="submit">Create</button>
+        	<button wicket:id="cancel" type="submit">Cancel</button>
+        	-->
     </form>
 </wicket:panel>
+</body>
+</html>

@@ -30,7 +30,7 @@ public class NewGroupPanel extends Panel {
 		form.add(new TextField<Integer>("size")
 						.setRequired(true)
 						.add(new RangeValidator<Integer>(1, Integer.MAX_VALUE)));
-		/**
+		
 		form.add(new TextField<Integer>("eliteCount")
 						.setRequired(true)
 						.add(new RangeValidator<Integer>(0, Integer.MAX_VALUE)));
@@ -56,7 +56,7 @@ public class NewGroupPanel extends Panel {
             	setResponsePage(new GroupTablePage());
             }
         });
-        **/
+        
 		add(form);
 	}
 

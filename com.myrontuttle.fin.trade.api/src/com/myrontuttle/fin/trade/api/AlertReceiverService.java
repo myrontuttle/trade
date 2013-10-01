@@ -10,11 +10,13 @@ public interface AlertReceiverService {
 
 	/**
 	 * Starts the receiver receiving alerts
+	 * @param tradeStrategy The strategy that receives notifications of received alerts
 	 * @param userId
 	 * @param connectionDetails Name-value pairs that provide details necessary to start receiving
 	 * @return true if the start was successful
 	 */
-	public boolean startReceiving(String userId, HashMap<String, String> connectionDetails);
+	public boolean startReceiving(TradeStrategy tradeStrategy, String userId, 
+									HashMap<String, String> connectionDetails);
 	
 	/**
 	 * Stops the receiver from receiving alerts

@@ -22,22 +22,23 @@ public class EmailAlertReceiver implements AlertReceiverService {
 	private final static int PERIOD = 60;
 	private final static int IMAPS_PORT = 993;
 	
-	private final TradeStrategy tradeStrategy;
+	private TradeStrategy tradeStrategy;
 	private List<AlertAction> alertActionList;
 
 	private ScheduledExecutorService ses;
 	private ScheduledFuture<?> sf;
 
-	EmailAlertReceiver(TradeStrategy tradeStrategy) {
-		this.tradeStrategy = tradeStrategy;
+	EmailAlertReceiver() {
 		this.alertActionList = new LinkedList<AlertAction>();
 	}
 
 	/* (non-Javadoc)
-	 * @see com.myrontuttle.adaptivetrader.AlertReceiver#startReceiving(HashMap<String, String>)
+	 * @see com.myrontuttle.adaptivetrader.AlertReceiver#startReceiving(TradeStrategy, String, HashMap<String, String>)
 	 */
 	@Override
-	public boolean startReceiving(String userId, HashMap<String, String> connectionDetails) {
+	public boolean startReceiving(TradeStrategy tradeStrategy, String userId, 
+									HashMap<String, String> connectionDetails) {
+		this.tradeStrategy = tradeStrategy;
 		String host = connectionDetails.get("host");
 		String user = connectionDetails.get("user");
 		String password = connectionDetails.get("password");

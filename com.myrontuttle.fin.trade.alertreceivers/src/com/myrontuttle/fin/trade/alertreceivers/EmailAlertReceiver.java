@@ -28,7 +28,7 @@ public class EmailAlertReceiver implements AlertReceiverService {
 	private ScheduledExecutorService ses;
 	private ScheduledFuture<?> sf;
 
-	EmailAlertReceiver() {
+	public EmailAlertReceiver() {
 		this.alertActionList = new LinkedList<AlertAction>();
 	}
 

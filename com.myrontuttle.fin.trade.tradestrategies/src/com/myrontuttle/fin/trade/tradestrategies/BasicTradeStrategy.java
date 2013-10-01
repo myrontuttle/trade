@@ -62,7 +62,7 @@ public class BasicTradeStrategy implements TradeStrategy {
 	private ScheduledExecutorService ses;
 	private HashMap<String, Trade> openTrades;
 	
-	BasicTradeStrategy(PortfolioService portfolioService, QuoteService quoteService, 
+	public BasicTradeStrategy(PortfolioService portfolioService, QuoteService quoteService, 
 									AlertService alertService, AlertReceiverService alertReceiver) {
 		this.portfolioService = portfolioService;
 		this.quoteService = quoteService;

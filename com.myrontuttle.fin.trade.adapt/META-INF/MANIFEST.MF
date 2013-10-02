@@ -6,6 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Myron Tuttle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Meta-Persistence: META-INF/persistence.xml
+JPA-PersistenceUnits: AdaptPersistanceUnit
 Import-Package: com.myrontuttle.fin.trade.api,
  com.myrontuttle.fin.trade.tradestrategies,
  com.myrontuttle.sci.evolve,

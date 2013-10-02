@@ -1,5 +1,6 @@
 package com.myrontuttle.fin.trade.adapt;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -10,7 +11,9 @@ import javax.persistence.*;
  * @author Myron Tuttle
  */
 @Entity(name = "Groups")
-public class Group {
+public class Group implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	
 	public static final String DAILY = "DAILY";
 	public static final String WEEKLY = "WEEKLY";

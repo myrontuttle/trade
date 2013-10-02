@@ -1,5 +1,7 @@
 package com.myrontuttle.fin.trade.adapt;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,7 +12,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 @Entity(name = "GroupStats")
-public class GroupStats {
+public class GroupStats implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@Column(name = "StatsId", nullable = false)
@@ -19,7 +23,7 @@ public class GroupStats {
 	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "GroupId", referencedColumnName = "GroupId")
-	private Group group;
+	private transient Group group;
 	
 	@Column(name = "GroupId")
 	private String groupId;

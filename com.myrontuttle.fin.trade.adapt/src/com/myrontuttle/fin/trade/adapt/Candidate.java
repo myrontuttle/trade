@@ -1,5 +1,6 @@
 package com.myrontuttle.fin.trade.adapt;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import javax.persistence.*;
@@ -14,8 +15,10 @@ import com.myrontuttle.fin.trade.tradestrategies.AlertTradeBounds;
  * @author Myron Tuttle
  */
 @Entity(name = "Candidates")
-public class Candidate implements ExpressedCandidate<int[]> {
+public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	
+	private static final long serialVersionUID = 1L;
+
 	public static final String GENE_SEPARATOR = "|";
 
 	@Id
@@ -28,7 +31,7 @@ public class Candidate implements ExpressedCandidate<int[]> {
 	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "GroupId", referencedColumnName = "GroupId")
-	private Group group;
+	private transient Group group;
 	
 	@Transient
 	private int[] genome;

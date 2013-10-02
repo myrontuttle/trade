@@ -11,7 +11,7 @@
 	<reference id="AlertReceiverService" interface="com.myrontuttle.fin.trade.api.AlertReceiverService" />
 	
 	<bean id="StrategyDAO" class="com.myrontuttle.fin.trade.adapt.StrategyDAO" scope="singleton">
-		<jpa:context property="em" unitname="AdaptPersistanceUnit" />
+		<jpa:context unitname="AdaptPersistanceUnit" property="entityManager" />
       	<tx:transaction method="*" value="Required"/>
 	</bean>
 	

@@ -13,13 +13,9 @@ import com.myrontuttle.sci.evolve.PopulationStats;
 
 public class StrategyDAO {
 
-	EntityManager em = null;
-	
-	public EntityManager getEm() {
-		return em;
-	}
+	private EntityManager em;
 
-	public void setEm(EntityManager em) {
+	public void setEntityManager(EntityManager em) {
 		this.em = em;
 	}
 

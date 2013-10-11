@@ -46,7 +46,7 @@ public class GroupDataProvider implements IDataProvider<Group> {
 	 * 
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#iterator(int, int)
 	 */
-	public Iterator<Group> iterator(int first, int count) {
+	public Iterator<Group> iterator(long first, long count) {
 		// Consider finding a subset of all groups to StrategyDAO:
 		// return getDAO().findGroups(first, count, new SortParam("groupId", true)).iterator();
 		return getDAO().findGroups().iterator();
@@ -57,7 +57,7 @@ public class GroupDataProvider implements IDataProvider<Group> {
 	 * 
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#size()
 	 */
-	public int size() {
+	public long size() {
 		return getDAO().findGroups().size();
 	}
 

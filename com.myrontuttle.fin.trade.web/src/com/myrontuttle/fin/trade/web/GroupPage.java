@@ -1,13 +1,16 @@
 package com.myrontuttle.fin.trade.web;
 
-import org.apache.wicket.Page;
+import org.apache.wicket.markup.html.WebPage;
 
-public class GroupPage extends Page {
+public class GroupPage extends WebPage {
 
 	private static final long serialVersionUID = 1L;
 
 	public GroupPage() {
-		add(new NewGroupPanel("newGroup"));
-		add(new GroupTablePanel("groupTable", null));
+		add(new Header("mainNavigation", "Adaptive Trader", this));
+		
+		add(new NewGroupPanel("newGroupPanel"));
+		add(new GroupTablePanel("groupTablePanel"));
 	}
+
 }

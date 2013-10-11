@@ -50,12 +50,6 @@ public class NewGroupPanel extends Panel {
             	DBAccess.getDAO().saveGroup((Group)compound.getObject());
             }
         });
-
-		form.add(new Button("cancel") {
-            public void onSubmit() {
-            	setResponsePage(new GroupTablePage());
-            }
-        });
         
 		add(form);
 	}

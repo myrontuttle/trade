@@ -24,8 +24,6 @@ import com.myrontuttle.fin.trade.adapt.StrategyDAO;
 /**
  * detachable model for an instance of group
  * 
- * @author igor
- * 
  */
 public class DetachableGroupModel extends LoadableDetachableModel<Group> {
 	

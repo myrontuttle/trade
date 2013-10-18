@@ -9,8 +9,6 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.export.CSVDataExporter;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.export.ExportToolbar;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
@@ -39,8 +37,8 @@ public class GroupTablePanel extends Panel {
 						public void onClick() {
 							PageParameters pars = new PageParameters();
 							pars.add("groupId", ((Group)getParent().getDefaultModelObject()).getGroupId());
-							GroupDetailPage gdp = new GroupDetailPage();
-							setResponsePage(gdp);
+							//GroupDetailPanel gdp = new GroupDetailPanel();
+							//setResponsePage(gdp);
 						}
 					});
 			}
@@ -58,7 +56,6 @@ public class GroupTablePanel extends Panel {
 
 		DataTable dataTable = new DefaultDataTable<Group, String>("groups", columns,
 				new SortableGroupDataProvider(), 8);
-		dataTable.addBottomToolbar(new ExportToolbar(dataTable).addDataExporter(new CSVDataExporter()));
 
 		add(dataTable);
 	}

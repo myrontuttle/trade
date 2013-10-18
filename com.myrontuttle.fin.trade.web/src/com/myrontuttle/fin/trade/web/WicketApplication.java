@@ -12,7 +12,7 @@ import com.myrontuttle.fin.trade.adapt.StrategyDAO;
 public class WicketApplication extends WebApplication {
 
 	@Inject
-    @Named("strategyDAO")
+    @Named("StrategyDAO")
     private StrategyDAO strategyDAO;
 	
 	public WicketApplication() {
@@ -29,6 +29,9 @@ public class WicketApplication extends WebApplication {
 	}
 
 	public StrategyDAO getDAO() {
+		if (strategyDAO == null) {
+			System.out.println("StrategyDAO is null");
+		}
 		return strategyDAO;
 	}
 	

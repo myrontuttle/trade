@@ -17,14 +17,14 @@ import com.myrontuttle.sci.evolve.termination.*;
 
 public class Evolver {
 	
-	StrategyDAO strategyDAO = null;
+	StrategyDAOImpl strategyDAOImpl = null;
 	
 	private final TerminationCondition[] terminationConditions = new TerminationCondition[]{
 																		new UserAbort() };
 	private final EvolutionObserver<int[]> dbObserver = new EvolutionObserver<int[]>() {
 		public void populationUpdate(PopulationStats<? extends int[]> data) {
 			// Use data to update group
-			strategyDAO.updateGroupStats(data);
+			strategyDAOImpl.updateGroupStats(data);
 		}
 	};
 	
@@ -59,9 +59,9 @@ public class Evolver {
 	}
 	
 	public void evolveOnce(String groupId) throws Exception {
-		Group group = strategyDAO.findGroup(groupId);
+		Group group = strategyDAOImpl.findGroup(groupId);
 		if (group != null) {
-			List<ExpressedCandidate<int[]>> candidates = strategyDAO.findCandidatesInGroup(groupId);
+			List<ExpressedCandidate<int[]>> candidates = strategyDAOImpl.findCandidatesInGroup(groupId);
 			int size = candidates.size();
 			int eliteCount = group.getEliteCount();
 

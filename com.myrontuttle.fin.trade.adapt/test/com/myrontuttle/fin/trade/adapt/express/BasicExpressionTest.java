@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.Group;
-import com.myrontuttle.fin.trade.adapt.StrategyDAO;
+import com.myrontuttle.fin.trade.adapt.StrategyDAOImpl;
 import com.myrontuttle.fin.trade.adapt.express.BasicExpression;
 import com.myrontuttle.fin.trade.api.AlertReceiverService;
 import com.myrontuttle.fin.trade.api.AlertService;
@@ -43,7 +43,7 @@ public class BasicExpressionTest {
 	private BasicTradeStrategy basicTradeStrategy;
 	private AlertReceiverService alertReceiver;
 
-	private StrategyDAO strategyDAO;
+	private StrategyDAOImpl strategyDAOImpl;
 	
 	private BasicExpression<int[]> expression;
 	
@@ -116,7 +116,7 @@ public class BasicExpressionTest {
 		basicTradeStrategy = mock(BasicTradeStrategy.class);
 		alertReceiver = mock(AlertReceiverService.class);
 		
-		strategyDAO = mock(StrategyDAO.class);
+		strategyDAOImpl = mock(StrategyDAOImpl.class);
 		
 		// Describe Mocks
 		when(screenerService.getAvailableCriteria(GID)).thenReturn(availableScreenCriteria);
@@ -157,7 +157,7 @@ public class BasicExpressionTest {
 		expression.setBasicTradeStrategy(basicTradeStrategy);
 		expression.setPortfolioService(portfolioService);
 		expression.setScreenerService(screenerService);
-		expression.setStrategyDAO(strategyDAO);
+		expression.setStrategyDAO(strategyDAOImpl);
 	}
 
 	@Test

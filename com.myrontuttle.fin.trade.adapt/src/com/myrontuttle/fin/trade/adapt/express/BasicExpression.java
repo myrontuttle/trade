@@ -9,7 +9,7 @@ import java.util.List;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.Group;
-import com.myrontuttle.fin.trade.adapt.StrategyDAO;
+import com.myrontuttle.fin.trade.adapt.StrategyDAOImpl;
 import com.myrontuttle.fin.trade.api.*;
 import com.myrontuttle.fin.trade.tradestrategies.AlertTradeBounds;
 import com.myrontuttle.fin.trade.tradestrategies.BasicTradeStrategy;
@@ -43,7 +43,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	BasicTradeStrategy basicTradeStrategy = null;
 	AlertReceiverService alertReceiver = null;
 	
-	StrategyDAO strategyDAO = null;
+	StrategyDAOImpl strategyDAOImpl = null;
 	
 	private int counter;
 	
@@ -95,12 +95,12 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		this.alertReceiver = alertReceiver;
 	}
 
-	public StrategyDAO getStrategyDAO() {
-		return strategyDAO;
+	public StrategyDAOImpl getStrategyDAO() {
+		return strategyDAOImpl;
 	}
 
-	public void setStrategyDAO(StrategyDAO strategyDAO) {
-		this.strategyDAO = strategyDAO;
+	public void setStrategyDAO(StrategyDAOImpl strategyDAOImpl) {
+		this.strategyDAOImpl = strategyDAOImpl;
 	}
 
 	public void startUp() {
@@ -379,10 +379,10 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	public Candidate express(int[] genome, String groupId) {
 
 		// Create the candidate
-		Candidate candidate = strategyDAO.newCandidateRecord(genome, groupId, basicTradeStrategy.getStartingCash());
+		Candidate candidate = strategyDAOImpl.newCandidateRecord(genome, groupId, basicTradeStrategy.getStartingCash());
 		
 		// Find the associated group
-		Group group = strategyDAO.findGroup(groupId);
+		Group group = strategyDAOImpl.findGroup(groupId);
 		
 		// Get a list of symbols from the Screener Service
 		String[] symbols = getScreenSymbols(genome, groupId, group);
@@ -418,7 +418,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		setupAlertReceiver(openAlerts, portfolioId, tradesToMake);
 
 		// Save candidate to database, and return
-		strategyDAO.saveCandidate(candidate);
+		strategyDAOImpl.saveCandidate(candidate);
 		
 		return candidate;
 	}

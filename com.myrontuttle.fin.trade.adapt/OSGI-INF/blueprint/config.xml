@@ -10,7 +10,7 @@
 	<reference id="TradeStrategy" interface="com.myrontuttle.fin.trade.api.TradeStrategy" />
 	<reference id="AlertReceiverService" interface="com.myrontuttle.fin.trade.api.AlertReceiverService" />
 	
-	<bean id="StrategyDAO" class="com.myrontuttle.fin.trade.adapt.StrategyDAO" scope="singleton">
+	<bean id="StrategyDAOImpl" class="com.myrontuttle.fin.trade.adapt.StrategyDAOImpl" scope="singleton">
 		<jpa:context unitname="AdaptPersistanceUnit" property="entityManager" />
       	<tx:transaction method="*" value="Required"/>
 	</bean>
@@ -27,11 +27,13 @@
 		<property name="portfolioService" ref="PortfolioService" />
 		<property name="basicTradeStrategy" ref="TradeStrategy" />
 		<property name="alertReceiver" ref="AlertReceiverService" />
-		<property name="strategyDAO" ref="StrategyDAO" />
+		<property name="strategyDAO" ref="StrategyDAOImpl" />
 	</bean>
 	
 	<bean id="Evolver" class="com.myrontuttle.fin.trade.adapt.Evolver" scope="singleton">
-		<property name="strategyDAO" ref="StrategyDAO" />
+		<property name="strategyDAO" ref="StrategyDAOImpl" />
 	</bean>
+	
+	<service ref="StrategyDAOImpl" interface="com.myrontuttle.fin.trade.adapt.StrategyDAO" />
 	
 </blueprint>

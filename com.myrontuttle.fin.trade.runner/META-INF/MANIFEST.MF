@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Runner
+Bundle-SymbolicName: com.myrontuttle.fin.trade.runner
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: com.myrontuttle.fin.trade.runner.Activator
+Bundle-Vendor: Myron Tuttle
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Import-Package: com.myrontuttle.fin.trade.adapt,
+ org.osgi.framework;version="1.3.0"

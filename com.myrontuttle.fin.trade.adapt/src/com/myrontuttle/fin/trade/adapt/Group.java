@@ -71,6 +71,9 @@ public class Group implements Serializable {
 	@Column(name = "AlertsPerSymbol")
 	private int alertsPerSymbol;
 	
+	@Column(name = "Active")
+	private boolean active;
+	
 	// Group Stats
 	@OneToMany(mappedBy = "group", targetEntity = GroupStats.class, 
 				fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -200,6 +203,22 @@ public class Group implements Serializable {
 
 	public void setAlertsPerSymbol(int alertsPerSymbol) {
 		this.alertsPerSymbol = alertsPerSymbol;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public ArrayList<GroupStats> getStats() {
+		return stats;
+	}
+
+	public void setStats(ArrayList<GroupStats> stats) {
+		this.stats = stats;
 	}
 
 	public Date getUpdatedTime() {

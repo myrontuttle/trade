@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+	<reference id="StrategyDAO" interface="com.myrontuttle.fin.trade.adapt.StrategyDAO" />
+	
+	<bean id="Activator" class="com.myrontuttle.fin.trade.runner.Activator">
+		<property name="strategyDAO" ref="StrategyDAO" />
+	</bean>
+
+</blueprint>

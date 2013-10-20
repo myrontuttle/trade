@@ -22,10 +22,10 @@
 	<bean id="BasicExpression" class="com.myrontuttle.fin.trade.adapt.express.BasicExpression"
 			init-method="startUp" >
 		<property name="screenerService" ref="ScreenerService" />
-		<property name="watchlistService" ref="PortfolioService" />
+		<property name="watchlistService" ref="WatchlistService" />
 		<property name="alertService" ref="AlertService" />
 		<property name="portfolioService" ref="PortfolioService" />
-		<property name="basicTradeStrategy" ref="TradeStrategy" />
+		<property name="tradeStrategy" ref="TradeStrategy" />
 		<property name="alertReceiver" ref="AlertReceiverService" />
 		<property name="strategyDAO" ref="StrategyDAOImpl" />
 	</bean>

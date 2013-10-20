@@ -154,7 +154,7 @@ public class BasicExpressionTest {
 		expression = new BasicExpression<int[]>();
 		expression.setAlertReceiver(alertReceiver);
 		expression.setAlertService(alertService);
-		expression.setBasicTradeStrategy(basicTradeStrategy);
+		expression.setTradeStrategy(basicTradeStrategy);
 		expression.setPortfolioService(portfolioService);
 		expression.setScreenerService(screenerService);
 		expression.setStrategyDAO(strategyDAOImpl);

@@ -40,7 +40,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	WatchlistService watchlistService = null;
 	AlertService alertService = null;
 	PortfolioService portfolioService = null;
-	BasicTradeStrategy basicTradeStrategy = null;
+	TradeStrategy tradeStrategy = null;
 	AlertReceiverService alertReceiver = null;
 	
 	StrategyDAOImpl strategyDAOImpl = null;
@@ -79,12 +79,12 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		this.portfolioService = portfolioService;
 	}
 
-	public BasicTradeStrategy getBasicTradeStrategy() {
-		return basicTradeStrategy;
+	public TradeStrategy getTradeStrategy() {
+		return tradeStrategy;
 	}
 
-	public void setBasicTradeStrategy(BasicTradeStrategy basicTradeStrategy) {
-		this.basicTradeStrategy = basicTradeStrategy;
+	public void setTradeStrategy(TradeStrategy tradeStrategy) {
+		this.tradeStrategy = tradeStrategy;
 	}
 
 	public AlertReceiverService getAlertReceiver() {
@@ -213,7 +213,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			portfolioId = portfolioService.create(candidateId, 
 													PORT_NAME_PREFIX + counter);
 			portfolioService.addCashTransaction(candidateId, portfolioId, 
-												basicTradeStrategy.getStartingCash(), 
+												tradeStrategy.getStartingCash(), 
 												true, true);
 		} catch (Exception e) {
 			System.out.println("Error creating portfolio: " + e.getMessage());
@@ -328,6 +328,8 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 		TradeBounds[] trades = new TradeBounds[symbols.length];
 		
+		BasicTradeStrategy basicTradeStrategy = (BasicTradeStrategy)tradeStrategy;
+		
 		int position = getAlertStartPosition(group) + 
 				group.getMaxSymbolsPerScreen() * ALERT_GENE_LENGTH * group.getAlertsPerSymbol();
 		for (int i=0; i<symbols.length; i++) {
@@ -379,7 +381,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	public Candidate express(int[] genome, String groupId) {
 
 		// Create the candidate
-		Candidate candidate = strategyDAOImpl.newCandidateRecord(genome, groupId, basicTradeStrategy.getStartingCash());
+		Candidate candidate = strategyDAOImpl.newCandidateRecord(genome, groupId, tradeStrategy.getStartingCash());
 		
 		// Find the associated group
 		Group group = strategyDAOImpl.findGroup(groupId);

@@ -21,13 +21,11 @@ public class StrategyDAOImpl implements StrategyDAO {
 
 	// Create a record in the database for the candidate to get a fresh id
 	public Candidate newCandidateRecord(int[] genome, String populationId, double startingCash) {
-		em.getTransaction().begin();
 		Candidate cand = new Candidate();
 		cand.setGenomeString(Candidate.generateGenomeString(genome));
 		cand.setStartingCash(startingCash);
 		cand.setGroupId(populationId);
 		em.persist(cand);
-		em.getTransaction().commit();
 		
 		OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
 		Object objId = oem.getObjectId(cand);
@@ -53,23 +51,17 @@ public class StrategyDAOImpl implements StrategyDAO {
 	}
 
 	public void saveCandidate(Candidate candidate) {
-		em.getTransaction().begin();
 		em.persist(candidate);
-		em.getTransaction().commit();
 	}
 	
 	public void removeCandidate(Candidate candidate) {
-		em.getTransaction().begin();
 		em.remove(candidate);
-		em.getTransaction().commit();
 	}
 	
 	public Group newGroupRecord() {
-		em.getTransaction().begin();
 		Group group = new Group();
 
 		em.persist(group);
-		em.getTransaction().commit();
 		
 		OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
 		Object objId = oem.getObjectId(group);
@@ -90,7 +82,6 @@ public class StrategyDAOImpl implements StrategyDAO {
 	}
 	
 	public void updateGroupStats(PopulationStats<? extends int[]> data) {
-		em.getTransaction().begin();
 		GroupStats stats = new GroupStats(data.getPopulationId(), 
 				findCandidateByGenome(data.getBestCandidate()).getCandidateId(), 
 				data.getBestCandidateFitness(), data.getMeanFitness(), 
@@ -98,7 +89,6 @@ public class StrategyDAOImpl implements StrategyDAO {
 		
 		// Save group to database
 		em.persist(stats);
-		em.getTransaction().commit();
 	}
 
 	// Retrieve group stats from database
@@ -109,14 +99,10 @@ public class StrategyDAOImpl implements StrategyDAO {
 	}
 	
 	public void saveGroup(Group group) {
-		em.getTransaction().begin();
 		em.persist(group);
-		em.getTransaction().commit();
 	}
 	
 	public void removeGroup(Group group) {
-		em.getTransaction().begin();
 		em.remove(group);
-		em.getTransaction().commit();
 	}
 }

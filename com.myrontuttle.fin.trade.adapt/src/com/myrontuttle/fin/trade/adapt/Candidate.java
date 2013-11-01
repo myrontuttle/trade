@@ -29,9 +29,9 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	@Column(name = "GroupId")
 	private String groupId;
 	
-	@ManyToOne(optional = false, targetEntity = Group.class)
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "GroupId", referencedColumnName = "GroupId")
-	private transient Group group;
+	private Group group;
 	
 	@Transient
 	private int[] genome;

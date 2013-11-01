@@ -2,6 +2,7 @@ package com.myrontuttle.fin.trade.adapt;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 import javax.persistence.*;
@@ -28,11 +29,8 @@ public class Group implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private String groupId;
 	
-	/*
-	@OneToMany(mappedBy = "group", 
-				fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	*/
-	private ArrayList<Candidate> candidates;
+	@OneToMany(mappedBy = "group", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private Collection<Candidate> candidates;
 	
 	@Column(name = "AlertAddress")
 	private String alertAddress;
@@ -77,9 +75,7 @@ public class Group implements Serializable {
 	private boolean active;
 	
 	// Group Stats
-	/*@OneToMany(mappedBy = "group", targetEntity = GroupStats.class, 
-				fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	*/
+	@OneToMany(mappedBy = "group", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private ArrayList<GroupStats> stats;
 	
 	@Version
@@ -96,11 +92,11 @@ public class Group implements Serializable {
 		this.groupId = groupId;
 	}
 
-	public ArrayList<Candidate> getCandidates() {
+	public Collection<Candidate> getCandidates() {
 		return candidates;
 	}
 
-	public void setCandidates(ArrayList<Candidate> candidates) {
+	public void setCandidates(Collection<Candidate> candidates) {
 		this.candidates = candidates;
 	}
 

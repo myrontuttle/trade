@@ -23,7 +23,7 @@ public class GroupStats implements Serializable {
 	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "GroupId", referencedColumnName = "GroupId")
-	private transient Group group;
+	private Group group;
 	
 	@Column(name = "GroupId")
 	private String groupId;

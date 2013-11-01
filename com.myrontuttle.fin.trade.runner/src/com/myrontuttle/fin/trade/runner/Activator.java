@@ -27,16 +27,17 @@ public class Activator {
 		}
 		
 		try {
-			System.out.println("Finding Simple Groups");
+			System.out.println("Finding Groups");
 			List<Group> existingGroups = strategyDAO.findGroups();
 			if (existingGroups != null && existingGroups.size() > 0) {
-				System.out.println("Groups (id): ");
+    			System.out.println("Groups (id - start date): ");
 				for (Group group : existingGroups) {
-					System.out.println(group.getGroupId());
+					System.out.println(group.getGroupId() + ": " + group.getStartTime().toString());
 				}
 			} else {
 				System.out.println("No existing groups. Creating new group");
 				Group group = strategyDAO.newGroupRecord();
+				System.out.println("New group created");
 				/*
 				group.setAlertAddress("wsodinvestor@gmail.com");
 				group.setActive(true);

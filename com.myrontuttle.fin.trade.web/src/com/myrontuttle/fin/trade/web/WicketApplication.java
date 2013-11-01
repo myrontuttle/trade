@@ -28,11 +28,9 @@ public class WicketApplication extends WebApplication {
 		//getRequestCycleSettings().addResponseFilter(new ServerAndClientTimeFilter());
 	}
 	
-	/*
 	public void setStrategyDAO(StrategyDAO sdao) {
 		this.strategyDAO = sdao;
 	}
-	*/
 
 	public StrategyDAO getDAO() {
 		if (strategyDAO == null) {

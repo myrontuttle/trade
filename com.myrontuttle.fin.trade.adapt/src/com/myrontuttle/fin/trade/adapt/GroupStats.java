@@ -46,6 +46,8 @@ public class GroupStats implements Serializable {
 	
 	@Column(name = "GenerationNumber")
     private int generationNumber;
+	
+	public GroupStats() {}
 
 	public GroupStats(String groupId, String bestCandidateId,
 			double bestCandidateFitness,

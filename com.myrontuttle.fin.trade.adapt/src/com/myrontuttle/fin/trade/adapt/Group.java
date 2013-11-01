@@ -28,8 +28,10 @@ public class Group implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private String groupId;
 	
-	@OneToMany(mappedBy = "group", targetEntity = Candidate.class, 
+	/*
+	@OneToMany(mappedBy = "group", 
 				fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	*/
 	private ArrayList<Candidate> candidates;
 	
 	@Column(name = "AlertAddress")
@@ -75,8 +77,9 @@ public class Group implements Serializable {
 	private boolean active;
 	
 	// Group Stats
-	@OneToMany(mappedBy = "group", targetEntity = GroupStats.class, 
+	/*@OneToMany(mappedBy = "group", targetEntity = GroupStats.class, 
 				fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	*/
 	private ArrayList<GroupStats> stats;
 	
 	@Version

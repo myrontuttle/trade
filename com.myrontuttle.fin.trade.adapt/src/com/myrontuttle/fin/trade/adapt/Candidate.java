@@ -29,7 +29,7 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	@Column(name = "GroupId")
 	private String groupId;
 	
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, targetEntity = Group.class)
 	@JoinColumn(name = "GroupId", referencedColumnName = "GroupId")
 	private transient Group group;
 	
@@ -54,7 +54,7 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	private AlertTradeBounds[] alerts;
 	*/
 	
-	Candidate(){ }
+	public Candidate(){ }
 	
 	public Candidate(String candidateId, String groupId, int[] genome, 
 			String portfolioId, double startingCash/*,
@@ -85,6 +85,14 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	}	
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
+	}
+
+	public Group getGroup() {
+		return group;
+	}
+
+	public void setGroup(Group group) {
+		this.group = group;
 	}
 
 	public String getGenomeString() {

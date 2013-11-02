@@ -17,11 +17,9 @@
 package com.myrontuttle.fin.trade.web;
 
 import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 import com.myrontuttle.fin.trade.adapt.Group;
@@ -41,8 +39,6 @@ public class BasePage extends WebPage {
 	 */
 	public BasePage() {
 		this(new PageParameters());
-
-		//add(new Label("selectedLabel", new PropertyModel<String>(this, "selectedGroupLabel")));
 	}
 
 	/**
@@ -82,7 +78,7 @@ public class BasePage extends WebPage {
 	 * @return The session
 	 */
 	public StrategyDAO getDAO() {
-		return ((WicketApplication)getApplication()).getDAO();
+		return DBAccess.getDAO();
 	}
 
 	/**

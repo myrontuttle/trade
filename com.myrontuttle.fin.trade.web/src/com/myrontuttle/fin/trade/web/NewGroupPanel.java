@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -19,6 +20,8 @@ import com.myrontuttle.fin.trade.adapt.Group;
 public class NewGroupPanel extends Panel {
 
 	private static final long serialVersionUID = 1L;
+
+	private String results = "";
 	
 	public NewGroupPanel(String id) {
 		super(id);
@@ -48,10 +51,13 @@ public class NewGroupPanel extends Panel {
 		form.add(new Button("create") {
             public void onSubmit() {
             	DBAccess.getDAO().saveGroup((Group)compound.getObject());
+            	results = "Group created";
             }
         });
         
 		add(form);
+
+		add(new Label("results", results));
 	}
 
 }

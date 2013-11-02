@@ -6,4 +6,6 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Myron Tuttle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: com.myrontuttle.fin.trade.adapt,
+ org.apache.felix.gogo.commands;version="0.10.0",
+ org.apache.karaf.shell.console;version="2.3.2",
  org.osgi.framework;version="1.3.0"

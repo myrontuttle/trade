@@ -3,10 +3,10 @@
 
 	<reference id="StrategyDAO" interface="com.myrontuttle.fin.trade.adapt.StrategyDAO">
 		<reference-listener bind-method="bind" unbind-method="unbind">
-			<bean class="com.myrontuttle.fin.trade.runner.Activator">
+			<bean class="com.myrontuttle.fin.trade.runner.StrategyAccess">
 				<property name="strategyDAO" ref="StrategyDAO" />
 			</bean>
 		</reference-listener>
 	</reference>
-	
+     
 </blueprint>

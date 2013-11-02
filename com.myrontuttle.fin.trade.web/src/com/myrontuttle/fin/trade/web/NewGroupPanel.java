@@ -21,7 +21,7 @@ public class NewGroupPanel extends Panel {
 
 	private static final long serialVersionUID = 1L;
 
-	private String results = "";
+	private String results = checkStrategyDAO();
 	
 	public NewGroupPanel(String id) {
 		super(id);
@@ -30,7 +30,7 @@ public class NewGroupPanel extends Panel {
 		form.add(new TextField<String>("alertAddress")
 					.add(EmailAddressValidator.getInstance()));
 		
-		form.add(new TextField<Integer>("size")
+		form.add(new TextField<String>("size")
 						.setRequired(true)
 						.add(new RangeValidator<Integer>(1, Integer.MAX_VALUE)));
 		
@@ -58,6 +58,14 @@ public class NewGroupPanel extends Panel {
 		add(form);
 
 		add(new Label("results", results));
+	}
+
+	public String checkStrategyDAO() {
+		if (DBAccess.getDAO() == null) {
+			return "StrategyDAO is null";
+		} else {
+			return "StrategyDAO accessed";
+		}
 	}
 
 }

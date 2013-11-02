@@ -12,12 +12,4 @@ public class Scratch extends WebPage {
 		add(new NewGroupPanel("newGroupPanel"));
 	}
 	
-	public String checkStrategyDAO() {
-		if (DBAccess.getDAO() == null) {
-			return "StrategyDAO is null";
-		} else {
-			return "StrategyDAO accessed";
-		}
-	}
-	
 }

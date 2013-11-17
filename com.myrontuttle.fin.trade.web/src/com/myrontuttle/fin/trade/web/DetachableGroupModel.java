@@ -31,10 +31,6 @@ public class DetachableGroupModel extends LoadableDetachableModel<Group> {
 	
 	private final String id;
 
-	protected StrategyDAO getDAO() {
-		return DBAccess.getDAO();
-	}
-
 	/**
 	 * @param c
 	 */
@@ -85,6 +81,6 @@ public class DetachableGroupModel extends LoadableDetachableModel<Group> {
 	@Override
 	protected Group load() {
 		// loads group from the database
-		return getDAO().findGroup(id);
+		return DBAccess.getDAO().findGroup(id);
 	}
 }

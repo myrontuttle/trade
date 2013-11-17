@@ -31,16 +31,13 @@ public class NewGroupPanel extends Panel {
 					.add(EmailAddressValidator.getInstance()));
 		
 		form.add(new TextField<String>("size")
-						.setRequired(true)
-						.add(new RangeValidator<Integer>(1, Integer.MAX_VALUE)));
+						.setRequired(true));
 		
 		form.add(new TextField<Integer>("eliteCount")
-						.setRequired(true)
-						.add(new RangeValidator<Integer>(0, Integer.MAX_VALUE)));
+						.setRequired(true));
 		form.add(new TextField<Integer>("geneUpperValue")
 						.setRequired(true)
-						.add(new AttributeModifier("value", "100"))
-						.add(new RangeValidator<Integer>(1, Integer.MAX_VALUE)));
+						.add(new AttributeModifier("value", "100")));
 		
 		List<String> expressions = Arrays.asList(Group.NO_EXPRESSION, Group.BASIC_EXPRESSION);
 		form.add(new DropDownChoice<String>("expressionStrategy", expressions));

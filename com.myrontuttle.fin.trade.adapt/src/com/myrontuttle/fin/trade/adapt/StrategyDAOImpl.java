@@ -36,7 +36,7 @@ public class StrategyDAOImpl implements StrategyDAO {
 	// Retrieve candidates from database
 	public List<ExpressedCandidate<int[]>> findCandidatesInGroup(String groupId) {
 		Query query = em.createQuery(
-				"SELECT c FROM Candidates c WHERE groupId = :groupId", 
+				"SELECT c FROM Candidates c WHERE c.groupId = :groupId", 
 				Candidate.class).setParameter("groupId", groupId);
 		
 		return (List<ExpressedCandidate<int[]>>) query.getResultList();
@@ -44,7 +44,7 @@ public class StrategyDAOImpl implements StrategyDAO {
 	
 	public Candidate findCandidateByGenome(int[] genome) {
 		return em.createQuery(
-				"SELECT c FROM Candidates c WHERE genomeString = :genomeString", 
+				"SELECT c FROM Candidates c WHERE c.genomeString = :genomeString", 
 					Candidate.class).
 				setParameter("genomeString", Candidate.generateGenomeString(genome)).
 				getSingleResult();
@@ -71,7 +71,7 @@ public class StrategyDAOImpl implements StrategyDAO {
 	// Get the group based on a groupId
 	public Group findGroup(String groupId) {
 		return em.createQuery(
-				"SELECT g FROM Groups g WHERE groupId = :groupId", 
+				"SELECT g FROM Groups g WHERE g.groupId = :groupId", 
 				Group.class).setParameter("groupId", groupId).getSingleResult();
 	}
 
@@ -94,7 +94,7 @@ public class StrategyDAOImpl implements StrategyDAO {
 	// Retrieve group stats from database
 	public List<GroupStats> findGroupStats(String groupId) {
 		return em.createQuery(
-				"SELECT s FROM GroupStats s WHERE groupId = :groupId", 
+				"SELECT s FROM GroupStats s WHERE s.groupId = :groupId", 
 				GroupStats.class).setParameter("groupId", groupId).getResultList();
 	}
 	

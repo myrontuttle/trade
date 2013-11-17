@@ -27,7 +27,7 @@ public class GroupTablePanel extends Panel {
 		super(id);
 
 		List<IColumn<Group, String>> columns = new ArrayList<IColumn<Group, String>>();
-
+/*
 		columns.add(new AbstractColumn<Group, String>(new Model<String>("Groups")) {
 			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
 				IModel<Group> model) {
@@ -43,8 +43,8 @@ public class GroupTablePanel extends Panel {
 					});
 			}
 		});
-
-		columns.add(new PropertyColumn(new Model<String>("ID"), "groupId"));
+*/
+		columns.add(new PropertyColumn<Group, String>(new Model<String>("ID"), "groupId", "groupId"));
 
 		columns.add(new PropertyColumn(new Model<String>("Start Time"), "startTime"));
 

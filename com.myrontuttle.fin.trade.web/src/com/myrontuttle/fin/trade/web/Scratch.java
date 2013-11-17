@@ -10,6 +10,8 @@ public class Scratch extends WebPage {
 		super();
 		
 		add(new NewGroupPanel("newGroupPanel"));
+		
+		add(new GroupTablePanel("groupTablePanel"));
 	}
 	
 }

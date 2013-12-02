@@ -36,4 +36,7 @@
 	
 	<service ref="StrategyDAOImpl" interface="com.myrontuttle.fin.trade.adapt.StrategyDAO" />
 	
+	<service ref="Evolver" interface="com.myrontuttle.fin.trade.adapt.EvolveService" />
+	
+	
 </blueprint>

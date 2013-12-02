@@ -79,7 +79,7 @@ public class Group implements Serializable {
 	private ArrayList<GroupStats> stats;
 	
 	@Version
-    @Column(name = "LAST_UPDATED_TIME")
+    @Column(name = "UpdatedTime")
     private Date updatedTime;
 	
 	public Group() {}

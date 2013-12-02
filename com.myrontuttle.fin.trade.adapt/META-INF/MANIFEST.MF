@@ -15,7 +15,9 @@ Import-Package: com.myrontuttle.fin.trade.api,
  com.myrontuttle.sci.evolve.selection,
  com.myrontuttle.sci.evolve.termination,
  javax.persistence,
- org.apache.openjpa.persistence
+ org.apache.openjpa.persistence,
+ org.joda.time;version="1.6.2",
+ org.joda.time.base;version="1.6.2"
 Export-Package: com.myrontuttle.fin.trade.adapt,
  com.myrontuttle.fin.trade.adapt.eval,
  com.myrontuttle.fin.trade.adapt.express

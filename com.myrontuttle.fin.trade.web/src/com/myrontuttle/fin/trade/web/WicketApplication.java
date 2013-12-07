@@ -21,6 +21,6 @@ public class WicketApplication extends WebApplication {
 	
     @Override
     public Class<? extends Page> getHomePage() {
-        return Scratch.class;
+        return GroupPage.class;
     }
 }

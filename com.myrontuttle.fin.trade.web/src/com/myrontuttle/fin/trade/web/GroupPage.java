@@ -7,6 +7,8 @@ public class GroupPage extends WebPage {
 	private static final long serialVersionUID = 1L;
 
 	public GroupPage() {
+		super();
+		
 		add(new Header("mainNavigation", "Adaptive Trader", this));
 		
 		add(new NewGroupPanel("newGroupPanel"));

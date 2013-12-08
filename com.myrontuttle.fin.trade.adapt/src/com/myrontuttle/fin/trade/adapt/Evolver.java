@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.prefs.Preferences;
 
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
@@ -26,8 +27,12 @@ public class Evolver implements EvolveService {
 
 	private final static int NUM_THREADS = 1;
 	private final static int MINUTES_IN_DAY = 60 * 24;
+	final String EVOLVE_ACTIVE = "evolve_active";
+	final String EVOLVE_HOUR = "evolve_hour";
+	final String EVOLVE_MINUTE = "evolve_minute";
 	
 	private StrategyDAO strategyDAO;
+	private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
 	
 	public void setStrategyDAO(StrategyDAO strategyDAO) {
 		this.strategyDAO = strategyDAO;
@@ -45,6 +50,15 @@ public class Evolver implements EvolveService {
 	private ScheduledExecutorService ses;
 	private ScheduledFuture<?> sf;
 	
+	public Evolver() {
+		if (prefs.getBoolean(EVOLVE_ACTIVE, false)) {
+			startEvolvingAt(
+					new DateTime().
+					withHourOfDay(prefs.getInt(EVOLVE_HOUR, 0)).
+					withMinuteOfHour(prefs.getInt(EVOLVE_MINUTE, 0)));
+		}
+	}
+	
 	protected boolean wasMarketOpenToday() {
 		// Currently assumes market open on week days
 		return (new DateTime().getDayOfWeek() < 6);
@@ -54,24 +68,8 @@ public class Evolver implements EvolveService {
 		return (new DateTime().getDayOfWeek() == 6);
 	}
 	
-	protected long minutesToTime(int hourOfDay) {
-		Minutes minutesToEvolveTime;
-		
-		if (hourOfDay < 0 || hourOfDay > 23) {
-			System.out.println("Hour of day should be between 0 and 23, not " + String.valueOf(hourOfDay) +
-					". Setting to zero = midnight");
-			hourOfDay = 0;
-		}
-		
-		DateTime todayAtTime = new DateTime().withHourOfDay(hourOfDay);
-		if (todayAtTime.isAfterNow()) {
-			minutesToEvolveTime = Minutes.minutesBetween(new DateTime(), todayAtTime);
-		} else {
-			minutesToEvolveTime = Minutes.minutesBetween(new DateTime(), 
-									new DateTime().plusDays(1).withHourOfDay(hourOfDay));
-		}
-
-		return minutesToEvolveTime.getMinutes();
+	protected long minutesToTime(DateTime date) {		
+		return Minutes.minutesBetween(new DateTime(), date).getMinutes();
 	}
 
 	private EvolutionEngine<int[]> createEngine(int totalGeneLength, int geneUpperValueBound,
@@ -145,37 +143,53 @@ public class Evolver implements EvolveService {
 	/*
 	 * Evolve all groups in database now
 	 */
-	public void evolveNow(List<Group> groups) {
+	public void evolveAllNow() {
+		List<Group> groups = strategyDAO.findGroups();
 		for (Group group : groups) {
-			evolveNow(group);
+			if (group.isActive()) {
+				if ((group.getFrequency().equals(Group.DAILY) && wasMarketOpenToday()) ||
+					((group.getFrequency().equals(Group.WEEKLY) && isSaturday()))) {
+					evolveNow(group);
+				}
+			}
 		}
 	}
 
 	/*
 	 * Starts evolving all active groups at a specific hour of the day (0 to 23)
 	 */
-	public void startEvolvingAt(int hourOfDayToEvolve) {
+	public void startEvolvingAt(DateTime date) {
+		if (date.isBeforeNow()) {
+			System.out.println("Date to evolve is before now.  Setting to evolving at same time tomorrow");
+			date = new DateTime().
+						plusDays(1).
+						withHourOfDay(date.getHourOfDay()).
+						withMinuteOfHour(date.getMinuteOfHour());
+		}
 		
 		this.sf = ses.scheduleAtFixedRate(new Runnable () {
 			@Override
 			public void run() {
 				try {
-					List<Group> groups = strategyDAO.findGroups();
-					for (Group group : groups) {
-						if (group.isActive()) {
-							if ((group.getFrequency().equals(Group.DAILY) && wasMarketOpenToday()) ||
-								((group.getFrequency().equals(Group.WEEKLY) && isSaturday()))) {
-								evolveNow(group);
-							}
-						}
-					}
+					evolveAllNow();
 				} catch (Exception e) {
 					System.out.println("Unable to evolve all groups. " + e.getMessage());
 				}
 			}
-		}, minutesToTime(hourOfDayToEvolve), MINUTES_IN_DAY, TimeUnit.MINUTES);
+		}, minutesToTime(date), MINUTES_IN_DAY, TimeUnit.MINUTES);
 		
         this.ses = Executors.newScheduledThreadPool(NUM_THREADS);
+
+		prefs.putInt(EVOLVE_HOUR, date.getHourOfDay());
+		prefs.putInt(EVOLVE_MINUTE, date.getMinuteOfHour());
+		prefs.putBoolean(EVOLVE_ACTIVE, true);
+	}
+	
+	public DateTime getNextEvolveDate() {
+		if (sf.isCancelled() || sf == null) {
+			return null;
+		}
+		return new DateTime().plusSeconds((int) sf.getDelay(TimeUnit.SECONDS));
 	}
 	
 	public boolean stopEvolving() {
@@ -190,6 +204,7 @@ public class Evolver implements EvolveService {
 			System.out.println("Unable to stop evolving. " + se.getMessage());
 			return false;
 		}
+		prefs.putBoolean(EVOLVE_ACTIVE, false);
 		return true;
 	}
 }

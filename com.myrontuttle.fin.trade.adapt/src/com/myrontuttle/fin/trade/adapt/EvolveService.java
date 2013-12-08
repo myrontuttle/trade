@@ -1,6 +1,6 @@
 package com.myrontuttle.fin.trade.adapt;
 
-import java.util.List;
+import org.joda.time.DateTime;
 
 /**
  * Service for evolving groups of candidate strategies 
@@ -10,8 +10,12 @@ public interface EvolveService {
 	
 	public void evolveNow(Group group);
 	
-	public void evolveNow(List<Group> groups);
+	public void evolveAllNow();
 	
-	public void startEvolvingAt(int hourOfDayToEvolve);
+	public void startEvolvingAt(DateTime date);
+	
+	public DateTime getNextEvolveDate();
+	
+	public boolean stopEvolving();
 
 }

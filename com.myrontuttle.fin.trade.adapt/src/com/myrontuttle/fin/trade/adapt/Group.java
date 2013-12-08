@@ -41,9 +41,6 @@ public class Group implements Serializable {
 	@Column(name = "EliteCount")
 	private int eliteCount;
 	
-	@Column(name = "GenomeLength")
-	private int genomeLength;
-	
 	@Column(name = "GeneUpperValue")
 	private int geneUpperValue;
 	
@@ -122,14 +119,6 @@ public class Group implements Serializable {
 
 	public void setEliteCount(int eliteCount) {
 		this.eliteCount = eliteCount;
-	}
-
-	public int getGenomeLength() {
-		return genomeLength;
-	}
-
-	public void setGenomeLength(int genomeLength) {
-		this.genomeLength = genomeLength;
 	}
 
 	public int getGeneUpperValue() {

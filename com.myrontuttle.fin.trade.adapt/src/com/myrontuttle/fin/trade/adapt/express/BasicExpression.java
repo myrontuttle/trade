@@ -106,8 +106,8 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	public void startUp() {
 		this.counter = 0;
 	}
-	
-	public static int calculateGenomeLength(Group group) {
+
+	public static int getGenomeLength(Group group) {
 		return 1 + SCREEN_GENE_LENGTH * group.getNumberOfScreens() +
 				group.getMaxSymbolsPerScreen() * ALERT_GENE_LENGTH * group.getAlertsPerSymbol() +
 				group.getMaxSymbolsPerScreen() * group.getAlertsPerSymbol() * TRADE_GENE_LENGTH;

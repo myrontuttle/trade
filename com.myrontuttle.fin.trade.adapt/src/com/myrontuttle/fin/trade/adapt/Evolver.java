@@ -113,10 +113,12 @@ public class Evolver implements EvolveService {
 			List<ExpressedCandidate<int[]>> candidates = strategyDAO.findCandidatesInGroup(group.getGroupId());
 			int size = group.getSize();
 			int eliteCount = group.getEliteCount();
+			int genomeLength = 0;
 
 			ExpressionStrategy<int[]> expressionStrategy = null;
 			if (group.getExpressionStrategy().equals(Group.BASIC_EXPRESSION)) {
 				expressionStrategy = new BasicExpression<int[]>();
+				genomeLength = BasicExpression.getGenomeLength(group);
 			} else {
 				expressionStrategy = new NoExpression();
 			}
@@ -128,7 +130,7 @@ public class Evolver implements EvolveService {
 				evaluator = new RandomEvaluator();
 			}
 
-			EvolutionEngine<int[]> engine = createEngine(group.getGenomeLength(), 
+			EvolutionEngine<int[]> engine = createEngine(genomeLength, 
 															group.getGeneUpperValue(), 
 															group.getMutationFactor(),
 															expressionStrategy, evaluator);

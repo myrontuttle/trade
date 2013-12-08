@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+	<bean id="AlertService" class="com.myrontuttle.fin.trade.mock.AlertMock"></bean>
+	<bean id="PortfolioService" class="com.myrontuttle.fin.trade.mock.PortfolioMock"></bean>
+	<bean id="ScreenerService" class="com.myrontuttle.fin.trade.mock.ScreenerMock"></bean>
+	<bean id="WatchlistService" class="com.myrontuttle.fin.trade.mock.WatchlistMock"></bean>
+	<bean id="QuoteService" class="com.myrontuttle.fin.trade.mock.QuoteMock"></bean>
+
+	<service ref="AlertService" interface="com.myrontuttle.fin.trade.api.AlertService" />
+	<service ref="PortfolioService" interface="com.myrontuttle.fin.trade.api.PortfolioService" />
+	<service ref="QuoteService" interface="com.myrontuttle.fin.trade.api.QuoteService" />
+	<service ref="ScreenerService" interface="com.myrontuttle.fin.trade.api.ScreenerService" />
+	<service ref="WatchlistService" interface="com.myrontuttle.fin.trade.api.WatchlistService" />
+	    
+</blueprint>

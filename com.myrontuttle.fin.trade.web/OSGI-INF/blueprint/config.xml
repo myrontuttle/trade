@@ -6,6 +6,12 @@
 	<bean id="DBAccess" class="com.myrontuttle.fin.trade.web.DBAccess">
 		<property name="strategyDAO" ref="StrategyDAO" />
 	</bean>
+	
+	<reference id="EvolveService" interface="com.myrontuttle.fin.trade.adapt.EvolveService" />
+  
+	<bean id="EvolveAccess" class="com.myrontuttle.fin.trade.web.EvolveAccess">
+		<property name="evolveService" ref="EvolveService" />
+	</bean>
 
 	<service interface="org.ops4j.pax.wicket.api.WebApplicationFactory" >
 		<service-properties>

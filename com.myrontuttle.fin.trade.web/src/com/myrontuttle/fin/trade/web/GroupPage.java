@@ -8,9 +8,8 @@ public class GroupPage extends WebPage {
 
 	public GroupPage() {
 		super();
-		
 		add(new Header("mainNavigation", "Adaptive Trader", this));
-		
+		add(new EvolvePanel("evolvePanel"));
 		add(new NewGroupPanel("newGroupPanel"));
 		add(new GroupTablePanel("groupTablePanel"));
 	}

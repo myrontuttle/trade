@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+<html 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:wicket="http://wicket.sourceforge.net/" 
+	xml:lang="en" 
+	lang="en">  
+<body>
+	<wicket:panel xmlns:wicket="http://wicket.apache.org">
+		<h2>Evolution Settings</h2>
+    	<form wicket:id="evolveForm">
+    		<table cellpadding="2" cellspacing="2">
+    			<tr>
+    				<td>Time to Evolve: 
+    					<input type="text" wicket:id="hourToEvolve"/>:<input type="text" wicket:id="minuteToEvolve"/>
+    					<button wicket:id="evolveAllAtTime" type="submit">Evolve at Time</button>
+    				</td>
+    				<td>
+    					<button wicket:id="evolveAllNow" type="submit">Evolve Now</button>
+        			</td>
+    				<td>Next evolution at: <span wicket:id="nextEvolution">DateTime</span>
+        			</td>
+        			<td>
+    					<button wicket:id="stopEvolving" type="submit">Stop Evolving</button>
+        			</td>
+    			</tr>
+    		</table>
+    	</form>
+	</wicket:panel>
+</body>
+</html>

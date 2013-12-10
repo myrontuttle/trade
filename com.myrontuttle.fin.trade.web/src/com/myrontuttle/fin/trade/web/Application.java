@@ -1,13 +1,12 @@
 package com.myrontuttle.fin.trade.web;
 
-
 import org.apache.wicket.Page;
 import org.apache.wicket.protocol.http.WebApplication;
 //import org.apache.wicket.response.filter.ServerAndClientTimeFilter;
 
-public class WicketApplication extends WebApplication {
+public class Application extends WebApplication {
 
-	public WicketApplication() {}
+	public Application() {}
 
 	/**
 	 * @see org.apache.wicket.protocol.http.WebApplication#init()

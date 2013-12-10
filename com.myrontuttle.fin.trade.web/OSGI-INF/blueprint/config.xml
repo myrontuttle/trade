@@ -19,7 +19,7 @@
 			<entry key="pax.wicket.mountpoint" value="trade/adapt" />
 		</service-properties>
 		<bean class="org.ops4j.pax.wicket.api.support.SimpleWebApplicationFactory" >
-			<property name="wicketApplication" value="com.myrontuttle.fin.trade.web.WicketApplication" />
+			<property name="wicketApplication" value="com.myrontuttle.fin.trade.web.Application" />
 		</bean>
 	</service>
  

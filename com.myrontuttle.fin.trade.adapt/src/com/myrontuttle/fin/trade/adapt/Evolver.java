@@ -186,7 +186,7 @@ public class Evolver implements EvolveService {
 	}
 	
 	public DateTime getNextEvolveDate() {
-		if (sf.isCancelled() || sf == null) {
+		if (sf == null || sf.isCancelled()) {
 			return null;
 		}
 		return new DateTime().plusSeconds((int) sf.getDelay(TimeUnit.SECONDS));

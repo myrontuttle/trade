@@ -2,7 +2,7 @@ package com.myrontuttle.fin.trade.web;
 
 import com.myrontuttle.fin.trade.adapt.EvolveService;
 
-/*
+/**
  * Service locator for Evolve Service
  */
 public class EvolveAccess {
@@ -13,7 +13,7 @@ public class EvolveAccess {
 		return evolveService;
 	}
 
-	public static void setEvolveService(EvolveService evolveService) {
+	public void setEvolveService(EvolveService evolveService) {
 		EvolveAccess.evolveService = evolveService;
 	}
 }

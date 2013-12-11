@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    
+<html 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:wicket="http://wicket.sourceforge.net/" 
+	xml:lang="en" 
+	lang="en">  
+<body>
+	<wicket:panel xmlns:wicket="http://wicket.apache.org">
+		<h2>Create a new trading group</h2>
+    	<form wicket:id="newGroupForm">
+    		<table cellpadding="2" cellspacing="2">
+    			<tr>
+    				<td>Alert Address<br /><input type="text" wicket:id="alertAddress"/></td>
+    				<td>Frequency of Evaluation<br /> 
+    					<span wicket:id="frequency">Frequency</span>
+        			</td>
+    				<td>Expression Strategy<br /> 
+    					<span wicket:id="expressionStrategy">Expression</span>
+        			</td>
+        			<td>Evaluation Strategy<br /> 
+        				<span wicket:id="evaluationStrategy">Evaluation</span>
+        			</td>
+        			<td>Activate<br />
+						<input type="checkbox" wicket:id="active" />
+					</td>
+    			</tr>
+    			<tr>
+    				<td>Group Size<br /><input type="text" wicket:id="size"/></td>
+    				<td>Number of Elites<br /><input type="text" wicket:id="eliteCount"/></td>
+    				<td>Upper Value of Genes<br /><span wicket:id="geneUpperValue">Upper</span></td>
+    				<td>&nbsp;</td>
+    				<td>&nbsp;</td>
+    			</tr>
+    			<tr>
+    				<td>Number of Screens<br /><span wicket:id="numberOfScreens">Screens</span></td>
+    				<td>Max Symbols Per Screen<br /><span wicket:id="maxSymbolsPerScreen">Symbols</span></td>
+    				<td>Alerts Per Symbol<br /><span wicket:id="alertsPerSymbol">Alerts</span></td>
+    				<td>&nbsp;</td>
+    				<td><button wicket:id="update" type="submit">Update</button></td>
+    			</tr>
+    		</table>
+    	</form>
+    	<p>Results: <span wicket:id = "results">Results go here</span></p>
+	</wicket:panel>
+</body>
+</html>

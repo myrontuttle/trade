@@ -1,6 +1,7 @@
 package com.myrontuttle.fin.trade.adapt;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Version;
 
 @Entity(name = "GroupStats")
 public class GroupStats implements Serializable {
@@ -46,6 +48,10 @@ public class GroupStats implements Serializable {
 	
 	@Column(name = "GenerationNumber")
     private int generationNumber;
+
+	@Version
+    @Column(name = "RecordedTime")
+    private Date recordedTime;
 	
 	public GroupStats() {}
 
@@ -68,6 +74,14 @@ public class GroupStats implements Serializable {
 
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
+	}
+
+	public String getStatsId() {
+		return statsId;
+	}
+
+	public void setStatsId(String statsId) {
+		this.statsId = statsId;
 	}
 
 	public String getBestCandidateId() {
@@ -116,6 +130,14 @@ public class GroupStats implements Serializable {
 
 	public void setGenerationNumber(int generationNumber) {
 		this.generationNumber = generationNumber;
+	}
+
+	public Date getRecordedTime() {
+		return recordedTime;
+	}
+
+	public void setRecordedTime(Date recordedTime) {
+		this.recordedTime = recordedTime;
 	}
 
 }

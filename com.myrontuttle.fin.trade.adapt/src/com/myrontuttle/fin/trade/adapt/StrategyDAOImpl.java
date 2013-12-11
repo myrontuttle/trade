@@ -92,11 +92,19 @@ public class StrategyDAOImpl implements StrategyDAO {
 	}
 
 	// Retrieve group stats from database
-	public List<GroupStats> findGroupStats(String groupId) {
+	public List<GroupStats> findStatsForGroup(String groupId) {
 		return em.createQuery(
 				"SELECT s FROM GroupStats s WHERE s.groupId = :groupId", 
 				GroupStats.class).setParameter("groupId", groupId).getResultList();
 	}
+
+	// Get the groupstats based on a statsId
+	public GroupStats findStats(String statsId) {
+		return em.createQuery(
+				"SELECT s FROM GroupStats s WHERE s.statsId = :statsId", 
+				GroupStats.class).setParameter("statsId", statsId).getSingleResult();
+	}
+
 	
 	public void saveGroup(Group group) {
 		em.persist(group);

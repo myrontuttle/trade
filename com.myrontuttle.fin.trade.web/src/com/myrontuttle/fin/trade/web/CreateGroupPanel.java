@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -13,20 +12,15 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 
 import com.myrontuttle.fin.trade.adapt.Group;
 
-public class NewGroupPanel extends Panel {
+public class CreateGroupPanel extends Panel {
 
 	private static final long serialVersionUID = 1L;
-
-	private String results = checkStrategyDAO();
-	private int genomeLength;
-	private boolean active = true;
 	
-	public NewGroupPanel(String id) {
+	public CreateGroupPanel(String id) {
 		super(id);
 		final IModel<Group> compound = new CompoundPropertyModel<Group>(new Group());
 		final Form<Group> form = new Form<Group>("newGroupForm", compound);
@@ -43,8 +37,7 @@ public class NewGroupPanel extends Panel {
 		List<String> evaluators = Arrays.asList(Group.RANDOM_EVALUATOR, Group.BASIC_EVALUATOR);
 		form.add(new DropDownChoice<String>("evaluationStrategy", evaluators));
 		
-		form.add(new CheckBox("active",
-				new PropertyModel<Boolean>(this, "active")));
+		form.add(new CheckBox("active"));
 
 		form.add(new TextField<String>("size")
 						.setRequired(true));
@@ -68,26 +61,13 @@ public class NewGroupPanel extends Panel {
 						.setRequired(true)
 						.add(new AttributeModifier("value", "2")));
 		
-		form.add(new Label("genomeLength", genomeLength));
-		
 		form.add(new Button("create") {
             public void onSubmit() {
             	DBAccess.getDAO().saveGroup((Group)compound.getObject());
-            	results = "Group created";
             }
         });
         
 		add(form);
-
-		add(new Label("results", results));
-	}
-
-	public String checkStrategyDAO() {
-		if (DBAccess.getDAO() == null) {
-			return "StrategyDAO is null";
-		} else {
-			return "StrategyDAO accessed";
-		}
 	}
 
 }

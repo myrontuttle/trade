@@ -22,23 +22,28 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.IModel;
 
-import com.myrontuttle.fin.trade.adapt.Group;
+import com.myrontuttle.fin.trade.adapt.GroupStats;
 import com.myrontuttle.fin.trade.adapt.StrategyDAO;
 
 
 /**
- * implementation of IDataProvider for groups that keeps track of sort information
+ * implementation of IDataProvider for group stas that keeps track of sort information
  */
-public class SortableGroupDataProvider extends SortableDataProvider<Group, String> {
-
+public class SortableGroupStatsDataProvider extends SortableDataProvider<GroupStats, String> {
+	
 	private static final long serialVersionUID = 1L;
-
+	
+	String groupId;
+	
 	/**
 	 * constructor
 	 */
-	public SortableGroupDataProvider() {
+	public SortableGroupStatsDataProvider(String groupId) {
+		
+		this.groupId = groupId;
+		
 		// set default sort
-		setSort("groupId", SortOrder.ASCENDING);
+		setSort("statsId", SortOrder.ASCENDING);
 	}
 
 	protected StrategyDAO getDAO() {
@@ -48,25 +53,25 @@ public class SortableGroupDataProvider extends SortableDataProvider<Group, Strin
 	/**
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#iterator(int, int)
 	 */
-	public Iterator<Group> iterator(long first, long count) {
+	public Iterator<GroupStats> iterator(long first, long count) {
 		// Consider finding a subset of all groups to StrategyDAO:
 		// return getDAO().findGroups(first, count, new SortParam("groupId", true)).iterator();
-		return getDAO().findGroups().iterator();
+		return getDAO().findStatsForGroup(groupId).iterator();
 	}
 
 	/**
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#size()
 	 */
 	public long size() {
-		return getDAO().findGroups().size();
+		return getDAO().findStatsForGroup(groupId).size();
 	}
 
 	/**
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#model(java.lang.Object)
 	 */
-	public IModel<Group> model(Group object)
+	public IModel<GroupStats> model(GroupStats object)
 	{
-		return new DetachableGroupModel(object);
+		return new DetachableGroupStatsModel(object);
 	}
 
 }

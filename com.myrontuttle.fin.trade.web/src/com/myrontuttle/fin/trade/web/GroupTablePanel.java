@@ -27,23 +27,7 @@ public class GroupTablePanel extends Panel {
 		super(id);
 
 		List<IColumn<Group, String>> columns = new ArrayList<IColumn<Group, String>>();
-/*
-		columns.add(new AbstractColumn<Group, String>(new Model<String>("Groups")) {
-			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
-				IModel<Group> model) {
-				cellItem.add(
-					new Link("view") {
-						@Override
-						public void onClick() {
-							PageParameters pars = new PageParameters();
-							pars.add("groupId", ((Group)getParent().getDefaultModelObject()).getGroupId());
-							//GroupDetailPanel gdp = new GroupDetailPanel();
-							//setResponsePage(gdp);
-						}
-					});
-			}
-		});
-*/
+		
 		columns.add(new PropertyColumn<Group, String>(new Model<String>("ID"), "groupId", "groupId"));
 		columns.add(new PropertyColumn(new Model<String>("Last Updated"), "updatedTime", "updatedTime"));
 		columns.add(new PropertyColumn(new Model<String>("Alert Address"), "alertAddress"));
@@ -59,6 +43,23 @@ public class GroupTablePanel extends Panel {
 		columns.add(new PropertyColumn(new Model<String>("Alerts/Symbol"), "alertsPerSymbol"));
 		columns.add(new PropertyColumn(new Model<String>("Genome Length"), "genomeLength"));
 
+		columns.add(new AbstractColumn<Group, String>(new Model<String>("Stats")) {
+			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
+				IModel<Group> model) {
+				cellItem.add(
+					new Link("view") {
+						@Override
+						public void onClick() {
+							String groupId =  ((Group)getParent().getDefaultModelObject()).getGroupId();
+							//PageParameters pars = new PageParameters();
+							//pars.add("groupId", groupId);
+							GroupPage gp = new GroupPage(groupId);
+							setResponsePage(gp);
+						}
+					});
+			}
+		});
+		
 		DataTable dataTable = new DefaultDataTable<Group, String>("groups", columns,
 				new SortableGroupDataProvider(), 5);
 

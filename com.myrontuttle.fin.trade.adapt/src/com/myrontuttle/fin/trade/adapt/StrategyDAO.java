@@ -25,7 +25,9 @@ public interface StrategyDAO {
 	
 	public void updateGroupStats(PopulationStats<? extends int[]> data);
 	
-	public List<GroupStats> findGroupStats(String groupId);
+	public List<GroupStats> findStatsForGroup(String groupId);
+	
+	public GroupStats findStats(String statsId);
 	
 	public void saveGroup(Group group);
 	

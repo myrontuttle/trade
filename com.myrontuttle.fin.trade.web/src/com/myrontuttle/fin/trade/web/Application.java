@@ -20,6 +20,6 @@ public class Application extends WebApplication {
 	
     @Override
     public Class<? extends Page> getHomePage() {
-        return GroupPage.class;
+        return MainPage.class;
     }
 }

@@ -3,12 +3,10 @@ package com.myrontuttle.fin.trade.adapt;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 import org.apache.openjpa.persistence.OpenJPAPersistence;
 
-import com.myrontuttle.sci.evolve.ExpressedCandidate;
 import com.myrontuttle.sci.evolve.PopulationStats;
 
 public class StrategyDAOImpl implements StrategyDAO {
@@ -32,14 +30,18 @@ public class StrategyDAOImpl implements StrategyDAO {
 		return em.find(Candidate.class, objId);
 	}
 
-	@SuppressWarnings("unchecked")
+	// Retrieve a candidate based on it's ID
+	public Candidate findCandidate(String candidateId) {
+		return em.createQuery(
+				"SELECT c FROM Candidates c WHERE c.candidateId = :candidateId", 
+				Candidate.class).setParameter("candidateId", candidateId).getSingleResult();
+	}
+
 	// Retrieve candidates from database
-	public List<ExpressedCandidate<int[]>> findCandidatesInGroup(String groupId) {
-		Query query = em.createQuery(
+	public List<Candidate> findCandidatesInGroup(String groupId) {
+		return em.createQuery(
 				"SELECT c FROM Candidates c WHERE c.groupId = :groupId", 
-				Candidate.class).setParameter("groupId", groupId);
-		
-		return (List<ExpressedCandidate<int[]>>) query.getResultList();
+				Candidate.class).setParameter("groupId", groupId).getResultList();
 	}
 	
 	public Candidate findCandidateByGenome(int[] genome) {

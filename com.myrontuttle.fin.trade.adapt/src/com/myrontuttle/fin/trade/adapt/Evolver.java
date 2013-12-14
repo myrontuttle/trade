@@ -1,5 +1,6 @@
 package com.myrontuttle.fin.trade.adapt;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -108,7 +109,9 @@ public class Evolver implements EvolveService {
 	public void evolveNow(Group group) {
 
 		try {
-			List<ExpressedCandidate<int[]>> candidates = strategyDAO.findCandidatesInGroup(group.getGroupId());
+			List<ExpressedCandidate<int[]>> candidates = new ArrayList<ExpressedCandidate<int[]>>(
+												strategyDAO.findCandidatesInGroup(group.getGroupId()));
+			
 			int size = group.getSize();
 			int eliteCount = group.getEliteCount();
 			int genomeLength = 0;

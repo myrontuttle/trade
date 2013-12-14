@@ -18,62 +18,57 @@ package com.myrontuttle.fin.trade.web;
 
 import java.util.Iterator;
 
-//import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
-import org.apache.wicket.markup.repeater.data.IDataProvider;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
+import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.IModel;
 
-import com.myrontuttle.fin.trade.adapt.Group;
+import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.StrategyDAO;
 
-
 /**
- * Implementation of IDataProvider that retrieves contacts from the contact database.
- * 
- * @author igor
- * 
+ * implementation of IDataProvider for group stas that keeps track of sort information
  */
-public class GroupDataProvider implements IDataProvider<Group> {
+public class SortableCandidateDataProvider extends SortableDataProvider<Candidate, String> {
 	
 	private static final long serialVersionUID = 1L;
+	
+	String groupId;
+	
+	/**
+	 * constructor
+	 */
+	public SortableCandidateDataProvider(String groupId) {
+		
+		this.groupId = groupId;
+		
+		// set default sort
+		setSort("candidateId", SortOrder.ASCENDING);
+	}
 
 	protected StrategyDAO getDAO() {
 		return DBAccess.getDAO();
 	}
 
 	/**
-	 * retrieves groups from database starting with index <code>first</code> and ending with
-	 * <code>first+count</code>
-	 * 
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#iterator(int, int)
 	 */
-	public Iterator<Group> iterator(long first, long count) {
-		// Consider finding a subset of all groups to StrategyDAO:
-		// return getDAO().findGroups(first, count, new SortParam("groupId", true)).iterator();
-		return getDAO().findGroups().iterator();
+	public Iterator<Candidate> iterator(long first, long count) {
+		return getDAO().findCandidatesInGroup(groupId).iterator();
 	}
 
 	/**
-	 * returns total number of groups in the database
-	 * 
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#size()
 	 */
 	public long size() {
-		return getDAO().findGroups().size();
+		return getDAO().findCandidatesInGroup(groupId).size();
 	}
 
 	/**
-	 * wraps retrieved group pojo with a wicket model
-	 * 
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#model(java.lang.Object)
 	 */
-	public IModel<Group> model(Group object) {
-		return new DetachableGroupModel(object);
-	}
-
-	/**
-	 * @see org.apache.wicket.model.IDetachable#detach()
-	 */
-	public void detach() {
+	public IModel<Candidate> model(Candidate object)
+	{
+		return new DetachableCandidateModel(object);
 	}
 
 }

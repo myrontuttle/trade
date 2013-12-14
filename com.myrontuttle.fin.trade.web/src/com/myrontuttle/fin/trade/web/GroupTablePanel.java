@@ -43,7 +43,7 @@ public class GroupTablePanel extends Panel {
 		columns.add(new PropertyColumn(new Model<String>("Alerts/Symbol"), "alertsPerSymbol"));
 		columns.add(new PropertyColumn(new Model<String>("Genome Length"), "genomeLength"));
 
-		columns.add(new AbstractColumn<Group, String>(new Model<String>("Stats")) {
+		columns.add(new AbstractColumn<Group, String>(new Model<String>("Details")) {
 			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
 				IModel<Group> model) {
 				cellItem.add(

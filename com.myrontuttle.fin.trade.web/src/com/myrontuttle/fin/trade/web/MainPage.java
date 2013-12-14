@@ -8,7 +8,7 @@ public class MainPage extends WebPage {
 
 	public MainPage() {
 		super();
-		add(new Header("mainNavigation", "Adaptive Trader", this));
+		add(new HeaderPanel("mainNavigation", "Adaptive Trader", this));
 		add(new EvolvePanel("evolvePanel"));
 		add(new CreateGroupPanel("createGroupPanel"));
 		add(new GroupTablePanel("groupTablePanel"));

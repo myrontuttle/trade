@@ -7,7 +7,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 /**
  * Navigation panel
  */
-public final class Header extends Panel
+public final class HeaderPanel extends Panel
 {
 	/**
 	 * Construct.
@@ -16,7 +16,7 @@ public final class Header extends Panel
 	 * @param siteTitle title of the site
 	 * @param page The example page
 	 */
-	public Header(String id, String siteTitle, WebPage page) {
+	public HeaderPanel(String id, String siteTitle, WebPage page) {
 		super(id);
 
 		add(new Label("siteTitle", siteTitle));

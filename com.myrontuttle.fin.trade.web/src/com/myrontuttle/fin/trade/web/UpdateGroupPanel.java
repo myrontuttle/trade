@@ -21,13 +21,13 @@ public class UpdateGroupPanel extends Panel {
 	public UpdateGroupPanel(String id, String groupId) {
 		super(id);
 		if (groupId != null) {
-			group = DBAccess.getDAO().findGroup(id);
+			group = DBAccess.getDAO().findGroup(groupId);
 		}
 		if (group == null) {
 			group = new Group();
 		}
 		final IModel<Group> compound = new CompoundPropertyModel<Group>(group);
-		final Form<Group> form = new Form<Group>("editGroupForm", compound);
+		final Form<Group> form = new Form<Group>("updateGroupForm", compound);
 		
 		form.add(new TextField<String>("alertAddress")
 					.add(EmailAddressValidator.getInstance()));

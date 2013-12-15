@@ -41,22 +41,11 @@ public class GroupTablePanel extends Panel {
 		columns.add(new PropertyColumn(new Model<String>("Screens"), "numberOfScreens"));
 		columns.add(new PropertyColumn(new Model<String>("Symbols/Screen"), "maxSymbolsPerScreen"));
 		columns.add(new PropertyColumn(new Model<String>("Alerts/Symbol"), "alertsPerSymbol"));
-		columns.add(new PropertyColumn(new Model<String>("Genome Length"), "genomeLength"));
 
 		columns.add(new AbstractColumn<Group, String>(new Model<String>("Details")) {
 			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
 				IModel<Group> model) {
-				cellItem.add(
-					new Link("view") {
-						@Override
-						public void onClick() {
-							String groupId =  ((Group)getParent().getDefaultModelObject()).getGroupId();
-							//PageParameters pars = new PageParameters();
-							//pars.add("groupId", groupId);
-							GroupPage gp = new GroupPage(groupId);
-							setResponsePage(gp);
-						}
-					});
+				cellItem.add(new ActionPanel(componentId, model));
 			}
 		});
 		
@@ -66,4 +55,23 @@ public class GroupTablePanel extends Panel {
 		add(dataTable);
 	}
 
+	class ActionPanel extends Panel {
+		/**
+		 * @param id component id
+		 * @param model model for contact
+		 */
+		public ActionPanel(String id, IModel<Group> model) {
+			super(id, model);
+			add(new Link("view") {
+				@Override
+				public void onClick() {
+					String groupId = ((Group)getParent().getDefaultModelObject()).getGroupId();
+					//PageParameters pars = new PageParameters();
+					//pars.add("groupId", groupId);
+					GroupPage gp = new GroupPage(groupId);
+					setResponsePage(gp);
+				}
+			});
+		}
+	}
 }

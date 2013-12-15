@@ -1,7 +1,5 @@
 package com.myrontuttle.fin.trade.web;
 
-import java.util.Date;
-
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
@@ -21,7 +19,14 @@ public class EvolvePanel extends Panel {
 	public EvolvePanel(String id) {
 		super(id);
 
-		Form form = new Form("evolveForm", new CompoundPropertyModel(this));
+		DateTime dt = EvolveAccess.getEvolveService().getNextEvolveDate();
+		if (dt == null) {
+			nextEvolution = "Not Set";
+		} else {
+        	setEvolveTime(dt);
+		}
+		
+		Form<EvolvePanel> form = new Form<EvolvePanel>("evolveForm", new CompoundPropertyModel<EvolvePanel>(this));
 
 		form.add(new TextField<String>("hourToEvolve"));
 		form.add(new TextField<String>("minuteToEvolve"));
@@ -30,24 +35,18 @@ public class EvolvePanel extends Panel {
             public void onSubmit() {
             	DateTime dt = new DateTime().withHourOfDay(hourToEvolve).withMinuteOfHour(minuteToEvolve);
             	EvolveAccess.getEvolveService().startEvolvingAt(dt);
-            	nextEvolution = dt.toString();
+            	setEvolveTime(dt);
             }
         });
 		
 		form.add(new Button("evolveAllNow") {
             public void onSubmit() {
             	EvolveAccess.getEvolveService().evolveAllNow();
-            	nextEvolution = new DateTime().toString();
+            	setEvolveTime(new DateTime());
             }
         });
         
-		DateTime dt = EvolveAccess.getEvolveService().getNextEvolveDate();
-		if (dt == null) {
-			nextEvolution = "Not Set";
-		} else {
-			nextEvolution = dt.toString();
-		}
-		form.add(new Label("nextEvolution", nextEvolution));
+		form.add(new Label("nextEvolution"));
 
 		form.add(new Button("stopEvolving") {
             public void onSubmit() {
@@ -57,6 +56,12 @@ public class EvolvePanel extends Panel {
         });		
 		
 		add(form);
+	}
+	
+	private void setEvolveTime(DateTime dt) {
+    	nextEvolution = dt.toString();
+    	hourToEvolve = dt.getHourOfDay();
+    	minuteToEvolve = dt.getMinuteOfHour();
 	}
 
 	public int getHourToEvolve() {
@@ -73,6 +78,14 @@ public class EvolvePanel extends Panel {
 
 	public void setMinuteToEvolve(int minuteToEvolve) {
 		this.minuteToEvolve = minuteToEvolve;
+	}
+
+	public String getNextEvolution() {
+		return nextEvolution;
+	}
+
+	public void setNextEvolution(String nextEvolution) {
+		this.nextEvolution = nextEvolution;
 	}
 
 }

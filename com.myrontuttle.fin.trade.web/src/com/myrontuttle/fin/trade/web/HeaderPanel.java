@@ -2,13 +2,13 @@ package com.myrontuttle.fin.trade.web;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 
 /**
  * Navigation panel
  */
-public final class HeaderPanel extends Panel
-{
+public final class HeaderPanel extends Panel {
 	/**
 	 * Construct.
 	 * 
@@ -20,6 +20,12 @@ public final class HeaderPanel extends Panel
 		super(id);
 
 		add(new Label("siteTitle", siteTitle));
+		add(new Link("mainPage") {
+			@Override
+			public void onClick() {
+				setResponsePage(new MainPage());
+			}
+		});
 
 	}
 }

@@ -107,7 +107,7 @@ public class Evolver implements EvolveService {
 	 * Evolve one group right now
 	 */
 	public void evolveNow(Group group) {
-
+		System.out.println("Evolving group " + group.getGroupId() + " now");
 		try {
 			List<ExpressedCandidate<int[]>> candidates = new ArrayList<ExpressedCandidate<int[]>>(
 												strategyDAO.findCandidatesInGroup(group.getGroupId()));
@@ -163,13 +163,15 @@ public class Evolver implements EvolveService {
 	 */
 	public void startEvolvingAt(DateTime date) {
 		if (date.isBeforeNow()) {
-			System.out.println("Date to evolve is before now.  Setting to evolving at same time tomorrow");
+			System.out.println("Date to evolve is before now.  Setting to evolve at same time tomorrow");
 			date = new DateTime().
 						plusDays(1).
 						withHourOfDay(date.getHourOfDay()).
 						withMinuteOfHour(date.getMinuteOfHour());
 		}
-		
+
+        this.ses = Executors.newScheduledThreadPool(NUM_THREADS);
+        
 		this.sf = ses.scheduleAtFixedRate(new Runnable () {
 			@Override
 			public void run() {
@@ -180,8 +182,6 @@ public class Evolver implements EvolveService {
 				}
 			}
 		}, minutesToTime(date), MINUTES_IN_DAY, TimeUnit.MINUTES);
-		
-        this.ses = Executors.newScheduledThreadPool(NUM_THREADS);
 
 		prefs.putInt(EVOLVE_HOUR, date.getHourOfDay());
 		prefs.putInt(EVOLVE_MINUTE, date.getMinuteOfHour());

@@ -15,21 +15,6 @@
       	<tx:transaction method="*" value="Required"/>
 	</bean>
 	
-	<bean id="BasicEvaluator" class="com.myrontuttle.fin.trade.adapt.eval.BasicEvaluator">
-		<property name="portfolioService" ref="PortfolioService" />
-	</bean>
-	
-	<bean id="BasicExpression" class="com.myrontuttle.fin.trade.adapt.express.BasicExpression"
-			init-method="startUp" >
-		<property name="screenerService" ref="ScreenerService" />
-		<property name="watchlistService" ref="WatchlistService" />
-		<property name="alertService" ref="AlertService" />
-		<property name="portfolioService" ref="PortfolioService" />
-		<property name="tradeStrategy" ref="TradeStrategy" />
-		<property name="alertReceiver" ref="AlertReceiverService" />
-		<property name="strategyDAO" ref="StrategyDAOImpl" />
-	</bean>
-	
 	<bean id="Evolver" class="com.myrontuttle.fin.trade.adapt.Evolver" scope="singleton">
 		<property name="strategyDAO" ref="StrategyDAOImpl" />
 	</bean>
@@ -38,5 +23,18 @@
 	
 	<service ref="Evolver" interface="com.myrontuttle.fin.trade.adapt.EvolveService" />
 	
+	<bean id="BasicEvaluator" class="com.myrontuttle.fin.trade.adapt.eval.BasicEvaluator">
+		<property name="portfolioService" ref="PortfolioService" />
+	</bean>
+	
+	<bean id="BasicExpression" class="com.myrontuttle.fin.trade.adapt.express.BasicExpression" >
+		<property name="screenerService" ref="ScreenerService" />
+		<property name="watchlistService" ref="WatchlistService" />
+		<property name="alertService" ref="AlertService" />
+		<property name="portfolioService" ref="PortfolioService" />
+		<property name="tradeStrategy" ref="TradeStrategy" />
+		<property name="alertReceiver" ref="AlertReceiverService" />
+		<property name="strategyDAO" ref="StrategyDAOImpl" />
+	</bean>
 	
 </blueprint>

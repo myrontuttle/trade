@@ -53,7 +53,7 @@ public class Evolver implements EvolveService {
 	
 	public Evolver() {
 		if (prefs.getBoolean(EVOLVE_ACTIVE, false)) {
-			startEvolvingAt(
+			evolveActiveAt(
 					new DateTime().
 					withHourOfDay(prefs.getInt(EVOLVE_HOUR, 0)).
 					withMinuteOfHour(prefs.getInt(EVOLVE_MINUTE, 0)));
@@ -140,6 +140,7 @@ public class Evolver implements EvolveService {
 										terminationConditions);
 		} catch (Exception e) {
 			System.out.println("Unable to evolve group: " + group.getGroupId() + "." + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 	
@@ -149,19 +150,14 @@ public class Evolver implements EvolveService {
 	public void evolveAllNow() {
 		List<Group> groups = strategyDAO.findGroups();
 		for (Group group : groups) {
-			if (group.isActive()) {
-				if ((group.getFrequency().equals(Group.DAILY) && wasMarketOpenToday()) ||
-					((group.getFrequency().equals(Group.WEEKLY) && isSaturday()))) {
-					evolveNow(group);
-				}
-			}
+			evolveNow(group);
 		}
 	}
 
 	/*
 	 * Starts evolving all active groups at a specific hour of the day (0 to 23)
 	 */
-	public void startEvolvingAt(DateTime date) {
+	public void evolveActiveAt(DateTime date) {
 		if (date.isBeforeNow()) {
 			System.out.println("Date to evolve is before now.  Setting to evolve at same time tomorrow");
 			date = new DateTime().
@@ -176,7 +172,15 @@ public class Evolver implements EvolveService {
 			@Override
 			public void run() {
 				try {
-					evolveAllNow();
+					List<Group> groups = strategyDAO.findGroups();
+					for (Group group : groups) {
+						if (group.isActive()) {
+							if ((group.getFrequency().equals(Group.DAILY) && wasMarketOpenToday()) ||
+								((group.getFrequency().equals(Group.WEEKLY) && isSaturday()))) {
+								evolveNow(group);
+							}
+						}
+					}
 				} catch (Exception e) {
 					System.out.println("Unable to evolve all groups. " + e.getMessage());
 				}

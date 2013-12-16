@@ -12,7 +12,7 @@ public interface EvolveService {
 	
 	public void evolveAllNow();
 	
-	public void startEvolvingAt(DateTime date);
+	public void evolveActiveAt(DateTime date);
 	
 	public DateTime getNextEvolveDate();
 	

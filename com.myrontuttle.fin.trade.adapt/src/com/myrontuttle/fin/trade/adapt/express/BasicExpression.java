@@ -6,10 +6,9 @@ package com.myrontuttle.fin.trade.adapt.express;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.Group;
-import com.myrontuttle.fin.trade.adapt.StrategyDAOImpl;
+import com.myrontuttle.fin.trade.adapt.StrategyDAO;
 import com.myrontuttle.fin.trade.api.*;
 import com.myrontuttle.fin.trade.tradestrategies.AlertTradeBounds;
 import com.myrontuttle.fin.trade.tradestrategies.BasicTradeStrategy;
@@ -36,16 +35,16 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	public static final String WATCH_NAME_PREFIX = "WATCH";
 	
 	// Managed by Blueprint
-	ScreenerService screenerService = null;
-	WatchlistService watchlistService = null;
-	AlertService alertService = null;
-	PortfolioService portfolioService = null;
-	TradeStrategy tradeStrategy = null;
-	AlertReceiverService alertReceiver = null;
+	ScreenerService screenerService;
+	WatchlistService watchlistService;
+	AlertService alertService;
+	PortfolioService portfolioService;
+	TradeStrategy tradeStrategy;
+	AlertReceiverService alertReceiver;
 	
-	StrategyDAOImpl strategyDAOImpl = null;
+	StrategyDAO strategyDAO;
 	
-	private int counter;
+	private int counter = 0;
 	
 	public ScreenerService getScreenerService() {
 		return screenerService;
@@ -95,16 +94,12 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		this.alertReceiver = alertReceiver;
 	}
 
-	public StrategyDAOImpl getStrategyDAO() {
-		return strategyDAOImpl;
+	public StrategyDAO getStrategyDAO() {
+		return strategyDAO;
 	}
 
-	public void setStrategyDAO(StrategyDAOImpl strategyDAOImpl) {
-		this.strategyDAOImpl = strategyDAOImpl;
-	}
-
-	public void startUp() {
-		this.counter = 0;
+	public void setStrategyDAO(StrategyDAO strategyDAO) {
+		this.strategyDAO = strategyDAO;
 	}
 
 	public static int getGenomeLength(Group group) {
@@ -379,12 +374,19 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 	@Override
 	public Candidate express(int[] genome, String groupId) {
+		
+		if (strategyDAO == null) {
+			System.out.println("No StrategyDAO");
+		}
+		if (tradeStrategy == null) {
+			System.out.println("No TradeStrategy");
+		}
 
 		// Create the candidate
-		Candidate candidate = strategyDAOImpl.newCandidateRecord(genome, groupId, tradeStrategy.getStartingCash());
+		Candidate candidate = strategyDAO.newCandidateRecord(genome, groupId, tradeStrategy.getStartingCash());
 		
 		// Find the associated group
-		Group group = strategyDAOImpl.findGroup(groupId);
+		Group group = strategyDAO.findGroup(groupId);
 		
 		// Get a list of symbols from the Screener Service
 		String[] symbols = getScreenSymbols(genome, groupId, group);
@@ -420,7 +422,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		setupAlertReceiver(openAlerts, portfolioId, tradesToMake);
 
 		// Save candidate to database, and return
-		strategyDAOImpl.saveCandidate(candidate);
+		strategyDAO.saveCandidate(candidate);
 		
 		return candidate;
 	}

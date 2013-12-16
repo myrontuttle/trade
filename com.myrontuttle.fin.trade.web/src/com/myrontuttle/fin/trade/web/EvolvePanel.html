@@ -10,14 +10,14 @@
 	<wicket:panel xmlns:wicket="http://wicket.apache.org">
 		<h2>Evolution Settings</h2>
     	<form wicket:id="evolveForm">
-    		<table cellpadding="2" cellspacing="2">
+    		<table cellpadding="2" cellspacing="2" border="1">
     			<tr>
     				<td>Time to Evolve: 
-    					<input type="text" size="3" wicket:id="hourToEvolve"/>:<input type="text" size="3" wicket:id="minuteToEvolve"/>
-    					<button wicket:id="evolveAllAtTime" type="submit">Evolve at this Time</button>
+    					<input type="text" size="2" wicket:id="hourToEvolve"/>:<input type="text" size="2" wicket:id="minuteToEvolve"/>
+    					<button wicket:id="evolveActiveAtTime" type="submit">Evolve Active Groups at this Time</button>
     				</td>
     				<td>
-    					<button wicket:id="evolveAllNow" type="submit">Evolve Now</button>
+    					<button wicket:id="evolveAllNow" type="submit">Evolve All Now</button>
         			</td>
     				<td>Next evolution at: <span wicket:id="nextEvolution">DateTime</span>
         			</td>

@@ -35,71 +35,71 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	public static final String WATCH_NAME_PREFIX = "WATCH";
 	
 	// Managed by Blueprint
-	ScreenerService screenerService;
-	WatchlistService watchlistService;
-	AlertService alertService;
-	PortfolioService portfolioService;
-	TradeStrategy tradeStrategy;
-	AlertReceiverService alertReceiver;
+	private static ScreenerService screenerService;
+	private static WatchlistService watchlistService;
+	private static AlertService alertService;
+	private static PortfolioService portfolioService;
+	private static TradeStrategy tradeStrategy;
+	private static AlertReceiverService alertReceiver;
 	
-	StrategyDAO strategyDAO;
+	private static StrategyDAO strategyDAO;
 	
 	private int counter = 0;
 	
-	public ScreenerService getScreenerService() {
+	public static ScreenerService getScreenerService() {
 		return screenerService;
 	}
 
 	public void setScreenerService(ScreenerService screenerService) {
-		this.screenerService = screenerService;
+		BasicExpression.screenerService = screenerService;
 	}
 
-	public WatchlistService getWatchlistService() {
+	public static WatchlistService getWatchlistService() {
 		return watchlistService;
 	}
 
 	public void setWatchlistService(WatchlistService watchlistService) {
-		this.watchlistService = watchlistService;
+		BasicExpression.watchlistService = watchlistService;
 	}
 
-	public AlertService getAlertService() {
+	public static AlertService getAlertService() {
 		return alertService;
 	}
 
 	public void setAlertService(AlertService alertService) {
-		this.alertService = alertService;
+		BasicExpression.alertService = alertService;
 	}
 
-	public PortfolioService getPortfolioService() {
+	public static PortfolioService getPortfolioService() {
 		return portfolioService;
 	}
 
 	public void setPortfolioService(PortfolioService portfolioService) {
-		this.portfolioService = portfolioService;
+		BasicExpression.portfolioService = portfolioService;
 	}
 
-	public TradeStrategy getTradeStrategy() {
+	public static TradeStrategy getTradeStrategy() {
 		return tradeStrategy;
 	}
 
 	public void setTradeStrategy(TradeStrategy tradeStrategy) {
-		this.tradeStrategy = tradeStrategy;
+		BasicExpression.tradeStrategy = tradeStrategy;
 	}
 
-	public AlertReceiverService getAlertReceiver() {
+	public static AlertReceiverService getAlertReceiver() {
 		return alertReceiver;
 	}
 
 	public void setAlertReceiver(AlertReceiverService alertReceiver) {
-		this.alertReceiver = alertReceiver;
+		BasicExpression.alertReceiver = alertReceiver;
 	}
 
-	public StrategyDAO getStrategyDAO() {
+	public static StrategyDAO getStrategyDAO() {
 		return strategyDAO;
 	}
 
 	public void setStrategyDAO(StrategyDAO strategyDAO) {
-		this.strategyDAO = strategyDAO;
+		BasicExpression.strategyDAO = strategyDAO;
 	}
 
 	public static int getGenomeLength(Group group) {
@@ -374,16 +374,13 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 	@Override
 	public Candidate express(int[] genome, String groupId) {
-		
-		if (strategyDAO == null) {
-			System.out.println("No StrategyDAO");
-		}
-		if (tradeStrategy == null) {
-			System.out.println("No TradeStrategy");
-		}
 
 		// Create the candidate
-		Candidate candidate = strategyDAO.newCandidateRecord(genome, groupId, tradeStrategy.getStartingCash());
+		Candidate candidate = new Candidate();
+		candidate.setGenomeString(Candidate.generateGenomeString(genome));
+		candidate.setStartingCash(tradeStrategy.getStartingCash());
+		candidate.setGroupId(groupId);
+		strategyDAO.saveCandidate(candidate);
 		
 		// Find the associated group
 		Group group = strategyDAO.findGroup(groupId);
@@ -392,7 +389,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		String[] symbols = getScreenSymbols(genome, groupId, group);
 		
 		// If the screener didn't produce any symbols there's no point using the other services
-		if (symbols.length == 0) {
+		if (symbols == null || symbols.length == 0) {
 			return candidate;
 		}
 		

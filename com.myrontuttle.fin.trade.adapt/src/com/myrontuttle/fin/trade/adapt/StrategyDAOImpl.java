@@ -23,8 +23,7 @@ public class StrategyDAOImpl implements StrategyDAO {
 		cand.setGenomeString(Candidate.generateGenomeString(genome));
 		cand.setStartingCash(startingCash);
 		cand.setGroupId(populationId);
-		em.persist(cand);
-		
+
 		OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
 		Object objId = oem.getObjectId(cand);
 		return em.find(Candidate.class, objId);
@@ -62,8 +61,6 @@ public class StrategyDAOImpl implements StrategyDAO {
 	
 	public Group newGroupRecord() {
 		Group group = new Group();
-
-		em.persist(group);
 		
 		OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
 		Object objId = oem.getObjectId(group);
@@ -107,7 +104,6 @@ public class StrategyDAOImpl implements StrategyDAO {
 				GroupStats.class).setParameter("statsId", statsId).getSingleResult();
 	}
 
-	
 	public void saveGroup(Group group) {
 		em.persist(group);
 	}

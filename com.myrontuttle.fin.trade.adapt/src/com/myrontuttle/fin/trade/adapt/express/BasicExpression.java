@@ -44,7 +44,8 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	
 	private static StrategyDAO strategyDAO;
 	
-	private int counter = 0;
+	private int watchlistCounter = 0;
+	private int portfolioCounter = 0;
 	
 	public static ScreenerService getScreenerService() {
 		return screenerService;
@@ -108,6 +109,10 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 				group.getMaxSymbolsPerScreen() * group.getAlertsPerSymbol() * TRADE_GENE_LENGTH;
 	}
 
+	private int getScreenStartPosition() {
+		return SCREEN_SORT_POSITION + 1;
+	}
+
 	/**
 	 * Creates a set of SelectedScreenCriteria based on a candidate's screener genes
 	 * Screen Gene Data Map
@@ -131,10 +136,12 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			e.printStackTrace();
 		}
 
-		int position = SCREEN_SORT_POSITION;
+		// Start at the first screen gene
+		int position = getScreenStartPosition();
 		ArrayList<SelectedScreenCriteria> selected = new ArrayList<SelectedScreenCriteria>();
 		for (int i=0; i<screens; i++) {
-			if (transpose(candidate[position], geneUpperValue, 0, 1) == 1) {
+			int active = transpose(candidate[position], geneUpperValue, 0, 1);
+			if (active == 1) {
 				int criteriaIndex = transpose(candidate[position + 1], geneUpperValue, 
 												0, availableScreenCriteria.length - 1);
 				String name = availableScreenCriteria[criteriaIndex].getName();
@@ -156,6 +163,10 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 																		genome, 
 																		group.getNumberOfScreens(),
 																		group.getGeneUpperValue());
+		if (screenCriteria.length == 0) {
+			// All of the screen symbols are turned off and we won't get any symbols from screening
+			return symbols;
+		}
 		int sortGene = transpose(genome[SCREEN_SORT_POSITION], group.getGeneUpperValue(), 
 									0, group.getNumberOfScreens());
 		try {
@@ -179,10 +190,10 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	}
 	
 	String setupWatchlist(String candidateId, String[] symbols) {
-		counter++;
+		watchlistCounter++;
 		String watchlistId = null;
 		try {
-			watchlistId = watchlistService.create(candidateId, WATCH_NAME_PREFIX + counter);
+			watchlistId = watchlistService.create(candidateId, WATCH_NAME_PREFIX + watchlistCounter);
 		} catch (Exception e1) {
 			System.out.println("Error creating watchlist: " + e1.getMessage());
 			e1.printStackTrace();
@@ -202,11 +213,12 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	}
 	
 	String setupPortfolio(String candidateId) {
+		portfolioCounter++;
 		String portfolioId = null;
 		
 		try {
 			portfolioId = portfolioService.create(candidateId, 
-													PORT_NAME_PREFIX + counter);
+													PORT_NAME_PREFIX + portfolioCounter);
 			portfolioService.addCashTransaction(candidateId, portfolioId, 
 												tradeStrategy.getStartingCash(), 
 												true, true);
@@ -220,7 +232,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	}
 	
 	private int getAlertStartPosition(Group group) {
-		return SCREEN_SORT_POSITION + SCREEN_GENE_LENGTH * group.getNumberOfScreens();
+		return getScreenStartPosition() + SCREEN_GENE_LENGTH * group.getNumberOfScreens();
 	}
 	
 	/**
@@ -313,7 +325,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	 * 3. Acceptable Loss
 	 * 4. Time in Trade
 	 * 5. Adjust At
-	 * @param userId
+	 * @param userId A candidate's ID
 	 * @param candidate A candidates genome
 	 * @param position Where in the candidate's genome to start reading order genes
 	 * @param symbols The symbols found during screening
@@ -381,6 +393,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		candidate.setStartingCash(tradeStrategy.getStartingCash());
 		candidate.setGroupId(groupId);
 		strategyDAO.saveCandidate(candidate);
+		System.out.println("Created new candidate with id: " + candidate.getCandidateId());
 		
 		// Find the associated group
 		Group group = strategyDAO.findGroup(groupId);
@@ -427,8 +440,9 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	@Override
 	public void candidatesExpressed(
 			List<ExpressedCandidate<int[]>> expressedCandidates) {
-		// All candidates for this generation expressed so reset counter to 0
-		counter = 0;
+		// All candidates for this generation expressed so reset counters to 0
+		watchlistCounter = 0;
+		portfolioCounter = 0;
 	}
 	
 	/**
@@ -444,10 +458,10 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			if (geneValue == geneUpperValue) {
 				return targetUpper;
 			}
-			return targetLower + (int)Math.floor((geneValue / geneUpperValue) * 
-									(targetUpper - targetLower + 1));
+			return targetLower + (int)Math.floor(((double)geneValue / geneUpperValue) * 
+					(targetUpper - targetLower + 1));
 		} else {
-			return targetLower + (int)Math.floor((geneValue / geneUpperValue) * 
+			return targetLower + (int)Math.floor(((double)geneValue / geneUpperValue) * 
 									(targetUpper - targetLower));
 		}
 	}
@@ -462,9 +476,9 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	 */
 	private double transpose(int geneValue, int geneUpperValue, double targetLower, double targetUpper) {
 		if (targetUpper - targetLower < geneUpperValue) {
-			return targetLower + (geneValue * (targetUpper - targetLower)) / geneUpperValue;
+			return targetLower + ((double)(geneValue * (targetUpper - targetLower)) / geneUpperValue);
 		} else {
-			return targetLower + (geneValue / geneUpperValue) * (targetUpper - targetLower);
+			return targetLower + ((double)geneValue / geneUpperValue) * (targetUpper - targetLower);
 		}
 	}
 }

@@ -3,12 +3,19 @@ package com.myrontuttle.fin.trade.adapt.express;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.Group;
-import com.myrontuttle.fin.trade.adapt.StrategyDAOImpl;
+import com.myrontuttle.fin.trade.adapt.StrategyDAO;
 import com.myrontuttle.fin.trade.adapt.express.BasicExpression;
 import com.myrontuttle.fin.trade.api.AlertReceiverService;
 import com.myrontuttle.fin.trade.api.AlertService;
@@ -19,6 +26,7 @@ import com.myrontuttle.fin.trade.api.ScreenerService;
 import com.myrontuttle.fin.trade.api.SelectedAlert;
 import com.myrontuttle.fin.trade.api.SelectedScreenCriteria;
 import com.myrontuttle.fin.trade.api.WatchlistService;
+import com.myrontuttle.fin.trade.tradestrategies.AlertTradeBounds;
 import com.myrontuttle.fin.trade.tradestrategies.BasicTradeStrategy;
 import com.myrontuttle.fin.trade.tradestrategies.TradeBounds;
 
@@ -28,8 +36,13 @@ public class BasicExpressionTest {
 	private final static String WID = "watchlistID";
 	private final static String PID = "portfolioID";
 	private final static String GID = "groupID";
+	private final static String LID = "LotID";
 	private final static String EMAIL = "test@test.com";
 	private final double STARTING_CASH = 10000.00;
+	private final static String BUY = "Buy";
+	private final static String SELL = "Sell";
+	private final static String SHORT = "ShortSell";
+	private final static String COVER = "BuyToCover";
 
 	private static final int SCREEN_GENES = 3;
 	private static final int MAX_SYMBOLS_PER_SCREEN = 5;
@@ -43,27 +56,26 @@ public class BasicExpressionTest {
 	private BasicTradeStrategy basicTradeStrategy;
 	private AlertReceiverService alertReceiver;
 
-	private StrategyDAOImpl strategyDAOImpl;
+	private StrategyDAO strategyDAO;
 	
 	private BasicExpression<int[]> expression;
 	
 	private Candidate candidateA;
 	private Group group1;
 	private int[] genomeA = new int[]{1	// Sort by first screener gene
-									,55,20,20	// 1st screener gene
-									,25,20,20	// 2nd screener gene (inactive)
-									,100,75,50	// 3rd screener gene
-									,19,50,0,0  // 1st alert gene
-									,0,0,0,0	// 2nd alert gene
-									,0,0,0,0	// 3rd alert gene
-									,0,0,0,0	// 4th alert gene
-									,0,0,0,0	// 5th alert gene
-									,0,0,0,0	// 6th alert gene
-									,0,0,0,0	// 7th alert gene
-									,0,0,0,0	// 8th alert gene
-									,0,0,0,0	// 9th alert gene
-									,0,0,0,0	// 10th alert gene
-									//TODO: Add trade genes
+									,55,20,20		// 1st screener gene
+									,25,20,20		// 2nd screener gene (inactive)
+									,100,75,50		// 3rd screener gene
+									,19,50,0,0  	// 1st alert gene
+									,12,25,0,0		// 2nd alert gene
+									,1,2,3,4		// 3rd alert gene
+									,8,7,6,5		// 4th alert gene
+									,11,21,22,23	// 5th alert gene
+									,19,37,24,0,88  	// 1st trade gene
+									,55,25,66,100,75	// 2nd trade gene
+									,1,2,3,4,5			// 3rd trade gene
+									,8,7,6,5,6			// 4th trade gene
+									,11,21,22,23,5		// 5th trade gene
 									};
 	private AvailableScreenCriteria[] availableScreenCriteria = 
 				new AvailableScreenCriteria[]{
@@ -81,12 +93,13 @@ public class BasicExpressionTest {
 	};
 	private SelectedScreenCriteria[] selectedScreenCriteria =
 			new SelectedScreenCriteria[]{
-				new SelectedScreenCriteria("RCCAssetClass", "LIKE[0]=Large Cap", "OR")
+				new SelectedScreenCriteria("RCCAssetClass", "LIKE[0]=Large Cap", "OR"),
+				new SelectedScreenCriteria("RCCRegion", "LIKE[0]=Americas", "OR")
 	};
 	private String[] screenSymbols = new String[]{"AAPL", "MSFT"};
 	
-	private String watchlistName = "Watch1";
-	private String portfolioName = "Port1";
+	private String watchlistName = BasicExpression.WATCH_NAME_PREFIX + "1";
+	private String portfolioName = BasicExpression.PORT_NAME_PREFIX + "1";
 
 	private final int alertId = 1;
 	private final String condition = "{symbol}'s price fell below {Price}";
@@ -105,9 +118,40 @@ public class BasicExpressionTest {
 			new SelectedAlert(alertId, condition, "AAPL", new double[]{400})
 	};
 	
+	private String[] openOrderTypes = new String[]{ BUY, SHORT };
+	private TradeBounds[] tradeBounds = new TradeBounds[]{
+			new TradeBounds(screenSymbols[0], 0, 37, 24, 60, 88),
+			new TradeBounds(screenSymbols[1], 1, 25, 66, 86400, 75)
+	};
+	private AlertTradeBounds[] alertTradeBounds = new AlertTradeBounds[] {
+			new AlertTradeBounds(selectedAlerts[0], PID, tradeBounds[0])
+	};
+	
 	@Before
 	public void setUp() throws Exception {
 
+		// Set variables
+		candidateA = new Candidate();
+		candidateA.setCandidateId(CID);
+		candidateA.setGenomeString(Candidate.generateGenomeString(genomeA));
+		candidateA.setGroupId(GID);
+		candidateA.setPortfolioId(PID);
+		candidateA.setStartingCash(STARTING_CASH);
+		candidateA.setWatchlistId(WID);
+		Collection<Candidate> candidates = new ArrayList<Candidate>();
+		candidates.add(candidateA);
+		
+		group1 = new Group();
+		group1.setGroupId(GID);
+		group1.setNumberOfScreens(SCREEN_GENES);
+		group1.setMaxSymbolsPerScreen(MAX_SYMBOLS_PER_SCREEN);
+		group1.setAlertsPerSymbol(ALERTS_PER_SYMBOL);
+		group1.setGeneUpperValue(100);
+		group1.setActive(true);
+		group1.setAlertAddress(EMAIL);
+		group1.setCandidates(candidates);
+		group1.setExpressionStrategy("BasicExpression");
+		
 	    // Create mocks
 		screenerService = mock(ScreenerService.class);
 		watchlistService = mock(WatchlistService.class);
@@ -115,33 +159,34 @@ public class BasicExpressionTest {
 		portfolioService = mock(PortfolioService.class);
 		basicTradeStrategy = mock(BasicTradeStrategy.class);
 		alertReceiver = mock(AlertReceiverService.class);
-		
-		strategyDAOImpl = mock(StrategyDAOImpl.class);
+		strategyDAO = mock(StrategyDAO.class);
 		
 		// Describe Mocks
 		when(screenerService.getAvailableCriteria(GID)).thenReturn(availableScreenCriteria);
 		when(screenerService.screen(GID, 
 									selectedScreenCriteria, 
-									availableScreenCriteria[0].getName(), 
+									selectedScreenCriteria[0].getName(), 
 									MAX_SYMBOLS_PER_SCREEN))
 			.thenReturn(screenSymbols);
 		
 		when(watchlistService.create(CID, watchlistName)).thenReturn(WID);
-		when(watchlistService.addHolding(CID, WID, screenSymbols[0]));
+		when(watchlistService.addHolding(CID, WID, screenSymbols[0])).thenReturn(LID);
+		when(watchlistService.addHolding(CID, WID, screenSymbols[1])).thenReturn(LID);
 		when(portfolioService.create(CID, portfolioName)).thenReturn(PID);
 		when(portfolioService.addCashTransaction(CID, PID, STARTING_CASH, 
 											true, true)).thenReturn(true);
+		when(portfolioService.openOrderTypesAvailable(CID)).thenReturn(openOrderTypes);
 		
-		when(alertService.getAvailableAlerts(CID)).thenReturn(availableAlerts);
-		when(alertService.getUpperDouble(CID, alertId, screenSymbols[0], 0)).thenReturn(alertUpper);
-		when(alertService.getLowerDouble(CID, alertId, screenSymbols[0], 0)).thenReturn(alertLower);
-		when(alertService.getListLength(CID, alertId, 0)).thenReturn(alertListLength);
-		when(alertService.parseCondition(priceBelowAlert, screenSymbols[0], new double[50])).
+		when(alertService.getAvailableAlerts(GID)).thenReturn(availableAlerts);
+		when(alertService.getUpperDouble(GID, alertId, screenSymbols[0], 0)).thenReturn(alertUpper);
+		when(alertService.getLowerDouble(GID, alertId, screenSymbols[0], 0)).thenReturn(alertLower);
+		when(alertService.getListLength(GID, alertId, 0)).thenReturn(alertListLength);
+		when(alertService.parseCondition(priceBelowAlert, screenSymbols[0], new double[]{400.0})).
 			thenReturn(actualCondition);
 		when(alertService.addAlertDestination(GID, EMAIL, "EMAIL")).thenReturn(true);
 		when(alertService.setupAlerts(GID, selectedAlerts)).thenReturn(true);
 		
-		when(portfolioService.openOrderTypesAvailable(CID)).thenReturn(new String[]{"buy"});
+		when(basicTradeStrategy.getStartingCash()).thenReturn(STARTING_CASH);
 		when(basicTradeStrategy.tradeAllocationLower()).thenReturn(BasicTradeStrategy.TRADE_ALLOC_LOWER);
 		when(basicTradeStrategy.tradeAllocationUpper()).thenReturn(BasicTradeStrategy.TRADE_ALLOC_UPPER);
 		when(basicTradeStrategy.acceptableLossLower()).thenReturn(BasicTradeStrategy.ACCEPT_LOSS_LOWER);
@@ -151,13 +196,25 @@ public class BasicExpressionTest {
 		when(basicTradeStrategy.adjustAtLower()).thenReturn(BasicTradeStrategy.ADJUST_AT_LOWER);
 		when(basicTradeStrategy.adjustAtUpper()).thenReturn(BasicTradeStrategy.ADJUST_AT_UPPER);
 		
+		when(strategyDAO.findGroup(GID)).thenReturn(group1);
+		doAnswer(new Answer<Candidate>() {
+		      public Candidate answer(InvocationOnMock invocation) {
+		          Candidate candidate = (Candidate)invocation.getArguments()[0];
+		          candidate.setCandidateId(CID);
+		          return candidate;
+		      }}).when(strategyDAO).saveCandidate(any(Candidate.class));
+		
+		//when(alertReceiver.watchFor(alertTradeBounds));
+		
+		// Assign services
 		expression = new BasicExpression<int[]>();
 		expression.setAlertReceiver(alertReceiver);
 		expression.setAlertService(alertService);
 		expression.setTradeStrategy(basicTradeStrategy);
 		expression.setPortfolioService(portfolioService);
+		expression.setWatchlistService(watchlistService);
 		expression.setScreenerService(screenerService);
-		expression.setStrategyDAO(strategyDAOImpl);
+		expression.setStrategyDAO(strategyDAO);
 	}
 
 	@Test
@@ -171,28 +228,57 @@ public class BasicExpressionTest {
 	}
 	
 	@Test
+	public void testGetScreenSymbols() {
+		String[] symbols = expression.getScreenSymbols(genomeA, GID, group1);
+		for (int i=0; i<symbols.length; i++) {
+			assertEquals(symbols[i], screenSymbols[i]);
+		}
+	}
+	
+	@Test
+	public void testSetupWatchlist() {
+		assertEquals(WID, expression.setupWatchlist(CID, screenSymbols));
+	}
+	
+	@Test
+	public void testSetupPortfolio() {
+		assertEquals(PID, expression.setupPortfolio(CID));
+	}
+	
+	@Test
 	public void testExpressAlertGenes() {
 		SelectedAlert[] selectedAlerts = expression.expressAlertGenes(GID, genomeA, 
 																	screenSymbols, group1);
 		
 		assertTrue(selectedAlerts.length > 0);
-		assertEquals(condition, selectedAlerts[0].getCondition());
+		assertEquals(actualCondition, selectedAlerts[0].getCondition());
 		assertEquals(screenSymbols[0], selectedAlerts[0].getSymbol());
 		assertTrue(selectedAlerts[0].getParam(0) > alertLower && 
-						selectedAlerts[0].getParam(0) > alertUpper);
+						selectedAlerts[0].getParam(0) < alertUpper);
+	}
+	
+	@Test
+	public void testSetupAlerts() {
+		expression.setupAlerts(GID, selectedAlerts, EMAIL);
 	}
 	
 	@Test
 	public void testExpressTradeGenes() {
 		TradeBounds[] trades = expression.expressTradeGenes(CID, genomeA, screenSymbols, group1);
-		fail("Not yet implemented");
+		for (int i=0; i<trades.length; i++) {
+			assertTrue(trades[i].equals(tradeBounds[i]));
+		}
+	}
+	
+	@Test
+	public void testSetupAlertReceiver() {
+		expression.setupAlertReceiver(selectedAlerts, PID, tradeBounds);
 	}
 	
 	@Test
 	public void testExpress() {
-		candidateA = new Candidate(CID, GID, genomeA, PID, STARTING_CASH);
-		
-		fail("Not yet implemented");
+		Candidate candidateB = expression.express(genomeA, GID);
+		assertTrue(candidateA.equals(candidateB));
 	}
 
 }

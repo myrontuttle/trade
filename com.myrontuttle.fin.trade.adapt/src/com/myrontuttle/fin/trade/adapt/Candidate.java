@@ -177,28 +177,65 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 		}
 	}
 
-/*
-	public AlertTradeBounds[] getAlerts() {
-		return alerts;
-	}
-	public void setAlerts(AlertTradeBounds[] alerts) {
-		this.alerts = alerts;
-	}
-	
-	public SelectedScreenCriteria[] getScreenCriteria() {
-		return screenCriteria;
-	}
-	public void setScreenCriteria(SelectedScreenCriteria[] screenCriteria) {
-		this.screenCriteria = screenCriteria;
-	}
-
-	public String[] getSymbols() {
-		return symbols;
-	}
-	public void setSymbols(String[] symbols) {
-		this.symbols = symbols;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((candidateId == null) ? 0 : candidateId.hashCode());
+		result = prime * result + Arrays.hashCode(genome);
+		result = prime * result
+				+ ((genomeString == null) ? 0 : genomeString.hashCode());
+		result = prime * result + ((groupId == null) ? 0 : groupId.hashCode());
+		result = prime * result
+				+ ((portfolioId == null) ? 0 : portfolioId.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(startingCash);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result
+				+ ((watchlistId == null) ? 0 : watchlistId.hashCode());
+		return result;
 	}
 
-
-	*/
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Candidate other = (Candidate) obj;
+		if (candidateId == null) {
+			if (other.candidateId != null)
+				return false;
+		} else if (!candidateId.equals(other.candidateId))
+			return false;
+		if (!Arrays.equals(genome, other.genome))
+			return false;
+		if (genomeString == null) {
+			if (other.genomeString != null)
+				return false;
+		} else if (!genomeString.equals(other.genomeString))
+			return false;
+		if (groupId == null) {
+			if (other.groupId != null)
+				return false;
+		} else if (!groupId.equals(other.groupId))
+			return false;
+		if (portfolioId == null) {
+			if (other.portfolioId != null)
+				return false;
+		} else if (!portfolioId.equals(other.portfolioId))
+			return false;
+		if (Double.doubleToLongBits(startingCash) != Double
+				.doubleToLongBits(other.startingCash))
+			return false;
+		if (watchlistId == null) {
+			if (other.watchlistId != null)
+				return false;
+		} else if (!watchlistId.equals(other.watchlistId))
+			return false;
+		return true;
+	}
 }

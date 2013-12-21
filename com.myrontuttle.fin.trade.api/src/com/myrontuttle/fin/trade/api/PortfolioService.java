@@ -64,7 +64,7 @@ public interface PortfolioService {
 	 * @param userId
 	 * @param portfolioId Id of the portfolio where we're buying shares for
 	 * @param order The order to open the position with
-	 * @return Indicates whether the purchase was successful
+	 * @return Transaction/Lot id
 	 */
 	public String openPosition(String userId, String portfolioId, Order order) throws Exception;
 

@@ -36,7 +36,7 @@ public interface WatchlistService {
 	 * @param userId
 	 * @param watchlistId Id of the watchlist we're adding to
 	 * @param symbol Symbol of the issue we're adding
-	 * @returns boolean Indicates whether the addition was successful
+	 * @returns String Transaction/Lot id
 	 */
 	public String addHolding(String userId, String watchlistId, String symbol) throws Exception;
 

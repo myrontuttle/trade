@@ -36,13 +36,13 @@ public class BasicTradeStrategy implements TradeStrategy {
 	public final static double DEFAULT_STARTING_CASH = 10000.00;
 	public final static int DEFAULT_NUMBER_ORDER_TYPES = 1;
 	public final static int TRADE_ALLOC_UPPER = 100;
-	public final static int TRADE_ALLOC_LOWER = 1;
+	public final static int TRADE_ALLOC_LOWER = 0;
 	public final static int ACCEPT_LOSS_UPPER = 100;
-	public final static int ACCEPT_LOSS_LOWER = 1;
+	public final static int ACCEPT_LOSS_LOWER = 0;
 	public final static int TIME_IN_TRADE_UPPER = 60*60*24;
 	public final static int TIME_IN_TRADE_LOWER = 60;
 	public final static int ADJUST_AT_UPPER = 100;
-	public final static int ADJUST_AT_LOWER = 1;
+	public final static int ADJUST_AT_LOWER = 0;
 	
 	private final PortfolioService portfolioService;
 	private final QuoteService quoteService;
@@ -221,7 +221,10 @@ public class BasicTradeStrategy implements TradeStrategy {
 				return tradeId;
 				
 			} else {
-				throw new Exception("Not enough allocated to trade " + tradeBounds.getSymbol());
+				throw new Exception("Not enough allocated to trade " + tradeBounds.getSymbol() +
+						". Current Price(" + currentPrice + ") > Max Allowed Trade Amount (" + 
+						maxTradeAmount + ")");
+				
 			}			
 		} catch (Exception e) {
 			throw new Exception("Unable to complete trade. " + e.getMessage());

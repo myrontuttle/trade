@@ -1,6 +1,7 @@
 package com.myrontuttle.fin.trade.web;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
@@ -48,6 +49,10 @@ public class CreateGroupPanel extends Panel {
 		form.add(new TextField<Integer>("geneUpperValue")
 						.setRequired(true)
 						.add(new AttributeModifier("value", "100")));
+
+		form.add(new TextField<Integer>("mutationFactor")
+						.setRequired(true)
+						.add(new AttributeModifier("value", "0.1")));
 		
 		form.add(new TextField<Integer>("numberOfScreens")
 						.setRequired(true)
@@ -63,7 +68,9 @@ public class CreateGroupPanel extends Panel {
 		
 		form.add(new Button("create") {
             public void onSubmit() {
-            	DBAccess.getDAO().saveGroup((Group)compound.getObject());
+            	Group group = (Group)compound.getObject();
+            	group.setStartTime(new Date());
+            	DBAccess.getDAO().saveGroup(group);
             }
         });
         

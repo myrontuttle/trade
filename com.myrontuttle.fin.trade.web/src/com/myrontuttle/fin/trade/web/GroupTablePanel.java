@@ -9,9 +9,12 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
+import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -38,6 +41,7 @@ public class GroupTablePanel extends Panel {
 		columns.add(new PropertyColumn(new Model<String>("Size"), "size"));
 		columns.add(new PropertyColumn(new Model<String>("Elites"), "eliteCount"));
 		columns.add(new PropertyColumn(new Model<String>("Gene Upper"), "geneUpperValue"));
+		columns.add(new PropertyColumn(new Model<String>("Mutation"), "mutationFactor"));
 		columns.add(new PropertyColumn(new Model<String>("Screens"), "numberOfScreens"));
 		columns.add(new PropertyColumn(new Model<String>("Symbols/Screen"), "maxSymbolsPerScreen"));
 		columns.add(new PropertyColumn(new Model<String>("Alerts/Symbol"), "alertsPerSymbol"));
@@ -45,7 +49,7 @@ public class GroupTablePanel extends Panel {
 		columns.add(new AbstractColumn<Group, String>(new Model<String>("Details")) {
 			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
 				IModel<Group> model) {
-				cellItem.add(new ActionPanel(componentId, model));
+				cellItem.add(new ViewPanel(componentId, model));
 			}
 		});
 		
@@ -55,12 +59,12 @@ public class GroupTablePanel extends Panel {
 		add(dataTable);
 	}
 
-	class ActionPanel extends Panel {
+	class ViewPanel extends Panel {
 		/**
 		 * @param id component id
 		 * @param model model for contact
 		 */
-		public ActionPanel(String id, IModel<Group> model) {
+		public ViewPanel(String id, IModel<Group> model) {
 			super(id, model);
 			add(new Link("view") {
 				@Override

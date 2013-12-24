@@ -45,12 +45,21 @@ public class UpdateGroupPanel extends Panel {
 						.setRequired(true));
 		
 		form.add(new Label("geneUpperValue"));
+
+		form.add(new Label("mutationFactor"));
 		
 		form.add(new Label("numberOfScreens"));
 		
 		form.add(new Label("maxSymbolsPerScreen"));
 		
 		form.add(new Label("alertsPerSymbol"));
+
+		form.add(new Button("delete") {
+			public void onSubmit() {
+				Group group = ((Group)getParent().getDefaultModelObject());
+				DBAccess.getDAO().removeGroup(group);
+			}
+		});
 		
 		form.add(new Button("update") {
             public void onSubmit() {

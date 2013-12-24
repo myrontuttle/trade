@@ -16,8 +16,8 @@ public class EvolvePanel extends Panel {
 	// Example = 2014-12-15 15:34 (Saturday)
 	private static final DateTimeFormatter fmt = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm (EEEE)");
 	
-	private int hourToEvolve;
-	private int minuteToEvolve;
+	private Integer hourToEvolve;
+	private Integer minuteToEvolve;
 	private String nextEvolution;
 
 	public EvolvePanel(String id) {
@@ -25,8 +25,8 @@ public class EvolvePanel extends Panel {
 		setEvolveTime();
 		Form<EvolvePanel> form = new Form<EvolvePanel>("evolveForm", new CompoundPropertyModel<EvolvePanel>(this));
 
-		form.add(new TextField<String>("hourToEvolve"));
-		form.add(new TextField<String>("minuteToEvolve"));
+		form.add(new TextField<Integer>("hourToEvolve"));
+		form.add(new TextField<Integer>("minuteToEvolve"));
 
 		form.add(new Button("evolveActiveAtTime") {
             public void onSubmit() {
@@ -66,11 +66,11 @@ public class EvolvePanel extends Panel {
 		}
 	}
 
-	public int getHourToEvolve() {
+	public Integer getHourToEvolve() {
 		return hourToEvolve;
 	}
 
-	public int getMinuteToEvolve() {
+	public Integer getMinuteToEvolve() {
 		return minuteToEvolve;
 	}
 

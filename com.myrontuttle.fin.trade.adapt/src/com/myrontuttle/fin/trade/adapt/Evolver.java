@@ -53,10 +53,12 @@ public class Evolver implements EvolveService {
 	
 	public Evolver() {
 		if (prefs.getBoolean(EVOLVE_ACTIVE, false)) {
+			/*
 			evolveActiveAt(
 					new DateTime().
 					withHourOfDay(prefs.getInt(EVOLVE_HOUR, 0)).
 					withMinuteOfHour(prefs.getInt(EVOLVE_MINUTE, 0)));
+					*/
 		}
 	}
 	
@@ -107,41 +109,36 @@ public class Evolver implements EvolveService {
 	 * Evolve one group right now
 	 */
 	public void evolveNow(Group group) {
-		System.out.println("Evolving group " + group.getGroupId() + " now");
-		try {
-			List<ExpressedCandidate<int[]>> candidates = new ArrayList<ExpressedCandidate<int[]>>(
-												strategyDAO.findCandidatesInGroup(group.getGroupId()));
-			
-			int size = group.getSize();
-			int eliteCount = group.getEliteCount();
-			int genomeLength = 0;
+		
+		List<ExpressedCandidate<int[]>> candidates = new ArrayList<ExpressedCandidate<int[]>>(
+											strategyDAO.findCandidatesInGroup(group.getGroupId()));
+		
+		int size = group.getSize();
+		int eliteCount = group.getEliteCount();
+		int genomeLength = 0;
 
-			ExpressionStrategy<int[]> expressionStrategy = null;
-			if (group.getExpressionStrategy().equals(Group.BASIC_EXPRESSION)) {
-				expressionStrategy = new BasicExpression<int[]>();
-				genomeLength = BasicExpression.getGenomeLength(group);
-			} else {
-				expressionStrategy = new NoExpression();
-			}
-			
-			ExpressedFitnessEvaluator<int[]> evaluator = null;
-			if (group.getEvaluationStrategy().equals(Group.BASIC_EVALUATOR)) {
-				evaluator = new BasicEvaluator();
-			} else {
-				evaluator = new RandomEvaluator();
-			}
-
-			EvolutionEngine<int[]> engine = createEngine(genomeLength, 
-															group.getGeneUpperValue(), 
-															group.getMutationFactor(),
-															expressionStrategy, evaluator);
-			
-			engine.evolveToExpression(candidates, group.getGroupId(), size, eliteCount, 
-										terminationConditions);
-		} catch (Exception e) {
-			System.out.println("Unable to evolve group: " + group.getGroupId() + "." + e.getMessage());
-			e.printStackTrace();
+		ExpressionStrategy<int[]> expressionStrategy = null;
+		if (group.getExpressionStrategy().equals(Group.BASIC_EXPRESSION)) {
+			expressionStrategy = new BasicExpression<int[]>();
+			genomeLength = BasicExpression.getGenomeLength(group);
+		} else {
+			expressionStrategy = new NoExpression();
 		}
+		
+		ExpressedFitnessEvaluator<int[]> evaluator = null;
+		if (group.getEvaluationStrategy().equals(Group.BASIC_EVALUATOR)) {
+			evaluator = new BasicEvaluator();
+		} else {
+			evaluator = new RandomEvaluator();
+		}
+		
+		EvolutionEngine<int[]> engine = createEngine(genomeLength, 
+														group.getGeneUpperValue(), 
+														group.getMutationFactor(),
+														expressionStrategy, evaluator);
+		
+		engine.evolveToExpression(candidates, group.getGroupId(), size, eliteCount, 
+				terminationConditions);
 	}
 	
 	/*

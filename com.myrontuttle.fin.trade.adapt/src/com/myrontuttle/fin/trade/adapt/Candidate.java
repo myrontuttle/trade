@@ -6,10 +6,7 @@ import java.util.Arrays;
 import javax.persistence.*;
 
 import com.myrontuttle.sci.evolve.ExpressedCandidate;
-/*
-import com.myrontuttle.fin.trade.api.SelectedScreenCriteria;
-import com.myrontuttle.fin.trade.tradestrategies.AlertTradeBounds;
-*/
+
 /**
  * A candidate which expresses a trading strategy
  * @author Myron Tuttle
@@ -93,6 +90,9 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 
 	public void setGroup(Group group) {
 		this.group = group;
+		if (!group.getCandidates().contains(this)) {
+			group.getCandidates().add(this);
+		}
 	}
 
 	public String getGenomeString() {

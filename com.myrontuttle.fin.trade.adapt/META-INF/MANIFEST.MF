@@ -1,14 +1,14 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Adapt
+Bundle-Name: Trade Adapt
 Bundle-SymbolicName: com.myrontuttle.fin.trade.adapt
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.1
 Bundle-Vendor: Myron Tuttle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Meta-Persistence: META-INF/persistence.xml
 JPA-PersistenceUnits: AdaptPersistanceUnit
 Import-Package: com.myrontuttle.fin.trade.api,
- com.myrontuttle.fin.trade.tradestrategies,
+ com.myrontuttle.fin.trade.strategies,
  com.myrontuttle.sci.evolve,
  com.myrontuttle.sci.evolve.factories,
  com.myrontuttle.sci.evolve.operators,

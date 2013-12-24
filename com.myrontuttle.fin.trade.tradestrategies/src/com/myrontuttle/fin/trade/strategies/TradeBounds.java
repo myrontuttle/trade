@@ -1,4 +1,4 @@
-package com.myrontuttle.fin.trade.tradestrategies;
+package com.myrontuttle.fin.trade.strategies;
 
 /**
  * Limits of opening, adjusting and closing a trade

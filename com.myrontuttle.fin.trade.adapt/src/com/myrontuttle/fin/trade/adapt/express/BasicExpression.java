@@ -10,9 +10,9 @@ import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.Group;
 import com.myrontuttle.fin.trade.adapt.StrategyDAO;
 import com.myrontuttle.fin.trade.api.*;
-import com.myrontuttle.fin.trade.tradestrategies.AlertTradeBounds;
-import com.myrontuttle.fin.trade.tradestrategies.BasicTradeStrategy;
-import com.myrontuttle.fin.trade.tradestrategies.TradeBounds;
+import com.myrontuttle.fin.trade.strategies.AlertTradeBounds;
+import com.myrontuttle.fin.trade.strategies.BasicTradeStrategy;
+import com.myrontuttle.fin.trade.strategies.TradeBounds;
 import com.myrontuttle.sci.evolve.ExpressedCandidate;
 import com.myrontuttle.sci.evolve.ExpressionStrategy;
 

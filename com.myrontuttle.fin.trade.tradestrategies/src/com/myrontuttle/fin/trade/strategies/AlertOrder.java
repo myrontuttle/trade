@@ -1,4 +1,4 @@
-package com.myrontuttle.fin.trade.tradestrategies;
+package com.myrontuttle.fin.trade.strategies;
 
 import com.myrontuttle.fin.trade.api.AlertAction;
 import com.myrontuttle.fin.trade.api.Order;

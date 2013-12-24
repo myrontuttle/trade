@@ -1,4 +1,4 @@
-package com.myrontuttle.fin.trade.tradestrategies;
+package com.myrontuttle.fin.trade.strategies;
 
 import java.util.HashMap;
 import java.util.UUID;

@@ -26,9 +26,9 @@ import com.myrontuttle.fin.trade.api.ScreenerService;
 import com.myrontuttle.fin.trade.api.SelectedAlert;
 import com.myrontuttle.fin.trade.api.SelectedScreenCriteria;
 import com.myrontuttle.fin.trade.api.WatchlistService;
-import com.myrontuttle.fin.trade.tradestrategies.AlertTradeBounds;
-import com.myrontuttle.fin.trade.tradestrategies.BasicTradeStrategy;
-import com.myrontuttle.fin.trade.tradestrategies.TradeBounds;
+import com.myrontuttle.fin.trade.strategies.AlertTradeBounds;
+import com.myrontuttle.fin.trade.strategies.BasicTradeStrategy;
+import com.myrontuttle.fin.trade.strategies.TradeBounds;
 
 public class BasicExpressionTest {
 

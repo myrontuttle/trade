@@ -7,7 +7,7 @@
 	<reference id="AlertService" interface="com.myrontuttle.fin.trade.api.AlertService" />
 	<reference id="AlertReceiverService" interface="com.myrontuttle.fin.trade.api.AlertReceiverService" />
 	
-	<bean id="BasicTradeStrategy" class="com.myrontuttle.fin.trade.tradestrategies.BasicTradeStrategy">
+	<bean id="BasicTradeStrategy" class="com.myrontuttle.fin.trade.strategies.BasicTradeStrategy">
 		<argument ref="PortfolioService" />
 		<argument ref="QuoteService" />
 		<argument ref="AlertService" />

@@ -14,10 +14,8 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 import com.myrontuttle.fin.trade.adapt.Group;
 
@@ -52,6 +50,20 @@ public class GroupTablePanel extends Panel {
 				cellItem.add(new ViewPanel(componentId, model));
 			}
 		});
+
+		columns.add(new AbstractColumn<Group, String>(new Model<String>("Evolve")) {
+			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
+				IModel<Group> model) {
+				cellItem.add(new EvolveGroupPanel(componentId, model));
+			}
+		});
+
+		columns.add(new AbstractColumn<Group, String>(new Model<String>("Delete")) {
+			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
+				IModel<Group> model) {
+				cellItem.add(new DeleteGroupPanel(componentId, model));
+			}
+		});
 		
 		DataTable dataTable = new DefaultDataTable<Group, String>("groups", columns,
 				new SortableGroupDataProvider(), 5);
@@ -70,12 +82,47 @@ public class GroupTablePanel extends Panel {
 				@Override
 				public void onClick() {
 					String groupId = ((Group)getParent().getDefaultModelObject()).getGroupId();
-					//PageParameters pars = new PageParameters();
-					//pars.add("groupId", groupId);
 					GroupPage gp = new GroupPage(groupId);
 					setResponsePage(gp);
 				}
 			});
+		}
+	}
+
+	class EvolveGroupPanel extends Panel {
+		/**
+		 * @param id component id
+		 * @param model model for contact
+		 */
+		public EvolveGroupPanel(String id, IModel<Group> model) {
+			super(id, model);
+			final Form<Group> form = new Form<Group>("evolveGroupForm", model);
+			form.add(new Button("evolve") {
+				public void onSubmit() {
+					String groupId = ((Group)getParent().getDefaultModelObject()).getGroupId();
+					EvolveAccess.getEvolveService().evolveNow(groupId);
+				}
+			});
+			add(form);
+		}
+	}
+
+	class DeleteGroupPanel extends Panel {
+		/**
+		 * @param id component id
+		 * @param model model for contact
+		 */
+		public DeleteGroupPanel(String id, IModel<Group> model) {
+			super(id, model);
+
+			final Form<Group> form = new Form<Group>("deleteGroupForm", model);
+			form.add(new Button("delete") {
+				public void onSubmit() {
+					Group group = ((Group)getParent().getDefaultModelObject());
+					DBAccess.getDAO().removeGroup(group.getGroupId());
+				}
+			});
+			add(form);
 		}
 	}
 }

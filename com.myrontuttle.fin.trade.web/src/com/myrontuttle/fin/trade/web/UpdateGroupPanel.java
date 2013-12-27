@@ -53,17 +53,10 @@ public class UpdateGroupPanel extends Panel {
 		form.add(new Label("maxSymbolsPerScreen"));
 		
 		form.add(new Label("alertsPerSymbol"));
-
-		form.add(new Button("delete") {
-			public void onSubmit() {
-				Group group = ((Group)getParent().getDefaultModelObject());
-				DBAccess.getDAO().removeGroup(group);
-			}
-		});
 		
 		form.add(new Button("update") {
             public void onSubmit() {
-            	DBAccess.getDAO().saveGroup((Group)compound.getObject());
+            	group = DBAccess.getDAO().updateGroup((Group)compound.getObject());
             }
         });
         

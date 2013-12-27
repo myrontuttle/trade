@@ -108,10 +108,12 @@ public class Evolver implements EvolveService {
 	/*
 	 * Evolve one group right now
 	 */
-	public void evolveNow(Group group) {
+	public void evolveNow(String groupId) {
 		
 		List<ExpressedCandidate<int[]>> candidates = new ArrayList<ExpressedCandidate<int[]>>(
-											strategyDAO.findCandidatesInGroup(group.getGroupId()));
+											strategyDAO.findCandidatesInGroup(groupId));
+		
+		Group group = strategyDAO.findGroup(groupId);
 		
 		int size = group.getSize();
 		int eliteCount = group.getEliteCount();
@@ -137,7 +139,7 @@ public class Evolver implements EvolveService {
 														group.getMutationFactor(),
 														expressionStrategy, evaluator);
 		
-		engine.evolveToExpression(candidates, group.getGroupId(), size, eliteCount, 
+		engine.evolveToExpression(candidates, groupId, size, eliteCount, 
 				terminationConditions);
 	}
 	
@@ -147,7 +149,7 @@ public class Evolver implements EvolveService {
 	public void evolveAllNow() {
 		List<Group> groups = strategyDAO.findGroups();
 		for (Group group : groups) {
-			evolveNow(group);
+			evolveNow(group.getGroupId());
 		}
 	}
 
@@ -174,7 +176,7 @@ public class Evolver implements EvolveService {
 						if (group.isActive()) {
 							if ((group.getFrequency().equals(Group.DAILY) && wasMarketOpenToday()) ||
 								((group.getFrequency().equals(Group.WEEKLY) && isSaturday()))) {
-								evolveNow(group);
+								evolveNow(group.getGroupId());
 							}
 						}
 					}

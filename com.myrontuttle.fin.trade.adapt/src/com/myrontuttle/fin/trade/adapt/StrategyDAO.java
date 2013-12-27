@@ -6,7 +6,17 @@ import com.myrontuttle.sci.evolve.PopulationStats;
 
 public interface StrategyDAO {
 
-	public Candidate newCandidateRecord(int[] genome, String populationId, double startingCash);
+	public void saveGroup(Group group);
+	
+	public Group findGroup(String groupId);
+	
+	public List<Group> findGroups();
+	
+	public Group updateGroup(Group group);
+	
+	public void removeGroup(String groupId);
+	
+	public void addCandidate(Candidate candidate, String groupId);
 	
 	public List<Candidate> findCandidatesInGroup(String groupId);
 	
@@ -14,15 +24,9 @@ public interface StrategyDAO {
 	
 	public Candidate findCandidate(String candidateId);
 	
-	public void saveCandidate(Candidate candidate);
+	public Candidate updateCandidate(Candidate candidate);
 	
-	public void removeCandidate(Candidate candidate);
-	
-	public Group newGroupRecord() ;
-	
-	public Group findGroup(String groupId);
-	
-	public List<Group> findGroups();
+	public void removeCandidate(String candidateId);
 	
 	public void updateGroupStats(PopulationStats<? extends int[]> data);
 	
@@ -30,7 +34,5 @@ public interface StrategyDAO {
 	
 	public GroupStats findStats(String statsId);
 	
-	public void saveGroup(Group group);
-	
-	public void removeGroup(Group group);
+	public void removeStats(String statsId);
 }

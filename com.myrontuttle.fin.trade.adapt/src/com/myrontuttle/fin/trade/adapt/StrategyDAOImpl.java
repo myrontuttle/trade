@@ -4,8 +4,8 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import org.apache.openjpa.persistence.OpenJPAEntityManager;
-import org.apache.openjpa.persistence.OpenJPAPersistence;
+//import org.apache.openjpa.persistence.OpenJPAEntityManager;
+//import org.apache.openjpa.persistence.OpenJPAPersistence;
 
 import com.myrontuttle.sci.evolve.PopulationStats;
 
@@ -17,23 +17,45 @@ public class StrategyDAOImpl implements StrategyDAO {
 		this.em = em;
 	}
 
-	// Create a record in the database for the candidate to get a fresh id
-	public Candidate newCandidateRecord(int[] genome, String populationId, double startingCash) {
-		Candidate cand = new Candidate();
-		cand.setGenomeString(Candidate.generateGenomeString(genome));
-		cand.setStartingCash(startingCash);
-		cand.setGroupId(populationId);
+	public void saveGroup(Group group) {
+		em.persist(group);
+	}
+	
+	// Get the group based on a groupId
+	public Group findGroup(String groupId) {
+		return em.find(Group.class, groupId);
+		/*return em.createQuery(
+				"SELECT g FROM Groups g WHERE g.groupId = :groupId", 
+				Group.class).setParameter("groupId", groupId).getSingleResult();
+				*/
+	}
 
-		OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
-		Object objId = oem.getObjectId(cand);
-		return em.find(Candidate.class, objId);
+	// Retrieve all groups
+	public List<Group> findGroups() {
+		return em.createQuery(
+				"SELECT g FROM Groups g", Group.class).getResultList();
+	}
+	
+	public Group updateGroup(Group group) {
+		return em.merge(group);
+	}
+	
+	public void removeGroup(String groupId) {
+		em.remove(em.find(Group.class, groupId));
+	}
+	
+	public void addCandidate(Candidate candidate, String groupId) {
+		Group group = em.find(Group.class, groupId);
+		group.addCandidate(candidate);
 	}
 
 	// Retrieve a candidate based on it's ID
 	public Candidate findCandidate(String candidateId) {
-		return em.createQuery(
+		return em.find(Candidate.class, candidateId);
+		/*return em.createQuery(
 				"SELECT c FROM Candidates c WHERE c.candidateId = :candidateId", 
 				Candidate.class).setParameter("candidateId", candidateId).getSingleResult();
+				*/
 	}
 
 	// Retrieve candidates from database
@@ -50,34 +72,13 @@ public class StrategyDAOImpl implements StrategyDAO {
 				setParameter("genomeString", Candidate.generateGenomeString(genome)).
 				getSingleResult();
 	}
-
-	public void saveCandidate(Candidate candidate) {
-		em.persist(candidate);
+	
+	public Candidate updateCandidate(Candidate candidate) {
+		return em.merge(candidate);
 	}
 	
-	public void removeCandidate(Candidate candidate) {
-		em.remove(candidate);
-	}
-	
-	public Group newGroupRecord() {
-		Group group = new Group();
-		
-		OpenJPAEntityManager oem = OpenJPAPersistence.cast(em);
-		Object objId = oem.getObjectId(group);
-		return em.find(Group.class, objId);
-	}
-
-	// Get the group based on a groupId
-	public Group findGroup(String groupId) {
-		return em.createQuery(
-				"SELECT g FROM Groups g WHERE g.groupId = :groupId", 
-				Group.class).setParameter("groupId", groupId).getSingleResult();
-	}
-
-	// Retrieve all groups
-	public List<Group> findGroups() {
-		return em.createQuery(
-				"SELECT g FROM Groups g", Group.class).getResultList();
+	public void removeCandidate(String candidateId) {
+		em.remove(em.find(Candidate.class, candidateId));
 	}
 	
 	public void updateGroupStats(PopulationStats<? extends int[]> data) {
@@ -86,8 +87,9 @@ public class StrategyDAOImpl implements StrategyDAO {
 				data.getBestCandidateFitness(), data.getMeanFitness(), 
 				data.getFitnessStandardDeviation(), data.getGenerationNumber());
 		
-		// Save group to database
-		em.persist(stats);
+		Group group = em.find(Group.class, data.getPopulationId());
+
+		group.addGroupStats(stats);
 	}
 
 	// Retrieve group stats from database
@@ -99,16 +101,14 @@ public class StrategyDAOImpl implements StrategyDAO {
 
 	// Get the groupstats based on a statsId
 	public GroupStats findStats(String statsId) {
-		return em.createQuery(
+		return em.find(GroupStats.class, statsId);
+		/*return em.createQuery(
 				"SELECT s FROM GroupStats s WHERE s.statsId = :statsId", 
 				GroupStats.class).setParameter("statsId", statsId).getSingleResult();
-	}
-
-	public void saveGroup(Group group) {
-		em.persist(group);
+				*/
 	}
 	
-	public void removeGroup(Group group) {
-		em.remove(group);
+	public void removeStats(String statsId) {
+		em.remove(em.find(GroupStats.class, statsId));
 	}
 }

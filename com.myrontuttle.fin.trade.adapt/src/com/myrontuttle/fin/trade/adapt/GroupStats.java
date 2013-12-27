@@ -68,20 +68,28 @@ public class GroupStats implements Serializable {
 		this.generationNumber = generationNumber;
 	}
 
-	public String getGroupId() {
-		return groupId;
-	}
-
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
-
 	public String getStatsId() {
 		return statsId;
 	}
 
 	public void setStatsId(String statsId) {
 		this.statsId = statsId;
+	}
+
+	public Group getGroup() {
+		return group;
+	}
+
+	public void setGroup(Group group) {
+		this.group = group;
+	}
+
+	public String getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
 	}
 
 	public String getBestCandidateId() {

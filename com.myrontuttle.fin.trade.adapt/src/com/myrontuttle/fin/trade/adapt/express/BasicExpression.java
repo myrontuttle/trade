@@ -386,19 +386,16 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 	@Override
 	public Candidate express(int[] genome, String groupId) {
-
+		
+		Candidate candidate = new Candidate();
+		candidate.setGenomeString(Candidate.generateGenomeString(genome));
+		candidate.setStartingCash(tradeStrategy.getStartingCash());
+		
+		strategyDAO.addCandidate(candidate, groupId);
+		
 		// Find the group
 		Group group = strategyDAO.findGroup(groupId);
 		
-		// Create the candidate
-		Candidate candidate = new Candidate();
-		candidate.setGroup(group);
-		candidate.setGenomeString(Candidate.generateGenomeString(genome));
-		candidate.setStartingCash(tradeStrategy.getStartingCash());
-		strategyDAO.saveGroup(group);
-		//candidate.setGroupId(groupId);
-		//strategyDAO.saveCandidate(candidate);
-
 		System.out.println("Created new candidate with id: " + candidate.getCandidateId());
 		
 		// Get a list of symbols from the Screener Service
@@ -435,7 +432,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		setupAlertReceiver(openAlerts, portfolioId, tradesToMake);
 
 		// Save candidate to database, and return
-		strategyDAO.saveCandidate(candidate);
+		strategyDAO.updateCandidate(candidate);
 		
 		return candidate;
 	}

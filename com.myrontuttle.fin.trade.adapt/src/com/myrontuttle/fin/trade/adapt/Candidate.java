@@ -34,6 +34,7 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	private int[] genome;
 	
 	@Column(name = "GenomeString")
+	@Lob
 	private String genomeString;
 
 	@Column(name = "WatchlistId")
@@ -90,9 +91,6 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 
 	public void setGroup(Group group) {
 		this.group = group;
-		if (!group.getCandidates().contains(this)) {
-			group.getCandidates().add(this);
-		}
 	}
 
 	public String getGenomeString() {

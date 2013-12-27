@@ -202,7 +202,7 @@ public class BasicExpressionTest {
 		          Candidate candidate = (Candidate)invocation.getArguments()[0];
 		          candidate.setCandidateId(CID);
 		          return candidate;
-		      }}).when(strategyDAO).saveCandidate(any(Candidate.class));
+		      }}).when(strategyDAO).updateCandidate(any(Candidate.class));
 		
 		//when(alertReceiver.watchFor(alertTradeBounds));
 		

@@ -8,7 +8,7 @@ import org.joda.time.DateTime;
  */
 public interface EvolveService {
 	
-	public void evolveNow(Group group);
+	public void evolveNow(String groupId);
 	
 	public void evolveAllNow();
 	

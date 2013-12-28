@@ -6,8 +6,7 @@ public class QuoteMock implements QuoteService {
 
 	@Override
 	public double getLast(String userId, String symbol) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		return 105.25;
 	}
 
 }

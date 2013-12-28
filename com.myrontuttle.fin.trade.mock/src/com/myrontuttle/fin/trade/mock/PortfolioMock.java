@@ -5,69 +5,70 @@ import com.myrontuttle.fin.trade.api.PortfolioService;
 
 public class PortfolioMock implements PortfolioService {
 
+	private final static String PID = "portfolioID";
+	private final static String LID = "LotID";
+	private final double STARTING_CASH = 10000.00;
+	private final static String BUY = "Buy";
+	private final static String SELL = "Sell";
+	private final static String SHORT = "ShortSell";
+	private final static String COVER = "BuyToCover";
+	
+	private String[] openOrderTypes = new String[]{ BUY, SHORT };
+	private String[] closeOrderTypes = new String[]{ SELL, COVER };
+	
 	@Override
 	public String create(String userId, String name) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return PID;
 	}
 
 	@Override
 	public boolean delete(String userId, String portfolioId) throws Exception {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean rename(String userId, String portfolioId, String newName)
 			throws Exception {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean addCashTransaction(String userId, String portfolioId,
 			double quantity, boolean credit, boolean open) throws Exception {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public double getAvailableBalance(String userId, String portfolioId)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		return STARTING_CASH;
 	}
 
 	@Override
 	public String[] openOrderTypesAvailable(String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		return openOrderTypes;
 	}
 
 	@Override
 	public String openPosition(String userId, String portfolioId, Order order)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return LID;
 	}
 
 	@Override
 	public String[] closeOrderTypesAvailable(String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		return closeOrderTypes;
 	}
 
 	@Override
 	public boolean closePosition(String userId, String portfolioId, Order order)
 			throws Exception {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public double closeAllPositions(String userId, String portfolioId)
 			throws Exception {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 

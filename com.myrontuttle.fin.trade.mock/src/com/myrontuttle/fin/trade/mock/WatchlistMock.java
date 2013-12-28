@@ -4,43 +4,41 @@ import com.myrontuttle.fin.trade.api.WatchlistService;
 
 public class WatchlistMock implements WatchlistService {
 
+	private final static String WID = "watchlistID";
+	private final static String LID = "LotID";
+	private final String[] HOLDINGS = new String[]{"AAPL", "MSFT"};
+	
 	@Override
 	public String create(String userId, String name) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return WID;
 	}
 
 	@Override
 	public boolean delete(String userId, String watchlistId) throws Exception {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean rename(String userId, String watchlistId, String newName)
 			throws Exception {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public String addHolding(String userId, String watchlistId, String symbol)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return LID;
 	}
 
 	@Override
 	public String[] retrieveHoldings(String userId, String watchlistId)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return HOLDINGS;
 	}
 
 	@Override
 	public boolean removeHolding(String userId, String watchlistId,
 			String symbol) throws Exception {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

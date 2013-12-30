@@ -86,9 +86,9 @@ public class EmailAlertReceiver implements AlertReceiverService {
 	 * @see com.myrontuttle.adaptivetrader.AlertReceiver#watchFor(com.myrontuttle.adaptivetrader.AlertAction[])
 	 */
 	@Override
-	public void watchFor(AlertAction... alertTrades) {
-		for (AlertAction alertTrade : alertTrades) {
-			alertActionList.add(alertTrade);
+	public void watchFor(AlertAction... alertActions) {
+		for (AlertAction alertAction : alertActions) {
+			alertActionList.add(alertAction);
 		}
 	}
 

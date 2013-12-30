@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Trade Alert Receivers
 Bundle-SymbolicName: com.myrontuttle.fin.trade.alertreceivers
-Bundle-Version: 1.0.1
+Bundle-Version: 1.0.2
 Bundle-Vendor: Myron Tuttle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: com.myrontuttle.fin.trade.api,

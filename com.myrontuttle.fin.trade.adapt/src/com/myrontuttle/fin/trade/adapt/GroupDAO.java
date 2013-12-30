@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.myrontuttle.sci.evolve.PopulationStats;
 
-public interface StrategyDAO {
+public interface GroupDAO {
 
 	public void saveGroup(Group group);
 	
@@ -28,6 +28,8 @@ public interface StrategyDAO {
 	
 	public void removeCandidate(String candidateId);
 	
+	public void removeAllCandidates(String groupId);
+	
 	public void updateGroupStats(PopulationStats<? extends int[]> data);
 	
 	public List<GroupStats> findStatsForGroup(String groupId);
@@ -35,4 +37,6 @@ public interface StrategyDAO {
 	public GroupStats findStats(String statsId);
 	
 	public void removeStats(String statsId);
+	
+	public void removeAllStats(String groupId);
 }

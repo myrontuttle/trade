@@ -1,19 +1,19 @@
 package com.myrontuttle.fin.trade.web;
 
-import com.myrontuttle.fin.trade.adapt.StrategyDAO;
+import com.myrontuttle.fin.trade.adapt.GroupDAO;
 
 /**
  * service locator class for data access object
  */
 public class DBAccess {
 
-	private static StrategyDAO strategyDAO;
+	private static GroupDAO groupDAO;
 	
-	public static StrategyDAO getDAO() {
-		return strategyDAO;
+	public static GroupDAO getDAO() {
+		return groupDAO;
 	}
 
-    public void setStrategyDAO(StrategyDAO sdao) {
-    	DBAccess.strategyDAO = sdao;
+    public void setGroupDAO(GroupDAO sdao) {
+    	DBAccess.groupDAO = sdao;
     }
 }

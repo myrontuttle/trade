@@ -9,7 +9,7 @@ import javax.persistence.EntityManager;
 
 import com.myrontuttle.sci.evolve.PopulationStats;
 
-public class StrategyDAOImpl implements StrategyDAO {
+public class GroupDAOImpl implements GroupDAO {
 
 	private EntityManager em;
 
@@ -78,7 +78,18 @@ public class StrategyDAOImpl implements StrategyDAO {
 	}
 	
 	public void removeCandidate(String candidateId) {
-		em.remove(em.find(Candidate.class, candidateId));
+		Candidate candidate = em.find(Candidate.class, candidateId);
+		Group group = em.find(Group.class, candidate.getGroupId());
+		group.removeCandidate(candidate);
+		em.remove(candidate);
+	}
+
+	public void removeAllCandidates(String groupId) {
+		Group group = findGroup(groupId);
+		for (Candidate c : group.getCandidates()) {
+			group.removeCandidate(c);
+			em.remove(c);
+		}
 	}
 	
 	public void updateGroupStats(PopulationStats<? extends int[]> data) {
@@ -109,6 +120,18 @@ public class StrategyDAOImpl implements StrategyDAO {
 	}
 	
 	public void removeStats(String statsId) {
-		em.remove(em.find(GroupStats.class, statsId));
+		GroupStats stats = em.find(GroupStats.class, statsId);
+		Group group = em.find(Group.class, stats.getGroupId());
+		group.removeStats(stats);
+		em.remove(stats);
+	}
+
+	@Override
+	public void removeAllStats(String groupId) {
+		Group group = findGroup(groupId);
+		for (GroupStats gs : group.getStats()) {
+			group.removeStats(gs);
+			em.remove(gs);
+		}
 	}
 }

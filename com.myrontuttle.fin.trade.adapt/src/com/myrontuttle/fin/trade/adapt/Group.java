@@ -51,6 +51,12 @@ public class Group implements Serializable {
 	@Column(name = "EvaluationStrategy")
 	private String evaluationStrategy;
 	
+	@Column(name = "TradeStrategy")
+	private String tradeStrategy;
+	
+	@Column(name = "AllowShorting")
+	private boolean allowShorting;
+	
 	@Column(name = "StartTime")
 	private Date startTime;
 	
@@ -68,6 +74,9 @@ public class Group implements Serializable {
 	
 	@Column(name = "AlertsPerSymbol")
 	private int alertsPerSymbol;
+	
+	@Column(name = "StartingCash")
+	private double startingCash;
 	
 	@Column(name = "Active")
 	private boolean active;
@@ -89,10 +98,24 @@ public class Group implements Serializable {
 		}
 	}
 	
+	public void removeCandidate(Candidate c) {
+		if (candidates.contains(c)) {
+			candidates.remove(c);
+			c.setGroup(null);
+		}
+	}
+	
 	public void addGroupStats(GroupStats gs) {
 		this.stats.add(gs);
 		if (gs.getGroup() != this) {
 			gs.setGroup(this);
+		}
+	}
+	
+	public void removeStats(GroupStats gs) {
+		if (stats.contains(gs)) {
+			stats.remove(gs);
+			gs.setGroup(null);
 		}
 	}
 
@@ -160,6 +183,22 @@ public class Group implements Serializable {
 		this.evaluationStrategy = evaluationStrategy;
 	}
 
+	public String getTradeStrategy() {
+		return tradeStrategy;
+	}
+
+	public void setTradeStrategy(String tradeStrategy) {
+		this.tradeStrategy = tradeStrategy;
+	}
+
+	public boolean isAllowShorting() {
+		return allowShorting;
+	}
+
+	public void setAllowShorting(boolean allowShorting) {
+		this.allowShorting = allowShorting;
+	}
+
 	public Date getStartTime() {
 		return startTime;
 	}
@@ -206,6 +245,14 @@ public class Group implements Serializable {
 
 	public void setAlertsPerSymbol(int alertsPerSymbol) {
 		this.alertsPerSymbol = alertsPerSymbol;
+	}
+
+	public double getStartingCash() {
+		return startingCash;
+	}
+
+	public void setStartingCash(double startingCash) {
+		this.startingCash = startingCash;
 	}
 
 	public boolean isActive() {

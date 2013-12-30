@@ -3,21 +3,37 @@ package com.myrontuttle.fin.trade.api;
 import java.util.HashMap;
 
 /**
- * Determines the limits for entering, adjusting, and exiting a trade
+ * Determines the behavior for entering, adjusting, and exiting a trade
  * @author Myron Tuttle
  */
 public interface TradeStrategy {
 
 	/**
-	 * Sets the limits for the strategy
+	 * @return The name of this strategy
+	 */
+	public String getName();
+	
+	/**
+	 * @return A description of this strategy
+	 */
+	public String getDescription();
+	
+	/**
+	 * @return The list of parameters needed for this strategy
+	 */
+	public AvailableStrategyParameter[] availableParameters();
+	
+	/**
+	 * Sets the limits for the strategy parameters
 	 * @param limits Name-value pairs that provide upper and lower limits
 	 */
-	public void setLimits(HashMap<String, String> limits);
-
+	public void setParameterLimits(HashMap<String, Integer> limits);
+	
 	/**
-	 * Returns the amount of cash that accounts start with
+	 * Sets the number of order types that are available to the strategy
+	 * @param OrderTypesAvailable
 	 */
-	public double getStartingCash();
+	public void setOrderTypesAvailable(int OrderTypesAvailable);
 	
 	/**
 	 * Opens, adjusts, or closes a trade based on the action

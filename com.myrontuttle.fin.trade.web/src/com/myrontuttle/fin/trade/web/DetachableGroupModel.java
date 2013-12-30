@@ -19,7 +19,7 @@ package com.myrontuttle.fin.trade.web;
 import org.apache.wicket.model.LoadableDetachableModel;
 
 import com.myrontuttle.fin.trade.adapt.Group;
-import com.myrontuttle.fin.trade.adapt.StrategyDAO;
+import com.myrontuttle.fin.trade.adapt.GroupDAO;
 
 /**
  * detachable model for an instance of group

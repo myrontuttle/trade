@@ -31,29 +31,34 @@ public class UpdateGroupPanel extends Panel {
 		
 		form.add(new TextField<String>("alertAddress")
 					.add(EmailAddressValidator.getInstance()));
-		
 		form.add(new Label("frequency"));
 		form.add(new Label("expressionStrategy"));
 		form.add(new Label("evaluationStrategy"));
+		form.add(new Label("tradeStrategy"));
 		
-		form.add(new CheckBox("active"));
-
 		form.add(new TextField<String>("size")
 						.setRequired(true));
-		
 		form.add(new TextField<Integer>("eliteCount")
 						.setRequired(true));
-		
 		form.add(new Label("geneUpperValue"));
-
 		form.add(new Label("mutationFactor"));
-		
+		form.add(new CheckBox("active"));
+
 		form.add(new Label("numberOfScreens"));
-		
 		form.add(new Label("maxSymbolsPerScreen"));
-		
 		form.add(new Label("alertsPerSymbol"));
-		
+		form.add(new CheckBox("allowShorting"));
+
+		form.add(new Button("removeCandidates") {
+            public void onSubmit() {
+            	DBAccess.getDAO().removeAllCandidates(group.getGroupId());
+            }
+        });
+		form.add(new Button("removeStats") {
+            public void onSubmit() {
+            	DBAccess.getDAO().removeAllCandidates(group.getGroupId());
+            }
+        });
 		form.add(new Button("update") {
             public void onSubmit() {
             	group = DBAccess.getDAO().updateGroup((Group)compound.getObject());

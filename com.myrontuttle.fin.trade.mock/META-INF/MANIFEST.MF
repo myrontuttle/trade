@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Trade Mock
 Bundle-SymbolicName: com.myrontuttle.fin.trade.mock
-Bundle-Version: 1.0.1
+Bundle-Version: 2.0.0
 Bundle-Vendor: Myron Tuttle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: com.myrontuttle.fin.trade.api

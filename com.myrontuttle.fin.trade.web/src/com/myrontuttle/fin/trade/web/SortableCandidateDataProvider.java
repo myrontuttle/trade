@@ -23,7 +23,7 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvid
 import org.apache.wicket.model.IModel;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
-import com.myrontuttle.fin.trade.adapt.StrategyDAO;
+import com.myrontuttle.fin.trade.adapt.GroupDAO;
 
 /**
  * implementation of IDataProvider for group stas that keeps track of sort information
@@ -45,7 +45,7 @@ public class SortableCandidateDataProvider extends SortableDataProvider<Candidat
 		setSort("candidateId", SortOrder.ASCENDING);
 	}
 
-	protected StrategyDAO getDAO() {
+	protected GroupDAO getDAO() {
 		return DBAccess.getDAO();
 	}
 

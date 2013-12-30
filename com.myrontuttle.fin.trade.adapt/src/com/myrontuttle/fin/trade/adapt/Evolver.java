@@ -32,11 +32,11 @@ public class Evolver implements EvolveService {
 	final String EVOLVE_HOUR = "evolve_hour";
 	final String EVOLVE_MINUTE = "evolve_minute";
 	
-	private StrategyDAO strategyDAO;
+	private GroupDAO groupDAO;
 	private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
 	
-	public void setStrategyDAO(StrategyDAO strategyDAO) {
-		this.strategyDAO = strategyDAO;
+	public void setStrategyDAO(GroupDAO groupDAO) {
+		this.groupDAO = groupDAO;
 	}
 	
 	private final TerminationCondition[] terminationConditions = new TerminationCondition[]{
@@ -44,7 +44,7 @@ public class Evolver implements EvolveService {
 	private final EvolutionObserver<int[]> dbObserver = new EvolutionObserver<int[]>() {
 		public void populationUpdate(PopulationStats<? extends int[]> data) {
 			// Use data to update group
-			strategyDAO.updateGroupStats(data);
+			groupDAO.updateGroupStats(data);
 		}
 	};
 	
@@ -53,12 +53,10 @@ public class Evolver implements EvolveService {
 	
 	public Evolver() {
 		if (prefs.getBoolean(EVOLVE_ACTIVE, false)) {
-			/*
 			evolveActiveAt(
 					new DateTime().
 					withHourOfDay(prefs.getInt(EVOLVE_HOUR, 0)).
 					withMinuteOfHour(prefs.getInt(EVOLVE_MINUTE, 0)));
-					*/
 		}
 	}
 	
@@ -111,21 +109,21 @@ public class Evolver implements EvolveService {
 	public void evolveNow(String groupId) {
 		
 		List<ExpressedCandidate<int[]>> candidates = new ArrayList<ExpressedCandidate<int[]>>(
-											strategyDAO.findCandidatesInGroup(groupId));
+											groupDAO.findCandidatesInGroup(groupId));
 		
-		Group group = strategyDAO.findGroup(groupId);
+		Group group = groupDAO.findGroup(groupId);
 		
 		int size = group.getSize();
 		int eliteCount = group.getEliteCount();
-		int genomeLength = 0;
 
 		ExpressionStrategy<int[]> expressionStrategy = null;
 		if (group.getExpressionStrategy().equals(Group.BASIC_EXPRESSION)) {
 			expressionStrategy = new BasicExpression<int[]>();
-			genomeLength = BasicExpression.getGenomeLength(group);
 		} else {
 			expressionStrategy = new NoExpression();
 		}
+		
+		int genomeLength = expressionStrategy.getGenomeLength(groupId);
 		
 		ExpressedFitnessEvaluator<int[]> evaluator = null;
 		if (group.getEvaluationStrategy().equals(Group.BASIC_EVALUATOR)) {
@@ -139,6 +137,10 @@ public class Evolver implements EvolveService {
 														group.getMutationFactor(),
 														expressionStrategy, evaluator);
 		
+		if (evaluator.isNatural()) {
+			System.out.println("Evaluation is natural");
+		}
+		
 		engine.evolveToExpression(candidates, groupId, size, eliteCount, 
 				terminationConditions);
 	}
@@ -147,7 +149,7 @@ public class Evolver implements EvolveService {
 	 * Evolve all groups in database now
 	 */
 	public void evolveAllNow() {
-		List<Group> groups = strategyDAO.findGroups();
+		List<Group> groups = groupDAO.findGroups();
 		for (Group group : groups) {
 			evolveNow(group.getGroupId());
 		}
@@ -171,7 +173,7 @@ public class Evolver implements EvolveService {
 			@Override
 			public void run() {
 				try {
-					List<Group> groups = strategyDAO.findGroups();
+					List<Group> groups = groupDAO.findGroups();
 					for (Group group : groups) {
 						if (group.isActive()) {
 							if ((group.getFrequency().equals(Group.DAILY) && wasMarketOpenToday()) ||

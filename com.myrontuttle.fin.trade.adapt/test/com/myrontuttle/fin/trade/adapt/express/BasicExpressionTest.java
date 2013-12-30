@@ -15,20 +15,25 @@ import org.mockito.stubbing.Answer;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.Group;
-import com.myrontuttle.fin.trade.adapt.StrategyDAO;
+import com.myrontuttle.fin.trade.adapt.GroupDAO;
 import com.myrontuttle.fin.trade.adapt.express.BasicExpression;
 import com.myrontuttle.fin.trade.api.AlertReceiverService;
 import com.myrontuttle.fin.trade.api.AlertService;
 import com.myrontuttle.fin.trade.api.AvailableAlert;
 import com.myrontuttle.fin.trade.api.AvailableScreenCriteria;
 import com.myrontuttle.fin.trade.api.PortfolioService;
+import com.myrontuttle.fin.trade.api.QuoteService;
 import com.myrontuttle.fin.trade.api.ScreenerService;
 import com.myrontuttle.fin.trade.api.SelectedAlert;
 import com.myrontuttle.fin.trade.api.SelectedScreenCriteria;
+import com.myrontuttle.fin.trade.api.Trade;
+import com.myrontuttle.fin.trade.api.TradeParameter;
+import com.myrontuttle.fin.trade.api.TradeStrategy;
+import com.myrontuttle.fin.trade.api.TradeStrategyService;
 import com.myrontuttle.fin.trade.api.WatchlistService;
-import com.myrontuttle.fin.trade.strategies.AlertTradeBounds;
-import com.myrontuttle.fin.trade.strategies.BasicTradeStrategy;
-import com.myrontuttle.fin.trade.strategies.TradeBounds;
+import com.myrontuttle.fin.trade.strategies.AlertTrade;
+import com.myrontuttle.fin.trade.strategies.BoundedStrategy;
+import com.myrontuttle.fin.trade.strategies.BoundedWAdjustStrategy;
 
 public class BasicExpressionTest {
 
@@ -43,6 +48,7 @@ public class BasicExpressionTest {
 	private final static String SELL = "Sell";
 	private final static String SHORT = "ShortSell";
 	private final static String COVER = "BuyToCover";
+	private final static String BOUNDED_STRAT = "Bounded Strategy";
 
 	private static final int SCREEN_GENES = 3;
 	private static final int MAX_SYMBOLS_PER_SCREEN = 5;
@@ -53,10 +59,11 @@ public class BasicExpressionTest {
 	private WatchlistService watchlistService;
 	private AlertService alertService;
 	private PortfolioService portfolioService;
-	private BasicTradeStrategy basicTradeStrategy;
+	private QuoteService quoteService;
+	private TradeStrategyService strategyService;
 	private AlertReceiverService alertReceiver;
-
-	private StrategyDAO strategyDAO;
+	private TradeStrategy tradeStrategy;
+	private GroupDAO groupDAO;
 	
 	private BasicExpression<int[]> expression;
 	
@@ -119,12 +126,27 @@ public class BasicExpressionTest {
 	};
 	
 	private String[] openOrderTypes = new String[]{ BUY, SHORT };
-	private TradeBounds[] tradeBounds = new TradeBounds[]{
-			new TradeBounds(screenSymbols[0], 0, 37, 24, 60, 88),
-			new TradeBounds(screenSymbols[1], 1, 25, 66, 86400, 75)
+
+	TradeParameter[] params1 = new TradeParameter[]{
+			new TradeParameter(BoundedWAdjustStrategy.OPEN_ORDER, 0),
+			new TradeParameter(BoundedWAdjustStrategy.TRADE_ALLOC, 37),
+			new TradeParameter(BoundedWAdjustStrategy.PERCENT_BELOW, 24),
+			new TradeParameter(BoundedWAdjustStrategy.TIME_LIMIT, 60),
+			new TradeParameter(BoundedWAdjustStrategy.PERCENT_ABOVE, 88)
 	};
-	private AlertTradeBounds[] alertTradeBounds = new AlertTradeBounds[] {
-			new AlertTradeBounds(selectedAlerts[0], PID, tradeBounds[0])
+	TradeParameter[] params2 = new TradeParameter[]{
+			new TradeParameter(BoundedWAdjustStrategy.OPEN_ORDER, 1),
+			new TradeParameter(BoundedWAdjustStrategy.TRADE_ALLOC, 25),
+			new TradeParameter(BoundedWAdjustStrategy.PERCENT_BELOW, 66),
+			new TradeParameter(BoundedWAdjustStrategy.TIME_LIMIT, 86400),
+			new TradeParameter(BoundedWAdjustStrategy.PERCENT_ABOVE, 75)
+	};
+	private Trade[] trades = new Trade[]{
+			new Trade(screenSymbols[0], params1),
+			new Trade(screenSymbols[1], params2)
+	};
+	private AlertTrade[] alertTrade = new AlertTrade[] {
+			new AlertTrade(selectedAlerts[0], PID, trades[0])
 	};
 	
 	@Before
@@ -136,7 +158,6 @@ public class BasicExpressionTest {
 		candidateA.setGenomeString(Candidate.generateGenomeString(genomeA));
 		candidateA.setGroupId(GID);
 		candidateA.setPortfolioId(PID);
-		candidateA.setStartingCash(STARTING_CASH);
 		candidateA.setWatchlistId(WID);
 		Collection<Candidate> candidates = new ArrayList<Candidate>();
 		candidates.add(candidateA);
@@ -148,18 +169,22 @@ public class BasicExpressionTest {
 		group1.setAlertsPerSymbol(ALERTS_PER_SYMBOL);
 		group1.setGeneUpperValue(100);
 		group1.setActive(true);
+		group1.setStartingCash(STARTING_CASH);
 		group1.setAlertAddress(EMAIL);
 		group1.setCandidates(candidates);
 		group1.setExpressionStrategy("BasicExpression");
+		group1.setTradeStrategy(BOUNDED_STRAT);
 		
 	    // Create mocks
 		screenerService = mock(ScreenerService.class);
 		watchlistService = mock(WatchlistService.class);
 		alertService = mock(AlertService.class);
 		portfolioService = mock(PortfolioService.class);
-		basicTradeStrategy = mock(BasicTradeStrategy.class);
+		quoteService = mock(QuoteService.class);
+		strategyService = mock(TradeStrategyService.class);
 		alertReceiver = mock(AlertReceiverService.class);
-		strategyDAO = mock(StrategyDAO.class);
+		groupDAO = mock(GroupDAO.class);
+		tradeStrategy = new BoundedStrategy(portfolioService, quoteService, alertService, alertReceiver);
 		
 		// Describe Mocks
 		when(screenerService.getAvailableCriteria(GID)).thenReturn(availableScreenCriteria);
@@ -186,23 +211,16 @@ public class BasicExpressionTest {
 		when(alertService.addAlertDestination(GID, EMAIL, "EMAIL")).thenReturn(true);
 		when(alertService.setupAlerts(GID, selectedAlerts)).thenReturn(true);
 		
-		when(basicTradeStrategy.getStartingCash()).thenReturn(STARTING_CASH);
-		when(basicTradeStrategy.tradeAllocationLower()).thenReturn(BasicTradeStrategy.TRADE_ALLOC_LOWER);
-		when(basicTradeStrategy.tradeAllocationUpper()).thenReturn(BasicTradeStrategy.TRADE_ALLOC_UPPER);
-		when(basicTradeStrategy.acceptableLossLower()).thenReturn(BasicTradeStrategy.ACCEPT_LOSS_LOWER);
-		when(basicTradeStrategy.acceptableLossUpper()).thenReturn(BasicTradeStrategy.ACCEPT_LOSS_UPPER);
-		when(basicTradeStrategy.timeInTradeLower()).thenReturn(BasicTradeStrategy.TIME_IN_TRADE_LOWER);
-		when(basicTradeStrategy.timeInTradeUpper()).thenReturn(BasicTradeStrategy.TIME_IN_TRADE_UPPER);
-		when(basicTradeStrategy.adjustAtLower()).thenReturn(BasicTradeStrategy.ADJUST_AT_LOWER);
-		when(basicTradeStrategy.adjustAtUpper()).thenReturn(BasicTradeStrategy.ADJUST_AT_UPPER);
+		when(strategyService.getTradeStrategy(BOUNDED_STRAT)).thenReturn(tradeStrategy);
 		
-		when(strategyDAO.findGroup(GID)).thenReturn(group1);
+		when(groupDAO.findGroup(GID)).thenReturn(group1);
 		doAnswer(new Answer<Candidate>() {
 		      public Candidate answer(InvocationOnMock invocation) {
 		          Candidate candidate = (Candidate)invocation.getArguments()[0];
 		          candidate.setCandidateId(CID);
+		          candidate.setGroupId(GID);
 		          return candidate;
-		      }}).when(strategyDAO).updateCandidate(any(Candidate.class));
+		      }}).when(groupDAO).addCandidate(any(Candidate.class), eq(GID));
 		
 		//when(alertReceiver.watchFor(alertTradeBounds));
 		
@@ -210,11 +228,11 @@ public class BasicExpressionTest {
 		expression = new BasicExpression<int[]>();
 		expression.setAlertReceiver(alertReceiver);
 		expression.setAlertService(alertService);
-		expression.setTradeStrategy(basicTradeStrategy);
+		expression.setTradeStrategyService(strategyService);
 		expression.setPortfolioService(portfolioService);
 		expression.setWatchlistService(watchlistService);
 		expression.setScreenerService(screenerService);
-		expression.setStrategyDAO(strategyDAO);
+		expression.setStrategyDAO(groupDAO);
 	}
 
 	@Test
@@ -242,7 +260,7 @@ public class BasicExpressionTest {
 	
 	@Test
 	public void testSetupPortfolio() {
-		assertEquals(PID, expression.setupPortfolio(CID));
+		assertEquals(PID, expression.setupPortfolio(CID, STARTING_CASH));
 	}
 	
 	@Test
@@ -264,15 +282,15 @@ public class BasicExpressionTest {
 	
 	@Test
 	public void testExpressTradeGenes() {
-		TradeBounds[] trades = expression.expressTradeGenes(CID, genomeA, screenSymbols, group1);
+		Trade[] trades = expression.expressTradeGenes(CID, genomeA, screenSymbols, group1);
 		for (int i=0; i<trades.length; i++) {
-			assertTrue(trades[i].equals(tradeBounds[i]));
+			assertTrue(trades[i].equals(trades[i]));
 		}
 	}
 	
 	@Test
 	public void testSetupAlertReceiver() {
-		expression.setupAlertReceiver(selectedAlerts, PID, tradeBounds);
+		expression.setupAlertReceiver(selectedAlerts, PID, trades);
 	}
 	
 	@Test

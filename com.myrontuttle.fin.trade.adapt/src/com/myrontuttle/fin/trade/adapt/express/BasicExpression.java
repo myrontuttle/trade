@@ -8,11 +8,9 @@ import java.util.List;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.Group;
-import com.myrontuttle.fin.trade.adapt.StrategyDAO;
+import com.myrontuttle.fin.trade.adapt.GroupDAO;
 import com.myrontuttle.fin.trade.api.*;
-import com.myrontuttle.fin.trade.strategies.AlertTradeBounds;
-import com.myrontuttle.fin.trade.strategies.BasicTradeStrategy;
-import com.myrontuttle.fin.trade.strategies.TradeBounds;
+import com.myrontuttle.fin.trade.strategies.AlertTrade;
 import com.myrontuttle.sci.evolve.ExpressedCandidate;
 import com.myrontuttle.sci.evolve.ExpressionStrategy;
 
@@ -39,10 +37,10 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	private static WatchlistService watchlistService;
 	private static AlertService alertService;
 	private static PortfolioService portfolioService;
-	private static TradeStrategy tradeStrategy;
+	private static TradeStrategyService tradeStrategyService;
 	private static AlertReceiverService alertReceiver;
 	
-	private static StrategyDAO strategyDAO;
+	private static GroupDAO groupDAO;
 	
 	private int watchlistCounter = 0;
 	private int portfolioCounter = 0;
@@ -79,12 +77,12 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		BasicExpression.portfolioService = portfolioService;
 	}
 
-	public static TradeStrategy getTradeStrategy() {
-		return tradeStrategy;
+	public static TradeStrategyService getTradeStrategyService() {
+		return tradeStrategyService;
 	}
 
-	public void setTradeStrategy(TradeStrategy tradeStrategy) {
-		BasicExpression.tradeStrategy = tradeStrategy;
+	public void setTradeStrategyService(TradeStrategyService tradeStrategyService) {
+		BasicExpression.tradeStrategyService = tradeStrategyService;
 	}
 
 	public static AlertReceiverService getAlertReceiver() {
@@ -95,15 +93,16 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		BasicExpression.alertReceiver = alertReceiver;
 	}
 
-	public static StrategyDAO getStrategyDAO() {
-		return strategyDAO;
+	public static GroupDAO getStrategyDAO() {
+		return groupDAO;
 	}
 
-	public void setStrategyDAO(StrategyDAO strategyDAO) {
-		BasicExpression.strategyDAO = strategyDAO;
+	public void setStrategyDAO(GroupDAO groupDAO) {
+		BasicExpression.groupDAO = groupDAO;
 	}
 
-	public static int getGenomeLength(Group group) {
+	public int getGenomeLength(String groupId) {
+		Group group = groupDAO.findGroup(groupId);
 		return 1 + SCREEN_GENE_LENGTH * group.getNumberOfScreens() +
 				group.getMaxSymbolsPerScreen() * ALERT_GENE_LENGTH * group.getAlertsPerSymbol() +
 				group.getMaxSymbolsPerScreen() * group.getAlertsPerSymbol() * TRADE_GENE_LENGTH;
@@ -168,7 +167,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			return symbols;
 		}
 		int sortGene = transpose(genome[SCREEN_SORT_POSITION], group.getGeneUpperValue(), 
-									0, group.getNumberOfScreens());
+									0, screenCriteria.length - 1);
 		try {
 			String[] screenSymbols = screenerService.screen(
 											groupId,
@@ -212,7 +211,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		return watchlistId;
 	}
 	
-	String setupPortfolio(String candidateId) {
+	String setupPortfolio(String candidateId, double startingCash) {
 		portfolioCounter++;
 		String portfolioId = null;
 		
@@ -220,7 +219,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			portfolioId = portfolioService.create(candidateId, 
 													PORT_NAME_PREFIX + portfolioCounter);
 			portfolioService.addCashTransaction(candidateId, portfolioId, 
-												tradeStrategy.getStartingCash(), 
+												startingCash, 
 												true, true);
 		} catch (Exception e) {
 			System.out.println("Error creating portfolio: " + e.getMessage());
@@ -331,52 +330,46 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	 * @param symbols The symbols found during screening
 	 * @return A set of alert criteria selected by this candidate
 	 */
-	TradeBounds[] expressTradeGenes(String userId, int[] candidate, String[] symbols, Group group) {
+	Trade[] expressTradeGenes(String userId, int[] candidate, String[] symbols, Group group) {
 
-		TradeBounds[] trades = new TradeBounds[symbols.length];
+		Trade[] trades = new Trade[symbols.length];
 		
-		BasicTradeStrategy basicTradeStrategy = (BasicTradeStrategy)tradeStrategy;
+		TradeStrategy tradeStrategy = tradeStrategyService.getTradeStrategy(group.getTradeStrategy());
+
+		tradeStrategy.setOrderTypesAvailable(portfolioService.openOrderTypesAvailable(userId).length);
+		
+		AvailableStrategyParameter[] availableParameters = tradeStrategy.availableParameters();
 		
 		int position = getAlertStartPosition(group) + 
 				group.getMaxSymbolsPerScreen() * ALERT_GENE_LENGTH * group.getAlertsPerSymbol();
+		
+		TradeParameter[] tradeParameters;
+		
 		for (int i=0; i<symbols.length; i++) {
-			int open = transpose(candidate[position],
-								group.getGeneUpperValue(), 0, 
-								portfolioService.openOrderTypesAvailable(userId).length - 1);
+			tradeParameters = new TradeParameter[availableParameters.length];
 			
-			int allocation = transpose(candidate[position + 1],
-											group.getGeneUpperValue(),
-											basicTradeStrategy.tradeAllocationLower(), 
-											basicTradeStrategy.tradeAllocationUpper());
-
-			int loss = transpose(candidate[position + 2],
-											group.getGeneUpperValue(),
-											basicTradeStrategy.acceptableLossLower(), 
-											basicTradeStrategy.acceptableLossUpper());
-
-			int time = transpose(candidate[position + 3],
-											group.getGeneUpperValue(),
-											basicTradeStrategy.timeInTradeLower(), 
-											basicTradeStrategy.timeInTradeUpper());
-
-			int adjust = transpose(candidate[position + 4],
-											group.getGeneUpperValue(),
-											basicTradeStrategy.adjustAtLower(), 
-											basicTradeStrategy.adjustAtUpper());
+			for (int j=0; j<availableParameters.length; j++) {
+				tradeParameters[j] = new TradeParameter(
+										availableParameters[i].getName(),
+										transpose(candidate[position + 1],
+												group.getGeneUpperValue(),
+												availableParameters[i].getLower(), 
+												availableParameters[i].getUpper()));
+			}
 			
-			trades[i] = new TradeBounds(symbols[i], open, allocation, loss, time, adjust);
+			trades[i] = new Trade(symbols[i], tradeParameters);
 			position += TRADE_GENE_LENGTH;
 		}
 		return trades;
 	}
 	
-	void setupAlertReceiver(SelectedAlert[] openAlerts, String portfolioId, TradeBounds[] tradesToMake) {
-		AlertTradeBounds[] alertTradeBounds = new AlertTradeBounds[openAlerts.length];
+	void setupAlertReceiver(SelectedAlert[] openAlerts, String portfolioId, Trade[] tradesToMake) {
+		AlertTrade[] alertTrades = new AlertTrade[openAlerts.length];
 		for (int i=0; i<openAlerts.length; i++) {
-			alertTradeBounds[i] = new AlertTradeBounds(openAlerts[i], portfolioId, tradesToMake[i]);
+			alertTrades[i] = new AlertTrade(openAlerts[i], portfolioId, tradesToMake[i]);
 		}
 		try {
-			alertReceiver.watchFor(alertTradeBounds);
+			alertReceiver.watchFor(alertTrades);
 		} catch (Exception e) {
 			System.out.println("Error preparing to watch for alerts: " + 
 								e.getMessage());
@@ -389,12 +382,11 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		
 		Candidate candidate = new Candidate();
 		candidate.setGenomeString(Candidate.generateGenomeString(genome));
-		candidate.setStartingCash(tradeStrategy.getStartingCash());
 		
-		strategyDAO.addCandidate(candidate, groupId);
+		groupDAO.addCandidate(candidate, groupId);
 		
 		// Find the group
-		Group group = strategyDAO.findGroup(groupId);
+		Group group = groupDAO.findGroup(groupId);
 		
 		System.out.println("Created new candidate with id: " + candidate.getCandidateId());
 		
@@ -411,7 +403,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		candidate.setWatchlistId(watchlistId);
 		
 		// Prepare portfolio
-		String portfolioId = setupPortfolio(candidate.getCandidateId());
+		String portfolioId = setupPortfolio(candidate.getCandidateId(), group.getStartingCash());
 
 		// No point continuing if there's no portfolio to track trades
 		if (portfolioId == null || portfolioId == "") {
@@ -425,14 +417,14 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		setupAlerts(groupId, openAlerts, group.getAlertAddress());
 		
 		// Create trades to be made when alerts are triggered
-		TradeBounds[] tradesToMake = expressTradeGenes(candidate.getCandidateId(), 
+		Trade[] tradesToMake = expressTradeGenes(candidate.getCandidateId(), 
 														genome, symbols, group);
 		
 		// Create listener for alerts to move stocks to portfolio
 		setupAlertReceiver(openAlerts, portfolioId, tradesToMake);
 
 		// Save candidate to database, and return
-		strategyDAO.updateCandidate(candidate);
+		groupDAO.updateCandidate(candidate);
 		
 		return candidate;
 	}

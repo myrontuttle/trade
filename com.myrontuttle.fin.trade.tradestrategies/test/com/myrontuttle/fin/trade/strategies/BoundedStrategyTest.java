@@ -11,19 +11,22 @@ import static org.mockito.Mockito.*;
 
 import com.myrontuttle.fin.trade.api.AlertReceiverService;
 import com.myrontuttle.fin.trade.api.AlertService;
+import com.myrontuttle.fin.trade.api.AvailableAlert;
 import com.myrontuttle.fin.trade.api.Order;
 import com.myrontuttle.fin.trade.api.PortfolioService;
 import com.myrontuttle.fin.trade.api.QuoteService;
 import com.myrontuttle.fin.trade.api.SelectedAlert;
+import com.myrontuttle.fin.trade.api.Trade;
+import com.myrontuttle.fin.trade.api.TradeParameter;
 
-public class BasicTradeStrategyTest {
+public class BoundedStrategyTest {
 
 	private PortfolioService portfolioService;
 	private QuoteService quoteService;
 	private AlertService alertService;
 	private AlertReceiverService alertReceiverService;
 	
-	private BasicTradeStrategy bts;
+	private BoundedStrategy bs;
 	
 	private final String userId = "testuser";
 	private final String richPortfolio = "rich";
@@ -35,6 +38,20 @@ public class BasicTradeStrategyTest {
 	private final double poorBalance = 10.00;
 	private final double avgPrice = 33.03;
 	private final double expensivePrice = 167380.00;
+
+	private final int belowId = 1;
+	private final String belowCondition = "{symbol}'s price fell below {Price}";
+	private AvailableAlert priceBelowAlert = new AvailableAlert(belowId, belowCondition, 
+			new String[]{"DOUBLE"}, 
+			new String[]{"Price"}, new String[]{"Fund.Price.Low.Lifetime"}, 
+			new String[]{"Quote.Value.Last"}, null);
+
+	private final int aboveId = 2;
+	private final String aboveCondition = "{symbol}'s price rose above {Price}";
+	private AvailableAlert priceAboveAlert = new AvailableAlert(aboveId, aboveCondition, 
+			new String[]{"DOUBLE"}, 
+			new String[]{"Price"}, new String[]{"Fund.Price.High.Lifetime"}, 
+			new String[]{"Quote.Value.Last"}, null);
 	
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
@@ -53,9 +70,12 @@ public class BasicTradeStrategyTest {
 		when(quoteService.getLast(userId, avgSymbol)).thenReturn(avgPrice);
 		when(portfolioService.getAvailableBalance(userId, poorPortfolio)).thenReturn(poorBalance);
 		when(quoteService.getLast(userId, expensiveSymbol)).thenReturn(expensivePrice);
-		when(portfolioService.closePosition(userId, richPortfolio, any(Order.class))).thenReturn(true);
+		when(portfolioService.closePosition(eq(userId), eq(richPortfolio), any(Order.class))).thenReturn(true);
 		
-		bts = new BasicTradeStrategy(portfolioService, quoteService, 
+		when(alertService.getPriceBelowAlert(userId)).thenReturn(priceBelowAlert);
+		when(alertService.getPriceAboveAlert(userId)).thenReturn(priceAboveAlert);
+		
+		bs = new BoundedStrategy(portfolioService, quoteService, 
 										alertService, alertReceiverService);
 	}
 
@@ -69,25 +89,26 @@ public class BasicTradeStrategyTest {
 		 * TimeInTrade = 60*60 = 3600 seconds = 1 hour
 		 * AdjustAt = 30% of current symbol price
 		 */
-		TradeBounds tradeMsft = new TradeBounds(avgSymbol, 0, 10, 10, 3600, 30);
+		TradeParameter[] params = new TradeParameter[]{
+				new TradeParameter(BoundedWAdjustStrategy.OPEN_ORDER, 0),
+				new TradeParameter(BoundedWAdjustStrategy.TRADE_ALLOC, 10),
+				new TradeParameter(BoundedWAdjustStrategy.PERCENT_BELOW, 10),
+				new TradeParameter(BoundedWAdjustStrategy.TIME_LIMIT, 3600),
+				new TradeParameter(BoundedWAdjustStrategy.PERCENT_ABOVE, 30)
+		};
+		Trade tradeMsft = new Trade(avgSymbol, params);
 		SelectedAlert openAlert = new SelectedAlert(1, "Price went up", avgSymbol, null);
-		AlertTradeBounds atb = new AlertTradeBounds(openAlert, richPortfolio, tradeMsft);
+		AlertTrade at = new AlertTrade(openAlert, richPortfolio, tradeMsft);
 				
 		// Test
-		String openTradeId = bts.takeAction(userId, atb);
+		String openTradeId = bs.takeAction(userId, at);
 		assertTrue(openTradeId != null);
-
-		SelectedAlert adjustAlert = new SelectedAlert(1, "Price went up again", avgSymbol, null);
-		AlertTradeAdjustment ata = new AlertTradeAdjustment(adjustAlert, richPortfolio, openTradeId);
-		
-		String adjustTradeId = bts.takeAction(userId, ata);
-		assertEquals(openTradeId, adjustTradeId);
 		
 		SelectedAlert closeAlert = new SelectedAlert(0, "Price went down", avgSymbol, null);
 		Order closeOrder = new Order(openTradeId, "sell", avgSymbol, 10);
 		AlertOrder ao = new AlertOrder(closeAlert, richPortfolio, closeOrder);
 		
-		assertEquals(bts.takeAction(userId, ao), openTradeId);
+		assertEquals(bs.takeAction(userId, ao), openTradeId);
 	}
 
 	@Test
@@ -100,13 +121,20 @@ public class BasicTradeStrategyTest {
 		 * TimeInTrade = 60*60 = 3600 seconds = 1 hour
 		 * AdjustAt = 30% of current symbol price
 		 */
-		TradeBounds tradeBrk = new TradeBounds(expensiveSymbol, 0, 10, 10, 3600, 30);
+		TradeParameter[] params = new TradeParameter[]{
+				new TradeParameter(BoundedWAdjustStrategy.OPEN_ORDER, 0),
+				new TradeParameter(BoundedWAdjustStrategy.TRADE_ALLOC, 10),
+				new TradeParameter(BoundedWAdjustStrategy.PERCENT_BELOW, 10),
+				new TradeParameter(BoundedWAdjustStrategy.TIME_LIMIT, 3600),
+				new TradeParameter(BoundedWAdjustStrategy.PERCENT_ABOVE, 30)
+		};
+		Trade tradeBrk = new Trade(expensiveSymbol, params);
 		SelectedAlert openAlert = new SelectedAlert(1, "Price went up", avgSymbol, null);
-		AlertTradeBounds atb = new AlertTradeBounds(openAlert, poorPortfolio, tradeBrk);
+		AlertTrade atb = new AlertTrade(openAlert, poorPortfolio, tradeBrk);
 
 		// Test
 		exception.expect(Exception.class);
-		String openTradeId = bts.takeAction(userId, atb);
+		String openTradeId = bs.takeAction(userId, atb);
 		assertTrue(openTradeId == null);
 	}
 

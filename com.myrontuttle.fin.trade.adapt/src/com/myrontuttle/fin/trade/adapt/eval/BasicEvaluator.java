@@ -4,6 +4,7 @@ import java.util.List;
 
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
+import com.myrontuttle.fin.trade.adapt.GroupDAO;
 import com.myrontuttle.fin.trade.api.PortfolioService;
 import com.myrontuttle.sci.evolve.ExpressedCandidate;
 import com.myrontuttle.sci.evolve.ExpressedFitnessEvaluator;
@@ -14,14 +15,23 @@ import com.myrontuttle.sci.evolve.ExpressedFitnessEvaluator;
  */
 public class BasicEvaluator implements ExpressedFitnessEvaluator<int[]> {
 
-	private PortfolioService portfolioService = null;
+	private static PortfolioService portfolioService = null;
+	private static GroupDAO groupDAO;
 
-	public PortfolioService getPortfolioService() {
+	public static PortfolioService getPortfolioService() {
 		return portfolioService;
 	}
 
 	public void setPortfolioService(PortfolioService portfolioService) {
-		this.portfolioService = portfolioService;
+		BasicEvaluator.portfolioService = portfolioService;
+	}
+
+	public static GroupDAO getGroupDAO() {
+		return groupDAO;
+	}
+
+	public void setGroupDAO(GroupDAO groupDAO) {
+		BasicEvaluator.groupDAO = groupDAO;
 	}
 
 	/**
@@ -44,6 +54,7 @@ public class BasicEvaluator implements ExpressedFitnessEvaluator<int[]> {
 		
 		// Fitness is simply realized gain
 		double balance = 0;
+		double startingCash = groupDAO.findGroup(tradeCandidate.getGroupId()).getStartingCash();
 		try {
 			balance = portfolioService.closeAllPositions(tradeCandidate.getCandidateId(),
 														tradeCandidate.getPortfolioId());
@@ -52,7 +63,7 @@ public class BasicEvaluator implements ExpressedFitnessEvaluator<int[]> {
 			e.printStackTrace();
 			return 0;
 		}
-		return (balance >= tradeCandidate.getStartingCash()) ? 
-					balance - tradeCandidate.getStartingCash() : 0;
+		return (balance >= startingCash) ? 
+					balance - startingCash : 0;
 	}
 }

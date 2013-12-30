@@ -37,8 +37,11 @@ public class CreateGroupPanel extends Panel {
 
 		List<String> evaluators = Arrays.asList(Group.RANDOM_EVALUATOR, Group.BASIC_EVALUATOR);
 		form.add(new DropDownChoice<String>("evaluationStrategy", evaluators));
-		
-		form.add(new CheckBox("active"));
+
+		List<String> tradeStrategies = Arrays.
+					asList(StrategyAccess.getTradeStrategyService().availableTradeStrategies());
+		form.add(new DropDownChoice<String>("tradeStrategy", tradeStrategies));
+
 
 		form.add(new TextField<String>("size")
 						.setRequired(true));
@@ -53,6 +56,9 @@ public class CreateGroupPanel extends Panel {
 		form.add(new TextField<Integer>("mutationFactor")
 						.setRequired(true)
 						.add(new AttributeModifier("value", "0.1")));
+
+		form.add(new CheckBox("allowShorting"));
+		
 		
 		form.add(new TextField<Integer>("numberOfScreens")
 						.setRequired(true)
@@ -65,6 +71,8 @@ public class CreateGroupPanel extends Panel {
 		form.add(new TextField<Integer>("alertsPerSymbol")
 						.setRequired(true)
 						.add(new AttributeModifier("value", "2")));
+
+		form.add(new CheckBox("active"));
 		
 		form.add(new Button("create") {
             public void onSubmit() {

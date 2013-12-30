@@ -60,6 +60,13 @@ public interface PortfolioService {
 	public String[] openOrderTypesAvailable(String userId);
 	
 	/**
+	 * Indicates whether an order type would benefit from a price increase
+	 * @param orderType From the openOrderTypesAvailable
+	 * @return True if rising prices would result in a better outcome for a holding
+	 */
+	public boolean priceRiseGood(String orderType);
+	
+	/**
 	 * Open a position with a particular order type
 	 * @param userId
 	 * @param portfolioId Id of the portfolio where we're buying shares for

@@ -7,24 +7,25 @@
 	<reference id="WatchlistService" interface="com.myrontuttle.fin.trade.api.WatchlistService" />
 	<reference id="AlertService" interface="com.myrontuttle.fin.trade.api.AlertService" />
 	<reference id="PortfolioService" interface="com.myrontuttle.fin.trade.api.PortfolioService" />
-	<reference id="TradeStrategy" interface="com.myrontuttle.fin.trade.api.TradeStrategy" />
+	<reference id="TradeStrategyService" interface="com.myrontuttle.fin.trade.api.TradeStrategyService" />
 	<reference id="AlertReceiverService" interface="com.myrontuttle.fin.trade.api.AlertReceiverService" />
 	
-	<bean id="StrategyDAOImpl" class="com.myrontuttle.fin.trade.adapt.StrategyDAOImpl" scope="singleton">
+	<bean id="GroupDAOImpl" class="com.myrontuttle.fin.trade.adapt.GroupDAOImpl" scope="singleton">
 		<jpa:context unitname="AdaptPersistanceUnit" property="entityManager" />
       	<tx:transaction method="*" value="Required"/>
 	</bean>
 	
 	<bean id="Evolver" class="com.myrontuttle.fin.trade.adapt.Evolver" scope="singleton">
-		<property name="strategyDAO" ref="StrategyDAOImpl" />
+		<property name="groupDAO" ref="GroupDAOImpl" />
 	</bean>
 	
-	<service ref="StrategyDAOImpl" interface="com.myrontuttle.fin.trade.adapt.StrategyDAO" />
+	<service ref="GroupDAOImpl" interface="com.myrontuttle.fin.trade.adapt.GroupDAO" />
 	
 	<service ref="Evolver" interface="com.myrontuttle.fin.trade.adapt.EvolveService" />
 	
 	<bean id="BasicEvaluator" class="com.myrontuttle.fin.trade.adapt.eval.BasicEvaluator">
 		<property name="portfolioService" ref="PortfolioService" />
+		<property name="groupDAO" ref="GroupDAOImpl" />
 	</bean>
 	
 	<bean id="BasicExpression" class="com.myrontuttle.fin.trade.adapt.express.BasicExpression" >
@@ -32,9 +33,9 @@
 		<property name="watchlistService" ref="WatchlistService" />
 		<property name="alertService" ref="AlertService" />
 		<property name="portfolioService" ref="PortfolioService" />
-		<property name="tradeStrategy" ref="TradeStrategy" />
+		<property name="tradeStrategyService" ref="TradeStrategyService" />
 		<property name="alertReceiver" ref="AlertReceiverService" />
-		<property name="strategyDAO" ref="StrategyDAOImpl" />
+		<property name="groupDAO" ref="GroupDAOImpl" />
 	</bean>
 	
 </blueprint>

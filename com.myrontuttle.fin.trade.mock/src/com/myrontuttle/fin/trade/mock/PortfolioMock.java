@@ -50,6 +50,15 @@ public class PortfolioMock implements PortfolioService {
 	}
 
 	@Override
+	public boolean priceRiseGood(String orderType) {
+		if (orderType.equals(BUY) || orderType.equals(SELL)) {
+			return true;
+		}
+		return false;
+	}
+
+
+	@Override
 	public String openPosition(String userId, String portfolioId, Order order)
 			throws Exception {
 		return LID;
@@ -71,5 +80,4 @@ public class PortfolioMock implements PortfolioService {
 			throws Exception {
 		return 0;
 	}
-
 }

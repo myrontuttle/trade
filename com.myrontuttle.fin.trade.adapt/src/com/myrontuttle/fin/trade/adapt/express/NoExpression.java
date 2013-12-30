@@ -18,7 +18,11 @@ public class NoExpression implements ExpressionStrategy<int[]> {
 	public void candidatesExpressed(
 			List<ExpressedCandidate<int[]>> expressedCandidates) {
 		// TODO Auto-generated method stub
-		
+	}
+
+	@Override
+	public int getGenomeLength(String populationId) {
+		return 0;
 	}
 
 }

@@ -42,9 +42,6 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 
 	@Column(name = "PortfolioId")
 	private String portfolioId;
-
-	@Column(name = "StartingCash")
-	private double startingCash;
 	
 	/*
 	private SelectedScreenCriteria[] screenCriteria;
@@ -63,7 +60,6 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 		this.genome = genome;
 		this.genomeString = Arrays.toString(genome);
 		this.portfolioId = portfolioId;
-		this.startingCash = startingCash;
 		/*
 		this.screenCriteria = screenCriteria;
 		this.symbols = symbols;
@@ -118,13 +114,6 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	}
 	public void setPortfolioId(String portfolioId) {
 		this.portfolioId = portfolioId;
-	}
-
-	public double getStartingCash() {
-		return startingCash;
-	}
-	public void setStartingCash(double startingCash) {
-		this.startingCash = startingCash;
 	}
 	
 	public static int[] parseGenomeString(String genomeString) {
@@ -181,15 +170,10 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 		int result = 1;
 		result = prime * result
 				+ ((candidateId == null) ? 0 : candidateId.hashCode());
-		result = prime * result + Arrays.hashCode(genome);
 		result = prime * result
 				+ ((genomeString == null) ? 0 : genomeString.hashCode());
-		result = prime * result + ((groupId == null) ? 0 : groupId.hashCode());
 		result = prime * result
 				+ ((portfolioId == null) ? 0 : portfolioId.hashCode());
-		long temp;
-		temp = Double.doubleToLongBits(startingCash);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result
 				+ ((watchlistId == null) ? 0 : watchlistId.hashCode());
 		return result;
@@ -209,25 +193,15 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 				return false;
 		} else if (!candidateId.equals(other.candidateId))
 			return false;
-		if (!Arrays.equals(genome, other.genome))
-			return false;
 		if (genomeString == null) {
 			if (other.genomeString != null)
 				return false;
 		} else if (!genomeString.equals(other.genomeString))
 			return false;
-		if (groupId == null) {
-			if (other.groupId != null)
-				return false;
-		} else if (!groupId.equals(other.groupId))
-			return false;
 		if (portfolioId == null) {
 			if (other.portfolioId != null)
 				return false;
 		} else if (!portfolioId.equals(other.portfolioId))
-			return false;
-		if (Double.doubleToLongBits(startingCash) != Double
-				.doubleToLongBits(other.startingCash))
 			return false;
 		if (watchlistId == null) {
 			if (other.watchlistId != null)
@@ -236,4 +210,5 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 			return false;
 		return true;
 	}
+	
 }

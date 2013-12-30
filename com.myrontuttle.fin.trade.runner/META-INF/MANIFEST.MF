@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Runner
+Bundle-Name: Trade Runner
 Bundle-SymbolicName: com.myrontuttle.fin.trade.runner
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 2.0.0
 Bundle-Vendor: Myron Tuttle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: com.myrontuttle.fin.trade.adapt,

@@ -5,32 +5,32 @@ import java.util.List;
 import org.osgi.framework.ServiceReference;
 
 import com.myrontuttle.fin.trade.adapt.Group;
-import com.myrontuttle.fin.trade.adapt.StrategyDAO;
+import com.myrontuttle.fin.trade.adapt.GroupDAO;
 
-public class StrategyAccess {
+public class GroupAccess {
 
-    private StrategyDAO strategyDAO;
+    private GroupDAO groupDAO;
     
-    public void setStrategyDAO(StrategyDAO sdao) {
-    	System.out.println("Setting StrategyDAO for StrategyAccess");
-    	this.strategyDAO = sdao;
+    public void setGroupDAO(GroupDAO sdao) {
+    	System.out.println("Setting GroupDAO for GroupAccess");
+    	this.groupDAO = sdao;
     }
     
-    public StrategyDAO getStrategyDAO() {
-    	return strategyDAO;
+    public GroupDAO getGroupDAO() {
+    	return groupDAO;
     }
 
     public void bind(ServiceReference<?> reference) {
-        System.out.println("StrategyAccess, service bound: " + reference);
+        System.out.println("GroupAccess, service bound: " + reference);
         
-        if (strategyDAO == null) {
-			System.out.println("No StrategyDAO");
+        if (groupDAO == null) {
+			System.out.println("No GroupDAO");
 			return;
 		}
 		
 		try {
 			System.out.println("Finding Groups");
-			List<Group> existingGroups = strategyDAO.findGroups();
+			List<Group> existingGroups = groupDAO.findGroups();
 			if (existingGroups != null && existingGroups.size() > 0) {
     			System.out.println("Groups (id - start date): ");
 				for (Group group : existingGroups) {
@@ -38,7 +38,7 @@ public class StrategyAccess {
 				}
 			} else {
 				System.out.println("No existing groups. Creating new group");
-				Group group = strategyDAO.newGroupRecord();
+				Group group = new Group();
 				System.out.println("New group created");
 				group.setAlertAddress("wsodinvestor@gmail.com");
 				group.setActive(true);
@@ -51,7 +51,7 @@ public class StrategyAccess {
 				group.setNumberOfScreens(1);
 				group.setMaxSymbolsPerScreen(5);
 				group.setMutationFactor(.05);
-				strategyDAO.saveGroup(group);
+				groupDAO.saveGroup(group);
 				System.out.println("Group " + group.getGroupId() + ", created on: " + 
 									group.getStartTime().toString());
 			}
@@ -63,10 +63,10 @@ public class StrategyAccess {
     }
 
     public void unbind(ServiceReference<?> reference) {
-        System.out.println("StrategyAccess, service unbound: " + reference);
+        System.out.println("GroupAccess, service unbound: " + reference);
 
         try {
-    		List<Group> existingGroups = strategyDAO.findGroups();
+    		List<Group> existingGroups = groupDAO.findGroups();
     		if (existingGroups != null && existingGroups.size() > 0) {
     			System.out.println("Groups (id - start date): ");
     			for (Group group : existingGroups) {

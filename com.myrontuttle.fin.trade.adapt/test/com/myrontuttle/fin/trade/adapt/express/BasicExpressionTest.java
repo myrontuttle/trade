@@ -103,7 +103,7 @@ public class BasicExpressionTest {
 				new SelectedScreenCriteria("RCCAssetClass", "LIKE[0]=Large Cap", "OR"),
 				new SelectedScreenCriteria("RCCRegion", "LIKE[0]=Americas", "OR")
 	};
-	private String[] screenSymbols = new String[]{"AAPL", "MSFT"};
+	private String[] screenSymbols = new String[]{"AAPL", "MSFT", "CSCO", "AA", "T"};
 	
 	private String watchlistName = BasicExpression.WATCH_NAME_PREFIX + "1";
 	private String portfolioName = BasicExpression.PORT_NAME_PREFIX + "1";
@@ -122,7 +122,11 @@ public class BasicExpressionTest {
 			priceBelowAlert
 	};
 	private SelectedAlert[] selectedAlerts = new SelectedAlert[]{
-			new SelectedAlert(alertId, condition, "AAPL", new double[]{400})
+			new SelectedAlert(alertId, condition, screenSymbols[0], new double[]{300}),
+			new SelectedAlert(alertId, condition, screenSymbols[1], new double[]{200}),
+			new SelectedAlert(alertId, condition, screenSymbols[2], new double[]{100}),
+			new SelectedAlert(alertId, condition, screenSymbols[3], new double[]{50}),
+			new SelectedAlert(alertId, condition, screenSymbols[4], new double[]{25}),
 	};
 	
 	private String[] openOrderTypes = new String[]{ BUY, SHORT };
@@ -290,7 +294,7 @@ public class BasicExpressionTest {
 	
 	@Test
 	public void testSetupAlertReceiver() {
-		expression.setupAlertReceiver(selectedAlerts, PID, trades);
+		expression.setupAlertReceiver(selectedAlerts, PID, trades, group1);
 	}
 	
 	@Test

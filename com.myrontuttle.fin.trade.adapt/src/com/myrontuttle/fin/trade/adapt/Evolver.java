@@ -137,10 +137,6 @@ public class Evolver implements EvolveService {
 														group.getMutationFactor(),
 														expressionStrategy, evaluator);
 		
-		if (evaluator.isNatural()) {
-			System.out.println("Evaluation is natural");
-		}
-		
 		engine.evolveToExpression(candidates, groupId, size, eliteCount, 
 				terminationConditions);
 	}

@@ -363,10 +363,13 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		return trades;
 	}
 	
-	void setupAlertReceiver(SelectedAlert[] openAlerts, String portfolioId, Trade[] tradesToMake) {
+	void setupAlertReceiver(SelectedAlert[] openAlerts, String portfolioId, Trade[] tradesToMake, 
+								Group group) {
 		AlertTrade[] alertTrades = new AlertTrade[openAlerts.length];
-		for (int i=0; i<openAlerts.length; i++) {
-			alertTrades[i] = new AlertTrade(openAlerts[i], portfolioId, tradesToMake[i]);
+		for (int i=0; i<tradesToMake.length; i++) {
+			for (int j=0; j<group.getAlertsPerSymbol(); j++) {
+				alertTrades[i+j] = new AlertTrade(openAlerts[i+j], portfolioId, tradesToMake[i]);
+			}
 		}
 		try {
 			alertReceiver.watchFor(alertTrades);
@@ -412,16 +415,16 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			candidate.setPortfolioId(portfolioId);
 		}
 
-		// Create alerts for stocks
+		// Create (symbols*alertsPerSymbol) alerts for stocks
 		SelectedAlert[] openAlerts = expressAlertGenes(groupId, genome, symbols, group);
 		setupAlerts(groupId, openAlerts, group.getAlertAddress());
 		
-		// Create trades to be made when alerts are triggered
+		// Create (symbol) trades to be made when alerts are triggered
 		Trade[] tradesToMake = expressTradeGenes(candidate.getCandidateId(), 
 														genome, symbols, group);
 		
 		// Create listener for alerts to move stocks to portfolio
-		setupAlertReceiver(openAlerts, portfolioId, tradesToMake);
+		setupAlertReceiver(openAlerts, portfolioId, tradesToMake, group);
 
 		// Save candidate to database, and return
 		groupDAO.updateCandidate(candidate);

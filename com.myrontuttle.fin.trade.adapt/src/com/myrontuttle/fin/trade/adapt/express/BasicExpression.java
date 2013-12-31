@@ -93,11 +93,11 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		BasicExpression.alertReceiver = alertReceiver;
 	}
 
-	public static GroupDAO getStrategyDAO() {
+	public static GroupDAO getGroupDAO() {
 		return groupDAO;
 	}
 
-	public void setStrategyDAO(GroupDAO groupDAO) {
+	public void setGroupDAO(GroupDAO groupDAO) {
 		BasicExpression.groupDAO = groupDAO;
 	}
 

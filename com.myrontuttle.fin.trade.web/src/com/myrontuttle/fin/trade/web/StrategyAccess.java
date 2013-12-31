@@ -13,7 +13,7 @@ public class StrategyAccess {
 		return tradeStrategyService;
 	}
 
-	public static void setTradeStrategyService(TradeStrategyService tradeStrategyService) {
+	public void setTradeStrategyService(TradeStrategyService tradeStrategyService) {
 		StrategyAccess.tradeStrategyService = tradeStrategyService;
 	}
 

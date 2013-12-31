@@ -232,7 +232,7 @@ public class BasicExpressionTest {
 		expression.setPortfolioService(portfolioService);
 		expression.setWatchlistService(watchlistService);
 		expression.setScreenerService(screenerService);
-		expression.setStrategyDAO(groupDAO);
+		expression.setGroupDAO(groupDAO);
 	}
 
 	@Test

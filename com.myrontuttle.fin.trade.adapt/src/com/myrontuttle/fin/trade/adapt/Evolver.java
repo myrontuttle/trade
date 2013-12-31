@@ -35,7 +35,7 @@ public class Evolver implements EvolveService {
 	private GroupDAO groupDAO;
 	private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
 	
-	public void setStrategyDAO(GroupDAO groupDAO) {
+	public void setGroupDAO(GroupDAO groupDAO) {
 		this.groupDAO = groupDAO;
 	}
 	

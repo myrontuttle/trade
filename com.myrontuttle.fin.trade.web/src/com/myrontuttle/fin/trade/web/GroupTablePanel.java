@@ -30,19 +30,13 @@ public class GroupTablePanel extends Panel {
 		List<IColumn<Group, String>> columns = new ArrayList<IColumn<Group, String>>();
 		
 		columns.add(new PropertyColumn<Group, String>(new Model<String>("ID"), "groupId", "groupId"));
-		columns.add(new PropertyColumn(new Model<String>("Last Updated"), "updatedTime", "updatedTime"));
 		columns.add(new PropertyColumn(new Model<String>("Alert Address"), "alertAddress"));
 		columns.add(new PropertyColumn(new Model<String>("Frequency"), "frequency"));
-		columns.add(new PropertyColumn(new Model<String>("Expression"), "expressionStrategy"));
-		columns.add(new PropertyColumn(new Model<String>("Evaluation"), "evaluationStrategy"));
 		columns.add(new PropertyColumn(new Model<String>("Active"), "active"));
 		columns.add(new PropertyColumn(new Model<String>("Size"), "size"));
 		columns.add(new PropertyColumn(new Model<String>("Elites"), "eliteCount"));
-		columns.add(new PropertyColumn(new Model<String>("Gene Upper"), "geneUpperValue"));
-		columns.add(new PropertyColumn(new Model<String>("Mutation"), "mutationFactor"));
-		columns.add(new PropertyColumn(new Model<String>("Screens"), "numberOfScreens"));
-		columns.add(new PropertyColumn(new Model<String>("Symbols/Screen"), "maxSymbolsPerScreen"));
-		columns.add(new PropertyColumn(new Model<String>("Alerts/Symbol"), "alertsPerSymbol"));
+		columns.add(new PropertyColumn(new Model<String>("Created On"), "startTime"));
+		columns.add(new PropertyColumn(new Model<String>("Last Updated"), "updatedTime"));
 
 		columns.add(new AbstractColumn<Group, String>(new Model<String>("Details")) {
 			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,

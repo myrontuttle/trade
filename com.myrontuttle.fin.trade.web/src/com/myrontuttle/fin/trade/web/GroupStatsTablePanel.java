@@ -23,7 +23,7 @@ public class GroupStatsTablePanel extends Panel {
 		List<IColumn<GroupStats, String>> columns = new ArrayList<IColumn<GroupStats, String>>();
 
 		columns.add(new PropertyColumn<GroupStats, String>(new Model<String>("ID"), "statsId", "statsId"));
-		columns.add(new PropertyColumn(new Model<String>("Recorded"), "recordedTime", "recordedTime"));
+		columns.add(new PropertyColumn(new Model<String>("Recorded"), "recordedTime"));
 		columns.add(new PropertyColumn(new Model<String>("Best Candidate"), "bestCandidateId"));
 		columns.add(new PropertyColumn(new Model<String>("Best Fitness"), "bestCandidateFitness"));
 		columns.add(new PropertyColumn(new Model<String>("Mean Fitness"), "meanFitness"));

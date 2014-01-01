@@ -17,8 +17,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
-import com.myrontuttle.fin.trade.adapt.Group;
-import com.myrontuttle.fin.trade.web.GroupTablePanel.DeleteGroupPanel;
 
 public class CandidateTablePanel extends Panel {
 	
@@ -31,7 +29,6 @@ public class CandidateTablePanel extends Panel {
 		List<IColumn<Candidate, String>> columns = new ArrayList<IColumn<Candidate, String>>();
 
 		columns.add(new PropertyColumn<Candidate, String>(new Model<String>("ID"), "candidateId", "candidateId"));
-		columns.add(new PropertyColumn(new Model<String>("Starting Cash"), "startingCash", "startingCash"));
 		columns.add(new PropertyColumn(new Model<String>("Watchlist"), "watchlistId"));
 		columns.add(new PropertyColumn(new Model<String>("Portfolio"), "portfolioId"));
 
@@ -45,7 +42,7 @@ public class CandidateTablePanel extends Panel {
 		columns.add(new PropertyColumn(new Model<String>("Genome"), "genomeString"));
 
 		DataTable dataTable = new DefaultDataTable<Candidate, String>("candidates", columns,
-				new SortableCandidateDataProvider(groupId), 5);
+				new SortableCandidateDataProvider(groupId), 20);
 
 		add(dataTable);
 	}

@@ -90,12 +90,15 @@ public class Evolver implements EvolveService {
 		SelectionStrategy<Object> selection = new RouletteWheelSelection();
 
 		// Strategy evolution engine
-		EvolutionEngine<int[]> engine = new GenerationalEvolutionEngine<int[]>(candidateFactory,
+		GenerationalEvolutionEngine<int[]> engine = new GenerationalEvolutionEngine<int[]>(candidateFactory,
 		                                              pipeline,
 		                                              candidateEvaluator,
 		                                              candidateExpression,
 		                                              selection,
 		                                              RNG.getRNG(RNG.MARSENNETWISTER));
+		
+		// Set single thread
+		//engine.setSingleThreaded(true);
 		
 		// Add observer for the evolution
 		engine.addEvolutionObserver(dbObserver);

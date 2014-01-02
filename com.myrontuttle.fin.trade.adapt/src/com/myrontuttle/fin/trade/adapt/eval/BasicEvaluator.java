@@ -54,12 +54,14 @@ public class BasicEvaluator implements ExpressedFitnessEvaluator<int[]> {
 		
 		// Fitness is simply realized gain
 		double balance = 0;
-		double startingCash = groupDAO.findGroup(tradeCandidate.getGroupId()).getStartingCash();
+		double startingCash = 0;
 		try {
+			startingCash = groupDAO.findGroup(tradeCandidate.getGroupId()).getStartingCash();
 			balance = portfolioService.closeAllPositions(tradeCandidate.getCandidateId(),
 														tradeCandidate.getPortfolioId());
 		} catch (Exception e) {
-			System.out.println("Error getting portfolio balance: " + e.getMessage());
+			System.out.println("Error getting portfolio balance for candidate: " + 
+					tradeCandidate.getCandidateId() + ". Group: " + tradeCandidate.getGroupId());
 			e.printStackTrace();
 			return 0;
 		}

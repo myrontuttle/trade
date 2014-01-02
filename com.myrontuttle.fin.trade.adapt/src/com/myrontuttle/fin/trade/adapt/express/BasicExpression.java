@@ -384,14 +384,13 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	public Candidate express(int[] genome, String groupId) {
 		
 		Candidate candidate = new Candidate();
-		candidate.setGenomeString(Candidate.generateGenomeString(genome));
+		candidate.setGenome(genome);
+		candidate.setGroupId(groupId);
 		
 		groupDAO.addCandidate(candidate, groupId);
 		
 		// Find the group
 		Group group = groupDAO.findGroup(groupId);
-		
-		System.out.println("Created new candidate with id: " + candidate.getCandidateId());
 		
 		// Get a list of symbols from the Screener Service
 		String[] symbols = getScreenSymbols(genome, groupId, group);
@@ -428,6 +427,10 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 		// Save candidate to database, and return
 		groupDAO.updateCandidate(candidate);
+
+		
+		System.out.println("Created new candidate with id: " + candidate.getCandidateId() + " in group: " +
+				candidate.getGroupId());
 		
 		return candidate;
 	}

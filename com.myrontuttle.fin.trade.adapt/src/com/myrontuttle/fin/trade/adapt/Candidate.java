@@ -98,7 +98,15 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 
 	@Override
 	public int[] getGenome() {
+		if (genome == null) {
+			setGenome(parseGenomeString(genomeString));
+		}
 		return genome;
+	}
+	
+	public void setGenome(int[] genome) {
+		setGenomeString(generateGenomeString(genome));
+		this.genome = genome;
 	}
 	
 	public String getWatchlistId() {
@@ -126,10 +134,10 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	}
 	
 	public static String generateGenomeString(int[] genome) {
-		int k = genome.length;
-		if (k == 0) {
-		    return null;
+		if (genome == null || genome.length == 0) {
+			return "";
 		}
+		int k = genome.length;
 		StringBuilder out = new StringBuilder();
 		out.append(genome[0]);
 		for (int i = 1; i < k; i++) {

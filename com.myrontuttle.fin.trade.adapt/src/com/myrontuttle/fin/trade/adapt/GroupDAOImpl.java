@@ -24,10 +24,6 @@ public class GroupDAOImpl implements GroupDAO {
 	// Get the group based on a groupId
 	public Group findGroup(String groupId) {
 		return em.find(Group.class, groupId);
-		/*return em.createQuery(
-				"SELECT g FROM Groups g WHERE g.groupId = :groupId", 
-				Group.class).setParameter("groupId", groupId).getSingleResult();
-				*/
 	}
 
 	// Retrieve all groups
@@ -52,10 +48,6 @@ public class GroupDAOImpl implements GroupDAO {
 	// Retrieve a candidate based on it's ID
 	public Candidate findCandidate(String candidateId) {
 		return em.find(Candidate.class, candidateId);
-		/*return em.createQuery(
-				"SELECT c FROM Candidates c WHERE c.candidateId = :candidateId", 
-				Candidate.class).setParameter("candidateId", candidateId).getSingleResult();
-				*/
 	}
 
 	// Retrieve candidates from database
@@ -87,14 +79,17 @@ public class GroupDAOImpl implements GroupDAO {
 	public void removeAllCandidates(String groupId) {
 		Group group = findGroup(groupId);
 		for (Candidate c : group.getCandidates()) {
-			group.removeCandidate(c);
 			em.remove(c);
 		}
+		group.getCandidates().clear();
 	}
 	
 	public void updateGroupStats(PopulationStats<? extends int[]> data) {
+		Candidate candidate = findCandidateByGenome(data.getBestCandidate());
+		String candidateId = candidate.getCandidateId();
+		
 		GroupStats stats = new GroupStats(data.getPopulationId(), 
-				findCandidateByGenome(data.getBestCandidate()).getCandidateId(), 
+				candidateId, 
 				data.getBestCandidateFitness(), data.getMeanFitness(), 
 				data.getFitnessStandardDeviation(), data.getGenerationNumber());
 		
@@ -113,10 +108,6 @@ public class GroupDAOImpl implements GroupDAO {
 	// Get the groupstats based on a statsId
 	public GroupStats findStats(String statsId) {
 		return em.find(GroupStats.class, statsId);
-		/*return em.createQuery(
-				"SELECT s FROM GroupStats s WHERE s.statsId = :statsId", 
-				GroupStats.class).setParameter("statsId", statsId).getSingleResult();
-				*/
 	}
 	
 	public void removeStats(String statsId) {
@@ -130,8 +121,8 @@ public class GroupDAOImpl implements GroupDAO {
 	public void removeAllStats(String groupId) {
 		Group group = findGroup(groupId);
 		for (GroupStats gs : group.getStats()) {
-			group.removeStats(gs);
 			em.remove(gs);
 		}
+		group.getStats().clear();
 	}
 }

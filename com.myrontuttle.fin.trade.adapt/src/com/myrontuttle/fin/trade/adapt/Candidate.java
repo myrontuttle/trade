@@ -16,7 +16,7 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
-	public static final String GENE_SEPARATOR = "|";
+	public static final String GENE_SEPARATOR = ",";
 
 	@Id
 	@Column(name = "CandidateId", nullable = false)
@@ -94,19 +94,21 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	}
 	public void setGenomeString(String genomeString) {
 		this.genomeString = genomeString;
+		if (genome == null) {
+			setGenome(parseGenomeString(genomeString));
+		}
 	}
 
 	@Override
 	public int[] getGenome() {
-		if (genome == null) {
-			setGenome(parseGenomeString(genomeString));
-		}
 		return genome;
 	}
 	
 	public void setGenome(int[] genome) {
-		setGenomeString(generateGenomeString(genome));
 		this.genome = genome;
+		if (genomeString == null || genomeString.isEmpty()) {
+			setGenomeString(generateGenomeString(genome));
+		}
 	}
 	
 	public String getWatchlistId() {

@@ -45,6 +45,9 @@ public class Evolver implements EvolveService {
 		public void populationUpdate(PopulationStats<? extends int[]> data) {
 			// Use data to update group
 			groupDAO.updateGroupStats(data);
+
+			// Remove candidates so as not to create duplicates
+			groupDAO.removeAllCandidates(data.getPopulationId());
 		}
 	};
 	
@@ -111,8 +114,13 @@ public class Evolver implements EvolveService {
 	 */
 	public void evolveNow(String groupId) {
 		
-		List<ExpressedCandidate<int[]>> candidates = new ArrayList<ExpressedCandidate<int[]>>(
-											groupDAO.findCandidatesInGroup(groupId));
+		List<Candidate> tradeCandidates = groupDAO.findCandidatesInGroup(groupId);
+		List<ExpressedCandidate<int[]>> candidates = new ArrayList<ExpressedCandidate<int[]>>(tradeCandidates.size());
+		
+		for (Candidate c : tradeCandidates) {
+			c.setGenome(Candidate.parseGenomeString(c.getGenomeString()));
+			candidates.add(c);
+		}
 		
 		Group group = groupDAO.findGroup(groupId);
 		

@@ -4,13 +4,12 @@ import com.myrontuttle.fin.trade.api.WatchlistService;
 
 public class WatchlistMock implements WatchlistService {
 
-	private final static String WID = "watchlistID";
 	private final static String LID = "LotID";
 	private final String[] HOLDINGS = new String[]{"AAPL", "MSFT"};
 	
 	@Override
 	public String create(String userId, String name) throws Exception {
-		return WID;
+		return name;
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import com.myrontuttle.fin.trade.api.PortfolioService;
 
 public class PortfolioMock implements PortfolioService {
 
-	private final static String PID = "portfolioID";
 	private final static String LID = "LotID";
 	private final double STARTING_CASH = 10000.00;
 	private final static String BUY = "Buy";
@@ -18,7 +17,7 @@ public class PortfolioMock implements PortfolioService {
 	
 	@Override
 	public String create(String userId, String name) throws Exception {
-		return PID;
+		return name;
 	}
 
 	@Override
@@ -78,6 +77,6 @@ public class PortfolioMock implements PortfolioService {
 	@Override
 	public double closeAllPositions(String userId, String portfolioId)
 			throws Exception {
-		return 0;
+		return STARTING_CASH + (Math.random() - 0.5) * 100;
 	}
 }

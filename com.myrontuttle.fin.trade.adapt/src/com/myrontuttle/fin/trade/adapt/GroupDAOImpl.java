@@ -94,6 +94,8 @@ public class GroupDAOImpl implements GroupDAO {
 				data.getFitnessStandardDeviation(), data.getGenerationNumber());
 		
 		Group group = em.find(Group.class, data.getPopulationId());
+		
+		group.setGeneration(data.getGenerationNumber());
 
 		group.addGroupStats(stats);
 	}

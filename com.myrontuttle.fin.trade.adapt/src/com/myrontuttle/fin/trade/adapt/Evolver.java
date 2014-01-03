@@ -148,7 +148,7 @@ public class Evolver implements EvolveService {
 														group.getMutationFactor(),
 														expressionStrategy, evaluator);
 		
-		engine.evolveToExpression(candidates, groupId, size, eliteCount, 
+		engine.evolveToExpression(candidates, groupId, size, group.getGeneration(), eliteCount, 
 				terminationConditions);
 	}
 	

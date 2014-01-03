@@ -78,6 +78,9 @@ public class Group implements Serializable {
 	@Column(name = "StartingCash")
 	private double startingCash;
 	
+	@Column(name = "Generation")
+	private int generation;
+	
 	@Column(name = "Active")
 	private boolean active;
 	
@@ -253,6 +256,14 @@ public class Group implements Serializable {
 
 	public void setStartingCash(double startingCash) {
 		this.startingCash = startingCash;
+	}
+
+	public int getGeneration() {
+		return generation;
+	}
+
+	public void setGeneration(int generation) {
+		this.generation = generation;
 	}
 
 	public boolean isActive() {

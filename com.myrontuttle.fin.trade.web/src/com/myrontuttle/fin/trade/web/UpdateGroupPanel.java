@@ -42,12 +42,15 @@ public class UpdateGroupPanel extends Panel {
 						.setRequired(true));
 		form.add(new Label("geneUpperValue"));
 		form.add(new Label("mutationFactor"));
-		form.add(new CheckBox("active"));
+		form.add(new CheckBox("allowShorting"));
 
 		form.add(new Label("numberOfScreens"));
 		form.add(new Label("maxSymbolsPerScreen"));
 		form.add(new Label("alertsPerSymbol"));
-		form.add(new CheckBox("allowShorting"));
+		
+		form.add(new TextField<Integer>("startingCash")
+						.setRequired(true));
+		form.add(new CheckBox("active"));
 
 		form.add(new Button("removeCandidates") {
             public void onSubmit() {
@@ -56,7 +59,7 @@ public class UpdateGroupPanel extends Panel {
         });
 		form.add(new Button("removeStats") {
             public void onSubmit() {
-            	DBAccess.getDAO().removeAllCandidates(group.getGroupId());
+            	DBAccess.getDAO().removeAllStats(group.getGroupId());
             }
         });
 		form.add(new Button("update") {

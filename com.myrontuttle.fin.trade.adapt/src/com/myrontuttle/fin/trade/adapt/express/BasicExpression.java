@@ -427,10 +427,6 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 		// Save candidate to database, and return
 		groupDAO.updateCandidate(candidate);
-
-		
-		System.out.println("Created new candidate with id: " + candidate.getCandidateId() + " in group: " +
-				candidate.getGroupId());
 		
 		return candidate;
 	}

@@ -71,6 +71,10 @@ public class CreateGroupPanel extends Panel {
 		form.add(new TextField<Integer>("alertsPerSymbol")
 						.setRequired(true)
 						.add(new AttributeModifier("value", "2")));
+		
+		form.add(new TextField<Integer>("startingCash")
+						.setRequired(true)
+						.add(new AttributeModifier("value", "10000.00")));
 
 		form.add(new CheckBox("active"));
 		

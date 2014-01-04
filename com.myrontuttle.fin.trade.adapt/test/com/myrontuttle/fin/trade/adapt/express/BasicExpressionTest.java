@@ -257,7 +257,7 @@ public class BasicExpressionTest {
 	
 	@Test
 	public void testGetScreenSymbols() {
-		String[] symbols = expression.getScreenSymbols(candidateA, group1);
+		String[] symbols = expression.getScreenSymbols(candidateA, group1, selectedScreenCriteria);
 		for (int i=0; i<symbols.length; i++) {
 			assertEquals(symbols[i], screenSymbols[i]);
 		}

@@ -29,13 +29,6 @@ public class GroupStats implements Serializable {
 	
 	@Column(name = "GroupId")
 	private String groupId;
-
-	@Column(name = "BestCandidateId")
-	private String bestCandidateId;
-	
-	@OneToOne(optional = true)
-	@JoinColumn(name = "BestCandidateId")
-	private Candidate bestCandidate;
 	
 	@Column(name = "BestCandidateFitness")
 	private double bestCandidateFitness;
@@ -55,13 +48,11 @@ public class GroupStats implements Serializable {
 	
 	public GroupStats() {}
 
-	public GroupStats(String groupId, String bestCandidateId,
-			double bestCandidateFitness,
+	public GroupStats(String groupId, double bestCandidateFitness,
 			double meanFitness, double fitnessStandardDeviation,
 			int generationNumber) {
 		super();
 		this.groupId = groupId;
-		this.bestCandidateId = bestCandidateId;
 		this.bestCandidateFitness = bestCandidateFitness;
 		this.meanFitness = meanFitness;
 		this.fitnessStandardDeviation = fitnessStandardDeviation;
@@ -90,22 +81,6 @@ public class GroupStats implements Serializable {
 
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
-	}
-
-	public String getBestCandidateId() {
-		return bestCandidateId;
-	}
-
-	public void setBestCandidateId(String bestCandidateId) {
-		this.bestCandidateId = bestCandidateId;
-	}
-
-	public Candidate getBestCandidate() {
-		return bestCandidate;
-	}
-
-	public void setBestCandidate(Candidate bestCandidate) {
-		this.bestCandidate = bestCandidate;
 	}
 
 	public double getBestCandidateFitness() {

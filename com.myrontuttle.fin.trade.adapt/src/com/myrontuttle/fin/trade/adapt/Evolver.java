@@ -16,6 +16,9 @@ import com.myrontuttle.fin.trade.adapt.eval.BasicEvaluator;
 import com.myrontuttle.fin.trade.adapt.eval.RandomEvaluator;
 import com.myrontuttle.fin.trade.adapt.express.BasicExpression;
 import com.myrontuttle.fin.trade.adapt.express.NoExpression;
+import com.myrontuttle.fin.trade.api.SelectedAlert;
+import com.myrontuttle.fin.trade.api.SelectedScreenCriteria;
+import com.myrontuttle.fin.trade.api.Trade;
 import com.myrontuttle.sci.evolve.*;
 import com.myrontuttle.sci.evolve.factories.IntArrayFactory;
 import com.myrontuttle.sci.evolve.operators.EvolutionPipeline;
@@ -43,6 +46,42 @@ public class Evolver implements EvolveService {
 																		new UserAbort() };
 	private final EvolutionObserver<int[]> dbObserver = new EvolutionObserver<int[]>() {
 		public void populationUpdate(PopulationStats<? extends int[]> data) {
+			// Save the best trader for the group
+			Candidate best = groupDAO.findCandidateByGenome(data.getBestCandidate());
+
+			Trader trader = new Trader();
+			trader.setGroupId(data.getPopulationId());
+			trader.setGenomeString(best.getGenomeString());
+			
+			groupDAO.setBestTrader(trader, data.getPopulationId());
+
+			// Find the group
+			Group group = groupDAO.findGroup(data.getPopulationId());
+
+			if (group.getExpressionStrategy().equals(Group.BASIC_EXPRESSION)) {
+				BasicExpression<int[]> expression = new BasicExpression<int[]>();
+				
+				SelectedScreenCriteria[] screenCriteria = expression.expressScreenerGenes(best, group);
+				for (SelectedScreenCriteria criteria : screenCriteria) {
+					groupDAO.addSavedScreen(new SavedScreen(trader.getTraderId(), criteria), 
+											trader.getTraderId());
+				}
+				
+				String[] symbols = expression.getScreenSymbols(best, group, screenCriteria);
+				
+				SelectedAlert[] alerts = expression.expressAlertGenes(best, group, symbols);
+				for (SelectedAlert alert : alerts) {
+					groupDAO.addSavedAlert(new SavedAlert(trader.getTraderId(), alert), 
+							trader.getTraderId());
+				}
+				
+				Trade[] trades = expression.expressTradeGenes(best, group, symbols);
+				for (Trade trade : trades) {
+					groupDAO.addTradeInstruction(new TradeInstruction(trader.getTraderId(), trade), 
+							trader.getTraderId());
+				}
+			}
+
 			// Use data to update group
 			groupDAO.updateGroupStats(data);
 
@@ -109,6 +148,22 @@ public class Evolver implements EvolveService {
 		return engine;
 	}
 	
+	protected static ExpressionStrategy<int[]> getExpressionStrategy(Group group) {
+		if (group.getExpressionStrategy().equals(Group.BASIC_EXPRESSION)) {
+			return new BasicExpression<int[]>();
+		} else {
+			return new NoExpression();
+		}
+	}
+	
+	protected static ExpressedFitnessEvaluator<int[]> getEvaluator(Group group) {
+		if (group.getEvaluationStrategy().equals(Group.BASIC_EVALUATOR)) {
+			return new BasicEvaluator();
+		} else {
+			return new RandomEvaluator();
+		}
+	}
+	
 	/*
 	 * Evolve one group right now
 	 */
@@ -127,21 +182,10 @@ public class Evolver implements EvolveService {
 		int size = group.getSize();
 		int eliteCount = group.getEliteCount();
 
-		ExpressionStrategy<int[]> expressionStrategy = null;
-		if (group.getExpressionStrategy().equals(Group.BASIC_EXPRESSION)) {
-			expressionStrategy = new BasicExpression<int[]>();
-		} else {
-			expressionStrategy = new NoExpression();
-		}
-		
+		ExpressionStrategy<int[]> expressionStrategy = getExpressionStrategy(group);
 		int genomeLength = expressionStrategy.getGenomeLength(groupId);
 		
-		ExpressedFitnessEvaluator<int[]> evaluator = null;
-		if (group.getEvaluationStrategy().equals(Group.BASIC_EVALUATOR)) {
-			evaluator = new BasicEvaluator();
-		} else {
-			evaluator = new RandomEvaluator();
-		}
+		ExpressedFitnessEvaluator<int[]> evaluator = getEvaluator(group);
 		
 		EvolutionEngine<int[]> engine = createEngine(genomeLength, 
 														group.getGeneUpperValue(), 

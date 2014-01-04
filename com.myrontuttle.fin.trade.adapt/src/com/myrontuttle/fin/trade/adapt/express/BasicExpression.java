@@ -10,6 +10,7 @@ import java.util.List;
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.Group;
 import com.myrontuttle.fin.trade.adapt.GroupDAO;
+import com.myrontuttle.fin.trade.adapt.Trader;
 import com.myrontuttle.fin.trade.api.*;
 import com.myrontuttle.fin.trade.strategies.AlertTrade;
 import com.myrontuttle.sci.evolve.ExpressedCandidate;
@@ -158,11 +159,11 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		return selected.toArray(new SelectedScreenCriteria[selected.size()]);
 	}
 	
-	String[] getScreenSymbols(Candidate candidate, Group group) {
+	public String[] getScreenSymbols(Candidate candidate, Group group, 
+										SelectedScreenCriteria[] screenCriteria) {
 		String[] symbols = null;
 		int[] genome = candidate.getGenome();
 
-		SelectedScreenCriteria[] screenCriteria = expressScreenerGenes(candidate, group);
 		if (screenCriteria.length == 0) {
 			// All of the screen symbols are turned off and we won't get any symbols from screening
 			return symbols;
@@ -395,9 +396,12 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		
 		// Find the group
 		Group group = groupDAO.findGroup(groupId);
+
+		// Get criteria to screen against
+		SelectedScreenCriteria[] screenCriteria = expressScreenerGenes(candidate, group);
 		
 		// Get a list of symbols from the Screener Service
-		String[] symbols = getScreenSymbols(candidate, group);
+		String[] symbols = getScreenSymbols(candidate, group, screenCriteria);
 		
 		// If the screener didn't produce any symbols there's no point using the other services
 		if (symbols == null || symbols.length == 0) {
@@ -474,5 +478,12 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		} else {
 			return targetLower + ((double)geneValue / geneUpperValue) * (targetUpper - targetLower);
 		}
+	}
+	
+	public static Trader createTrader(Candidate candidate) {
+		Trader trader = new Trader();
+		//trader.setGroupId(candidate.getGroupId());
+		//trader.setGenomeString(candidate.getGenomeString());
+		return trader;
 	}
 }

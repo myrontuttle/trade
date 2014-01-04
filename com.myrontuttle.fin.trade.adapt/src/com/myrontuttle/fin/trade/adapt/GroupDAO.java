@@ -39,4 +39,18 @@ public interface GroupDAO {
 	public void removeStats(String statsId);
 	
 	public void removeAllStats(String groupId);
+	
+	public void setBestTrader(Trader trader, String groupId);
+	
+	public Trader updateTrader(Trader trader);
+	
+	public Trader findTrader(String traderId);
+	
+	public Trader getBestTrader(String groupId);
+
+	public void addSavedScreen(SavedScreen screen, String traderId);
+
+	public void addSavedAlert(SavedAlert alert, String traderId);
+	
+	public void addTradeInstruction(TradeInstruction instruction, String traderId);
 }

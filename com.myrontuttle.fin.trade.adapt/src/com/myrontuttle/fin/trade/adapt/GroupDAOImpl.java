@@ -4,9 +4,6 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-//import org.apache.openjpa.persistence.OpenJPAEntityManager;
-//import org.apache.openjpa.persistence.OpenJPAPersistence;
-
 import com.myrontuttle.sci.evolve.PopulationStats;
 
 public class GroupDAOImpl implements GroupDAO {
@@ -85,11 +82,8 @@ public class GroupDAOImpl implements GroupDAO {
 	}
 	
 	public void updateGroupStats(PopulationStats<? extends int[]> data) {
-		Candidate candidate = findCandidateByGenome(data.getBestCandidate());
-		String candidateId = candidate.getCandidateId();
 		
 		GroupStats stats = new GroupStats(data.getPopulationId(), 
-				candidateId, 
 				data.getBestCandidateFitness(), data.getMeanFitness(), 
 				data.getFitnessStandardDeviation(), data.getGenerationNumber());
 		
@@ -126,5 +120,47 @@ public class GroupDAOImpl implements GroupDAO {
 			em.remove(gs);
 		}
 		group.getStats().clear();
+	}
+
+	@Override
+	public void setBestTrader(Trader trader, String groupId) {
+		Group group = findGroup(groupId);		
+		group.setBestTrader(trader);		
+	}
+
+	@Override
+	public Trader updateTrader(Trader trader) {
+		return em.merge(trader);
+	}
+
+	// Get the trader based on its traderId
+	public Trader findTrader(String traderId) {
+		return em.find(Trader.class, traderId);
+	}
+
+	@Override
+	public Trader getBestTrader(String groupId) {
+		return em.createQuery(
+				"SELECT b FROM BestTraders b WHERE b.groupId = :groupId", 
+				Trader.class).setParameter("groupId", groupId).getSingleResult();
+	}
+
+	@Override
+	public void addSavedScreen(SavedScreen screen, String traderId) {
+		Trader trader = em.find(Trader.class, traderId);
+		trader.addScreen(screen);
+	}
+
+	@Override
+	public void addSavedAlert(SavedAlert alert, String traderId) {
+		Trader trader = em.find(Trader.class, traderId);
+		trader.addAlert(alert);
+	}
+
+	@Override
+	public void addTradeInstruction(TradeInstruction instruction,
+			String traderId) {
+		Trader trader = em.find(Trader.class, traderId);
+		trader.addTradeInstruction(instruction);
 	}
 }

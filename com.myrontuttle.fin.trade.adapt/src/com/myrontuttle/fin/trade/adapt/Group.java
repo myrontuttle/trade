@@ -33,6 +33,10 @@ public class Group implements Serializable {
 			fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Collection<Candidate> candidates;
 	
+	@OneToOne(optional=false,cascade=CascadeType.ALL, 
+		       mappedBy="group",targetEntity=Trader.class)
+	private Trader bestTrader;
+	
 	@Column(name = "AlertAddress")
 	private String alertAddress;
 
@@ -108,6 +112,14 @@ public class Group implements Serializable {
 		}
 	}
 	
+	public Trader getBestTrader() {
+		return bestTrader;
+	}
+
+	public void setBestTrader(Trader bestTrader) {
+		this.bestTrader = bestTrader;
+	}
+
 	public void addGroupStats(GroupStats gs) {
 		this.stats.add(gs);
 		if (gs.getGroup() != this) {

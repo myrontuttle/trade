@@ -1,4 +1,4 @@
-package com.myrontuttle.fin.trade.web;
+package com.myrontuttle.fin.trade.web.panels;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -16,6 +16,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 
 import com.myrontuttle.fin.trade.adapt.Group;
+import com.myrontuttle.fin.trade.web.StrategyAccess;
+import com.myrontuttle.fin.trade.web.data.DBAccess;
 
 public class CreateGroupPanel extends Panel {
 

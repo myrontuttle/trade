@@ -1,4 +1,4 @@
-package com.myrontuttle.fin.trade.web;
+package com.myrontuttle.fin.trade.web.panels;
 
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -9,6 +9,8 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import com.myrontuttle.fin.trade.web.EvolveAccess;
 
 public class EvolvePanel extends Panel {
 

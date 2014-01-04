@@ -1,9 +1,11 @@
-package com.myrontuttle.fin.trade.web;
+package com.myrontuttle.fin.trade.web.panels;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
+
+import com.myrontuttle.fin.trade.web.pages.MainPage;
 
 /**
  * Navigation panel

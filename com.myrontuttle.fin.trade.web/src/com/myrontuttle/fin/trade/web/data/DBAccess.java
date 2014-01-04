@@ -1,4 +1,4 @@
-package com.myrontuttle.fin.trade.web;
+package com.myrontuttle.fin.trade.web.data;
 
 import com.myrontuttle.fin.trade.adapt.GroupDAO;
 

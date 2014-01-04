@@ -1,4 +1,4 @@
-package com.myrontuttle.fin.trade.web;
+package com.myrontuttle.fin.trade.web.panels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +11,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 
 import com.myrontuttle.fin.trade.adapt.GroupStats;
+import com.myrontuttle.fin.trade.web.data.SortableGroupStatsDataProvider;
 
 public class GroupStatsTablePanel extends Panel {
 	

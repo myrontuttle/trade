@@ -1,4 +1,4 @@
-package com.myrontuttle.fin.trade.web;
+package com.myrontuttle.fin.trade.web.panels;
 
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.html.basic.Label;
@@ -11,6 +11,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 
 import com.myrontuttle.fin.trade.adapt.Group;
+import com.myrontuttle.fin.trade.web.data.DBAccess;
 
 public class UpdateGroupPanel extends Panel {
 

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.myrontuttle.fin.trade.web;
+package com.myrontuttle.fin.trade.web.data;
 
 import java.util.Iterator;
 
@@ -22,28 +22,24 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.IModel;
 
-import com.myrontuttle.fin.trade.adapt.GroupStats;
+import com.myrontuttle.fin.trade.adapt.Group;
 import com.myrontuttle.fin.trade.adapt.GroupDAO;
+import com.myrontuttle.fin.trade.web.models.DetachableGroupModel;
 
 
 /**
- * implementation of IDataProvider for group stas that keeps track of sort information
+ * implementation of IDataProvider for groups that keeps track of sort information
  */
-public class SortableGroupStatsDataProvider extends SortableDataProvider<GroupStats, String> {
-	
+public class SortableGroupDataProvider extends SortableDataProvider<Group, String> {
+
 	private static final long serialVersionUID = 1L;
-	
-	String groupId;
-	
+
 	/**
 	 * constructor
 	 */
-	public SortableGroupStatsDataProvider(String groupId) {
-		
-		this.groupId = groupId;
-		
+	public SortableGroupDataProvider() {
 		// set default sort
-		setSort("statsId", SortOrder.ASCENDING);
+		setSort("groupId", SortOrder.ASCENDING);
 	}
 
 	protected GroupDAO getDAO() {
@@ -53,25 +49,25 @@ public class SortableGroupStatsDataProvider extends SortableDataProvider<GroupSt
 	/**
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#iterator(int, int)
 	 */
-	public Iterator<GroupStats> iterator(long first, long count) {
+	public Iterator<Group> iterator(long first, long count) {
 		// Consider finding a subset of all groups to StrategyDAO:
 		// return getDAO().findGroups(first, count, new SortParam("groupId", true)).iterator();
-		return getDAO().findStatsForGroup(groupId).iterator();
+		return getDAO().findGroups().iterator();
 	}
 
 	/**
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#size()
 	 */
 	public long size() {
-		return getDAO().findStatsForGroup(groupId).size();
+		return getDAO().findGroups().size();
 	}
 
 	/**
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#model(java.lang.Object)
 	 */
-	public IModel<GroupStats> model(GroupStats object)
+	public IModel<Group> model(Group object)
 	{
-		return new DetachableGroupStatsModel(object);
+		return new DetachableGroupModel(object);
 	}
 
 }

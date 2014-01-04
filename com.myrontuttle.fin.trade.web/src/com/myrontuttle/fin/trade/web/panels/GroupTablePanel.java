@@ -1,4 +1,4 @@
-package com.myrontuttle.fin.trade.web;
+package com.myrontuttle.fin.trade.web.panels;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +18,10 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
 import com.myrontuttle.fin.trade.adapt.Group;
+import com.myrontuttle.fin.trade.web.EvolveAccess;
+import com.myrontuttle.fin.trade.web.data.DBAccess;
+import com.myrontuttle.fin.trade.web.data.SortableGroupDataProvider;
+import com.myrontuttle.fin.trade.web.pages.GroupPage;
 
 public class GroupTablePanel extends Panel {
 	

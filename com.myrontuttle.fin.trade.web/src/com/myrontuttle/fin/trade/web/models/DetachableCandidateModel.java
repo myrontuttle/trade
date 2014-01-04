@@ -14,37 +14,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.myrontuttle.fin.trade.web;
+package com.myrontuttle.fin.trade.web.models;
 
 import org.apache.wicket.model.LoadableDetachableModel;
 
-import com.myrontuttle.fin.trade.adapt.GroupStats;
+import com.myrontuttle.fin.trade.adapt.Candidate;
+import com.myrontuttle.fin.trade.web.data.DBAccess;
 
 /**
- * detachable model for an instance of group
+ * detachable model for an instance of candidate
  * 
  */
-public class DetachableGroupStatsModel extends LoadableDetachableModel<GroupStats> {
+public class DetachableCandidateModel extends LoadableDetachableModel<Candidate> {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private final String statsId;
+	private final String id;
 
 	/**
 	 * @param c
 	 */
-	public DetachableGroupStatsModel(GroupStats gs) {
-		this(gs.getStatsId());
+	public DetachableCandidateModel(Candidate c) {
+		this(c.getCandidateId());
 	}
 
 	/**
 	 * @param id
 	 */
-	public DetachableGroupStatsModel(String statsId) {
-		if (statsId == null) {
+	public DetachableCandidateModel(String id) {
+		if (id == null) {
 			throw new IllegalArgumentException();
 		}
-		this.statsId = statsId;
+		this.id = id;
 	}
 
 	/**
@@ -52,7 +53,7 @@ public class DetachableGroupStatsModel extends LoadableDetachableModel<GroupStat
 	 */
 	@Override
 	public int hashCode() {
-		return Long.valueOf(statsId).hashCode();
+		return Long.valueOf(id).hashCode();
 	}
 
 	/**
@@ -67,9 +68,9 @@ public class DetachableGroupStatsModel extends LoadableDetachableModel<GroupStat
 			return true;
 		} else if (obj == null) {
 			return false;
-		} else if (obj instanceof DetachableGroupStatsModel) {
-			DetachableGroupStatsModel other = (DetachableGroupStatsModel)obj;
-			return other.statsId == statsId;
+		} else if (obj instanceof DetachableCandidateModel) {
+			DetachableCandidateModel other = (DetachableCandidateModel)obj;
+			return other.id == id;
 		}
 		return false;
 	}
@@ -78,8 +79,8 @@ public class DetachableGroupStatsModel extends LoadableDetachableModel<GroupStat
 	 * @see org.apache.wicket.model.LoadableDetachableModel#load()
 	 */
 	@Override
-	protected GroupStats load() {
+	protected Candidate load() {
 		// loads group from the database
-		return DBAccess.getDAO().findStats(statsId);
+		return DBAccess.getDAO().findCandidate(id);
 	}
 }

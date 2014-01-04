@@ -4,6 +4,8 @@ import org.apache.wicket.Page;
 import org.apache.wicket.protocol.http.WebApplication;
 //import org.apache.wicket.response.filter.ServerAndClientTimeFilter;
 
+import com.myrontuttle.fin.trade.web.pages.MainPage;
+
 public class Application extends WebApplication {
 
 	public Application() {}

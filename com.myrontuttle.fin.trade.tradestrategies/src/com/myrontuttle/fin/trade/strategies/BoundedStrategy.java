@@ -1,6 +1,7 @@
 package com.myrontuttle.fin.trade.strategies;
 
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -17,7 +18,6 @@ import com.myrontuttle.fin.trade.api.PortfolioService;
 import com.myrontuttle.fin.trade.api.QuoteService;
 import com.myrontuttle.fin.trade.api.SelectedAlert;
 import com.myrontuttle.fin.trade.api.Trade;
-import com.myrontuttle.fin.trade.api.TradeParameter;
 import com.myrontuttle.fin.trade.api.TradeStrategy;
 
 /**
@@ -47,19 +47,14 @@ public class BoundedStrategy implements TradeStrategy {
 	public final static TimeUnit TIME_LIMIT_UNIT = TimeUnit.SECONDS;
 	public final static int OPEN_ORDER_LOWER = 0;
 	public final static int OPEN_ORDER_UPPER = 0;
-	public final static int OPEN_ORDER_POS = 0;
 	public final static int TRADE_ALLOC_LOWER = 0;
 	public final static int TRADE_ALLOC_UPPER = 100;
-	public final static int TRADE_ALLOC_POS = 1;
 	public final static int PERCENT_BELOW_LOWER = 0;
 	public final static int PERCENT_BELOW_UPPER = 100;
-	public final static int PERCENT_BELOW_POS = 2;
 	public final static int TIME_LIMIT_LOWER = 60;
 	public final static int TIME_LIMIT_UPPER = 60*60*24;
-	public final static int TIME_LIMIT_POS = 3;
 	public final static int PERCENT_ABOVE_LOWER = 0;
 	public final static int PERCENT_ABOVE_UPPER = 100;
-	public final static int PERCENT_ABOVE_POS = 4;
 	
 	protected final PortfolioService portfolioService;
 	protected final QuoteService quoteService;
@@ -186,16 +181,16 @@ public class BoundedStrategy implements TradeStrategy {
 				portfolioService.closeOrderTypesAvailable(userId).length) {
 			throw new Exception("Open and close order types must match.  Trade not made.");
 		}
-		TradeParameter[] tradeParams = trade.getParameters();
+		Hashtable<String, Integer> tradeParams = trade.getParameters();
 		
 		String openOrderType = portfolioService.
-									openOrderTypesAvailable(userId)[tradeParams[OPEN_ORDER_POS].getValue()];
+									openOrderTypesAvailable(userId)[tradeParams.get(OPEN_ORDER)];
 		String closeOrderType = portfolioService.
-									closeOrderTypesAvailable(userId)[tradeParams[OPEN_ORDER_POS].getValue()];
+									closeOrderTypesAvailable(userId)[tradeParams.get(OPEN_ORDER)];
 		
 		try {
 			double portfolioBalance = portfolioService.getAvailableBalance(userId, portfolioId);
-			double maxTradeAmount = portfolioBalance * (tradeParams[TRADE_ALLOC_POS].getValue() / 100.0);
+			double maxTradeAmount = portfolioBalance * (tradeParams.get(TRADE_ALLOC) / 100.0);
 			double currentPrice = quoteService.getLast(userId, trade.getSymbol());
 
 			if (currentPrice <= maxTradeAmount) {
@@ -213,7 +208,7 @@ public class BoundedStrategy implements TradeStrategy {
 				
 				// time in trade
 				ScheduledFuture<?> timeInTrade = createTimeLimit(userId, closeOrder, portfolioId, 
-						tradeParams[TIME_LIMIT_POS].getValue());
+						tradeParams.get(TIME_LIMIT));
 				
 				// stop above
 				AlertOrder stopAbove = createStopTrade(userId, trade, currentPrice, closeOrder, tradeId, false);
@@ -254,9 +249,9 @@ public class BoundedStrategy implements TradeStrategy {
 
 		AvailableAlert alertWhen = (priceRiseGood) ? alertService.getPriceBelowAlert(userId) :
 										alertService.getPriceAboveAlert(userId);
-		int position = (priceRiseGood) ? PERCENT_BELOW_POS : PERCENT_ABOVE_POS;
+		String alertParam = (priceRiseGood) ? PERCENT_BELOW : PERCENT_ABOVE;
 		
-		double loss = currentPrice - (trade.getParameters()[position].getValue() / 100) * currentPrice;
+		double loss = currentPrice - (trade.getParameters().get(alertParam) / 100) * currentPrice;
 		SelectedAlert stopLossAlert = new SelectedAlert(alertWhen.getId(),
 														alertWhen.getCondition(),
 														trade.getSymbol(), 

@@ -2,6 +2,8 @@ package com.myrontuttle.fin.trade.strategies;
 
 import static org.junit.Assert.*;
 
+import java.util.Hashtable;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,7 +19,6 @@ import com.myrontuttle.fin.trade.api.PortfolioService;
 import com.myrontuttle.fin.trade.api.QuoteService;
 import com.myrontuttle.fin.trade.api.SelectedAlert;
 import com.myrontuttle.fin.trade.api.Trade;
-import com.myrontuttle.fin.trade.api.TradeParameter;
 
 public class BoundedStrategyTest {
 
@@ -89,13 +90,13 @@ public class BoundedStrategyTest {
 		 * TimeInTrade = 60*60 = 3600 seconds = 1 hour
 		 * AdjustAt = 30% of current symbol price
 		 */
-		TradeParameter[] params = new TradeParameter[]{
-				new TradeParameter(BoundedWAdjustStrategy.OPEN_ORDER, 0),
-				new TradeParameter(BoundedWAdjustStrategy.TRADE_ALLOC, 10),
-				new TradeParameter(BoundedWAdjustStrategy.PERCENT_BELOW, 10),
-				new TradeParameter(BoundedWAdjustStrategy.TIME_LIMIT, 3600),
-				new TradeParameter(BoundedWAdjustStrategy.PERCENT_ABOVE, 30)
-		};
+		Hashtable<String, Integer> params = new Hashtable<String, Integer>(5);
+		params.put(BoundedWAdjustStrategy.OPEN_ORDER, 0);
+		params.put(BoundedWAdjustStrategy.TRADE_ALLOC, 10);
+		params.put(BoundedWAdjustStrategy.PERCENT_BELOW, 10);
+		params.put(BoundedWAdjustStrategy.TIME_LIMIT, 3600);
+		params.put(BoundedWAdjustStrategy.PERCENT_ABOVE, 30);
+		
 		Trade tradeMsft = new Trade(avgSymbol, params);
 		SelectedAlert openAlert = new SelectedAlert(1, "Price went up", avgSymbol, null);
 		AlertTrade at = new AlertTrade(openAlert, richPortfolio, tradeMsft);
@@ -121,13 +122,13 @@ public class BoundedStrategyTest {
 		 * TimeInTrade = 60*60 = 3600 seconds = 1 hour
 		 * AdjustAt = 30% of current symbol price
 		 */
-		TradeParameter[] params = new TradeParameter[]{
-				new TradeParameter(BoundedWAdjustStrategy.OPEN_ORDER, 0),
-				new TradeParameter(BoundedWAdjustStrategy.TRADE_ALLOC, 10),
-				new TradeParameter(BoundedWAdjustStrategy.PERCENT_BELOW, 10),
-				new TradeParameter(BoundedWAdjustStrategy.TIME_LIMIT, 3600),
-				new TradeParameter(BoundedWAdjustStrategy.PERCENT_ABOVE, 30)
-		};
+		Hashtable<String, Integer> params = new Hashtable<String, Integer>(5);
+		params.put(BoundedWAdjustStrategy.OPEN_ORDER, 0);
+		params.put(BoundedWAdjustStrategy.TRADE_ALLOC, 10);
+		params.put(BoundedWAdjustStrategy.PERCENT_BELOW, 10);
+		params.put(BoundedWAdjustStrategy.TIME_LIMIT, 3600);
+		params.put(BoundedWAdjustStrategy.PERCENT_ABOVE, 30);
+		
 		Trade tradeBrk = new Trade(expensiveSymbol, params);
 		SelectedAlert openAlert = new SelectedAlert(1, "Price went up", avgSymbol, null);
 		AlertTrade atb = new AlertTrade(openAlert, poorPortfolio, tradeBrk);

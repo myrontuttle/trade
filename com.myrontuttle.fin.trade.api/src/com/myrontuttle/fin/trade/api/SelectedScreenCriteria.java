@@ -1,11 +1,17 @@
 package com.myrontuttle.fin.trade.api;
 
+import java.io.Serializable;
+
 /**
  * A criteria by which an equity can by screened
  * @author Myron Tuttle
  */
-public class SelectedScreenCriteria {
+public class SelectedScreenCriteria implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
+	public static final String SEPARATOR = ";";
+	
 	private final String name;
 	private final String selectedValue;
 	private final String argsOperator;

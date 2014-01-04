@@ -1,11 +1,16 @@
 package com.myrontuttle.fin.trade.api;
 
-public class Trade {
+import java.io.Serializable;
+import java.util.Hashtable;
 
-	private final String symbol;
-	private final TradeParameter[] parameters;
+public class Trade implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	
-	public Trade(String symbol, TradeParameter[] parameters) {
+	private final String symbol;
+	private final Hashtable<String, Integer> parameters;
+	
+	public Trade(String symbol, Hashtable<String, Integer> parameters) {
 		super();
 		this.symbol = symbol;
 		this.parameters = parameters;
@@ -14,7 +19,7 @@ public class Trade {
 	public String getSymbol() {
 		return symbol;
 	}
-	public TradeParameter[] getParameters() {
+	public Hashtable<String, Integer> getParameters() {
 		return parameters;
 	}
 	

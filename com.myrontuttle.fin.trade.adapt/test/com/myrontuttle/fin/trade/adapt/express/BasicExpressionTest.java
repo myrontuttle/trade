@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Hashtable;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +28,6 @@ import com.myrontuttle.fin.trade.api.ScreenerService;
 import com.myrontuttle.fin.trade.api.SelectedAlert;
 import com.myrontuttle.fin.trade.api.SelectedScreenCriteria;
 import com.myrontuttle.fin.trade.api.Trade;
-import com.myrontuttle.fin.trade.api.TradeParameter;
 import com.myrontuttle.fin.trade.api.TradeStrategy;
 import com.myrontuttle.fin.trade.api.TradeStrategyService;
 import com.myrontuttle.fin.trade.api.WatchlistService;
@@ -105,8 +105,10 @@ public class BasicExpressionTest {
 	};
 	private String[] screenSymbols = new String[]{"AAPL", "MSFT", "CSCO", "AA", "T"};
 	
-	private String watchlistName = BasicExpression.WATCH_NAME_PREFIX + "1";
-	private String portfolioName = BasicExpression.PORT_NAME_PREFIX + "1";
+	private String watchlistName = BasicExpression.WATCH_NAME_PREFIX + BasicExpression.GROUP + GID + 
+			BasicExpression.CANDIDATE + CID;
+	private String portfolioName = BasicExpression.PORT_NAME_PREFIX + BasicExpression.GROUP + GID + 
+			BasicExpression.CANDIDATE + CID;
 
 	private final int alertId = 1;
 	private final String condition = "{symbol}'s price fell below {Price}";
@@ -131,20 +133,11 @@ public class BasicExpressionTest {
 	
 	private String[] openOrderTypes = new String[]{ BUY, SHORT };
 
-	TradeParameter[] params1 = new TradeParameter[]{
-			new TradeParameter(BoundedWAdjustStrategy.OPEN_ORDER, 0),
-			new TradeParameter(BoundedWAdjustStrategy.TRADE_ALLOC, 37),
-			new TradeParameter(BoundedWAdjustStrategy.PERCENT_BELOW, 24),
-			new TradeParameter(BoundedWAdjustStrategy.TIME_LIMIT, 60),
-			new TradeParameter(BoundedWAdjustStrategy.PERCENT_ABOVE, 88)
-	};
-	TradeParameter[] params2 = new TradeParameter[]{
-			new TradeParameter(BoundedWAdjustStrategy.OPEN_ORDER, 1),
-			new TradeParameter(BoundedWAdjustStrategy.TRADE_ALLOC, 25),
-			new TradeParameter(BoundedWAdjustStrategy.PERCENT_BELOW, 66),
-			new TradeParameter(BoundedWAdjustStrategy.TIME_LIMIT, 86400),
-			new TradeParameter(BoundedWAdjustStrategy.PERCENT_ABOVE, 75)
-	};
+	Hashtable<String, Integer> params1 = new Hashtable<String, Integer>(5);
+
+
+	Hashtable<String, Integer> params2 = new Hashtable<String, Integer>(5);
+
 	private Trade[] trades = new Trade[]{
 			new Trade(screenSymbols[0], params1),
 			new Trade(screenSymbols[1], params2)
@@ -178,6 +171,18 @@ public class BasicExpressionTest {
 		group1.setCandidates(candidates);
 		group1.setExpressionStrategy("BasicExpression");
 		group1.setTradeStrategy(BOUNDED_STRAT);
+
+		params1.put(BoundedWAdjustStrategy.OPEN_ORDER, 0);
+		params1.put(BoundedWAdjustStrategy.TRADE_ALLOC, 37);
+		params1.put(BoundedWAdjustStrategy.PERCENT_BELOW, 24);
+		params1.put(BoundedWAdjustStrategy.TIME_LIMIT, 60);
+		params1.put(BoundedWAdjustStrategy.PERCENT_ABOVE, 88);
+		
+		params2.put(BoundedWAdjustStrategy.OPEN_ORDER, 1);
+		params2.put(BoundedWAdjustStrategy.TRADE_ALLOC, 25);
+		params2.put(BoundedWAdjustStrategy.PERCENT_BELOW, 66);
+		params2.put(BoundedWAdjustStrategy.TIME_LIMIT, 86400);
+		params2.put(BoundedWAdjustStrategy.PERCENT_ABOVE, 75);
 		
 	    // Create mocks
 		screenerService = mock(ScreenerService.class);
@@ -201,6 +206,7 @@ public class BasicExpressionTest {
 		when(watchlistService.create(CID, watchlistName)).thenReturn(WID);
 		when(watchlistService.addHolding(CID, WID, screenSymbols[0])).thenReturn(LID);
 		when(watchlistService.addHolding(CID, WID, screenSymbols[1])).thenReturn(LID);
+		
 		when(portfolioService.create(CID, portfolioName)).thenReturn(PID);
 		when(portfolioService.addCashTransaction(CID, PID, STARTING_CASH, 
 											true, true)).thenReturn(true);
@@ -242,7 +248,7 @@ public class BasicExpressionTest {
 	@Test
 	public void testExpressScreenerGenes() {
 		SelectedScreenCriteria[] screenCriteria = 
-				expression.expressScreenerGenes(GID, genomeA, SCREEN_GENES, GENE_UPPER_VALUE);
+				expression.expressScreenerGenes(candidateA, group1);
 		
 		assertTrue(screenCriteria.length > 0);
 		assertEquals("RCCAssetClass",screenCriteria[0].getName());
@@ -251,7 +257,7 @@ public class BasicExpressionTest {
 	
 	@Test
 	public void testGetScreenSymbols() {
-		String[] symbols = expression.getScreenSymbols(genomeA, GID, group1);
+		String[] symbols = expression.getScreenSymbols(candidateA, group1);
 		for (int i=0; i<symbols.length; i++) {
 			assertEquals(symbols[i], screenSymbols[i]);
 		}
@@ -259,18 +265,18 @@ public class BasicExpressionTest {
 	
 	@Test
 	public void testSetupWatchlist() {
-		assertEquals(WID, expression.setupWatchlist(CID, screenSymbols));
+		assertEquals(WID, expression.setupWatchlist(candidateA, group1, screenSymbols));
 	}
 	
 	@Test
 	public void testSetupPortfolio() {
-		assertEquals(PID, expression.setupPortfolio(CID, STARTING_CASH));
+		assertEquals(PID, expression.setupPortfolio(candidateA, group1));
 	}
 	
 	@Test
 	public void testExpressAlertGenes() {
-		SelectedAlert[] selectedAlerts = expression.expressAlertGenes(GID, genomeA, 
-																	screenSymbols, group1);
+		SelectedAlert[] selectedAlerts = expression.expressAlertGenes(candidateA, group1,
+																	screenSymbols);
 		
 		assertTrue(selectedAlerts.length > 0);
 		assertEquals(actualCondition, selectedAlerts[0].getCondition());
@@ -286,7 +292,7 @@ public class BasicExpressionTest {
 	
 	@Test
 	public void testExpressTradeGenes() {
-		Trade[] trades = expression.expressTradeGenes(CID, genomeA, screenSymbols, group1);
+		Trade[] trades = expression.expressTradeGenes(candidateA, group1, screenSymbols);
 		for (int i=0; i<trades.length; i++) {
 			assertTrue(trades[i].equals(trades[i]));
 		}

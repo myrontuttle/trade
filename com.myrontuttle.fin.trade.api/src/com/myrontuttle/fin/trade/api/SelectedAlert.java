@@ -1,13 +1,16 @@
 package com.myrontuttle.fin.trade.api;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  * An indicator that a symbol has met a certain condition with certain parameters
  * @author Myron Tuttle
  */
-public class SelectedAlert {
+public class SelectedAlert implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	private final int id;
 	private final String condition;
 	private final String symbol;

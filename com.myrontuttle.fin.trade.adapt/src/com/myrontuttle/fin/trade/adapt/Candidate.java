@@ -43,28 +43,15 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	@Column(name = "PortfolioId")
 	private String portfolioId;
 	
-	/*
-	private SelectedScreenCriteria[] screenCriteria;
-	private String[] symbols;
-	private AlertTradeBounds[] alerts;
-	*/
-	
 	public Candidate(){ }
 	
 	public Candidate(String candidateId, String groupId, int[] genome, 
-			String portfolioId, double startingCash/*,
-			SelectedScreenCriteria[] screenCriteria,
-			String[] symbols, AlertTradeBounds[] alerts*/) {
+			String portfolioId, double startingCash) {
 		this.candidateId = candidateId;
 		this.groupId = groupId;
 		this.genome = genome;
 		this.genomeString = Arrays.toString(genome);
 		this.portfolioId = portfolioId;
-		/*
-		this.screenCriteria = screenCriteria;
-		this.symbols = symbols;
-		this.alerts = alerts;
-		*/
 	}
 
 	public String getCandidateId() {

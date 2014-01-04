@@ -1,5 +1,6 @@
 package com.myrontuttle.fin.trade.strategies;
 
+import java.util.Hashtable;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 
@@ -12,7 +13,6 @@ import com.myrontuttle.fin.trade.api.PortfolioService;
 import com.myrontuttle.fin.trade.api.QuoteService;
 import com.myrontuttle.fin.trade.api.SelectedAlert;
 import com.myrontuttle.fin.trade.api.Trade;
-import com.myrontuttle.fin.trade.api.TradeParameter;
 import com.myrontuttle.fin.trade.api.TradeStrategy;
 
 /**
@@ -71,18 +71,18 @@ public class BoundedWAdjustStrategy extends BoundedStrategy implements TradeStra
 				portfolioService.closeOrderTypesAvailable(userId).length) {
 			throw new Exception("Open and close order types must match.  Trade not made.");
 		}
-		TradeParameter[] tradeParams = trade.getParameters();
+		Hashtable<String, Integer> tradeParams = trade.getParameters();
 		
 		String openOrderType = portfolioService.
-									openOrderTypesAvailable(userId)[tradeParams[OPEN_ORDER_POS].getValue()];
+									openOrderTypesAvailable(userId)[tradeParams.get(OPEN_ORDER)];
 		String closeOrderType = portfolioService.
-									closeOrderTypesAvailable(userId)[tradeParams[OPEN_ORDER_POS].getValue()];
+									closeOrderTypesAvailable(userId)[tradeParams.get(OPEN_ORDER)];
 		
 		boolean priceRiseGood = portfolioService.priceRiseGood(openOrderType);
 		
 		try {
 			double portfolioBalance = portfolioService.getAvailableBalance(userId, portfolioId);
-			double maxTradeAmount = portfolioBalance * (tradeParams[TRADE_ALLOC_POS].getValue() / 100.0);
+			double maxTradeAmount = portfolioBalance * (tradeParams.get(TRADE_ALLOC) / 100.0);
 			double currentPrice = quoteService.getLast(userId, trade.getSymbol());
 
 			if (currentPrice <= maxTradeAmount) {
@@ -100,7 +100,7 @@ public class BoundedWAdjustStrategy extends BoundedStrategy implements TradeStra
 				
 				// time in trade
 				ScheduledFuture<?> timeInTrade = createTimeLimit(userId, closeOrder, portfolioId, 
-						tradeParams[TIME_LIMIT_POS].getValue());
+						tradeParams.get(TIME_LIMIT));
 				
 				// adjustment at
 				AlertTradeAdjustment adjustment = createAdjustment(userId, trade, currentPrice, 
@@ -130,9 +130,9 @@ public class BoundedWAdjustStrategy extends BoundedStrategy implements TradeStra
 			String symbol = trade.getSymbol();
 			int quantity = boundedTrade.getOpenOrder().getQuantity();
 			
-			TradeParameter[] tradeParams = trade.getParameters();
+			Hashtable<String, Integer> tradeParams = trade.getParameters();
 			String closeOrderType = portfolioService.
-					closeOrderTypesAvailable(userId)[tradeParams[OPEN_ORDER_POS].getValue()];
+					closeOrderTypesAvailable(userId)[tradeParams.get(OPEN_ORDER)];
 			boolean priceRiseGood = portfolioService.priceRiseGood(closeOrderType);
 			
 			Order closeOrder = new Order(tradeId, closeOrderType, symbol, quantity);
@@ -147,7 +147,7 @@ public class BoundedWAdjustStrategy extends BoundedStrategy implements TradeStra
 				
 				// time in trade
 				ScheduledFuture<?> timeLimit = createTimeLimit(userId, closeOrder, boundedTrade.getPortfolioId(), 
-																trade.getParameters()[TIME_LIMIT_POS].getValue());
+																trade.getParameters().get(TIME_LIMIT));
 				boundedTrade.setTimeLimit(timeLimit);
 				
 				// adjustment at
@@ -170,10 +170,10 @@ public class BoundedWAdjustStrategy extends BoundedStrategy implements TradeStra
 
 		AvailableAlert alertWhen = (priceRiseGood) ? alertService.getPriceAboveAlert(userId) :
 										alertService.getPriceBelowAlert(userId);
-		int position = (priceRiseGood) ? PERCENT_BELOW_POS : PERCENT_ABOVE_POS;
+		String alertType = (priceRiseGood) ? PERCENT_BELOW : PERCENT_ABOVE;
 		
 		double adjustmentPrice = currentPrice + 
-					(trade.getParameters()[position].getValue() / 100) * currentPrice;
+					(trade.getParameters().get(alertType) / 100) * currentPrice;
 		SelectedAlert adjustmentAlert = new SelectedAlert(alertWhen.getId(),
 											alertWhen.getCondition(),
 											trade.getSymbol(),

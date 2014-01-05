@@ -1,9 +1,9 @@
-package com.myrontuttle.fin.trade.web;
+package com.myrontuttle.fin.trade.web.service;
 
 import com.myrontuttle.fin.trade.api.TradeStrategyService;
 
 /**
- * Service locator for Evolve Service
+ * Service locator for Trade Strategy Service
  */
 public class StrategyAccess {
 	

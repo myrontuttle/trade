@@ -10,7 +10,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import com.myrontuttle.fin.trade.web.EvolveAccess;
+import com.myrontuttle.fin.trade.web.service.EvolveAccess;
 
 public class EvolvePanel extends Panel {
 

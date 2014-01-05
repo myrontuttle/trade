@@ -49,6 +49,18 @@ public interface GroupDAO {
 	public Trader getBestTrader(String groupId);
 
 	public void addSavedScreen(SavedScreen screen, String traderId);
+	
+	public List<SavedScreen> findScreensForTrader(String traderId);
+	
+	public SavedScreen findScreen(String savedScreenId);
+	
+	public List<SavedAlert> findAlertsForTrader(String traderId);
+	
+	public SavedAlert findAlert(String savedAlertId);
+	
+	public List<TradeInstruction> findInstructionsForTrader(String traderId);
+	
+	public TradeInstruction findTradeInstruction(String tradeInstructionId);
 
 	public void addSavedAlert(SavedAlert alert, String traderId);
 	

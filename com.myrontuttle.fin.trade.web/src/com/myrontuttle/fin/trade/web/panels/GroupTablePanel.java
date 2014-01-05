@@ -18,10 +18,11 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
 import com.myrontuttle.fin.trade.adapt.Group;
-import com.myrontuttle.fin.trade.web.EvolveAccess;
 import com.myrontuttle.fin.trade.web.data.DBAccess;
 import com.myrontuttle.fin.trade.web.data.SortableGroupDataProvider;
 import com.myrontuttle.fin.trade.web.pages.GroupPage;
+import com.myrontuttle.fin.trade.web.pages.TraderPage;
+import com.myrontuttle.fin.trade.web.service.EvolveAccess;
 
 public class GroupTablePanel extends Panel {
 	
@@ -45,7 +46,7 @@ public class GroupTablePanel extends Panel {
 		columns.add(new AbstractColumn<Group, String>(new Model<String>("Details")) {
 			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
 				IModel<Group> model) {
-				cellItem.add(new ViewPanel(componentId, model));
+				cellItem.add(new DetailPanel(componentId, model));
 			}
 		});
 
@@ -56,7 +57,14 @@ public class GroupTablePanel extends Panel {
 			}
 		});
 
-		columns.add(new AbstractColumn<Group, String>(new Model<String>("Delete")) {
+		columns.add(new AbstractColumn<Group, String>(new Model<String>("Best Trader")) {
+			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
+				IModel<Group> model) {
+				cellItem.add(new BestTraderPanel(componentId, model));
+			}
+		});
+
+		columns.add(new AbstractColumn<Group, String>(new Model<String>("Delete Group")) {
 			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
 				IModel<Group> model) {
 				cellItem.add(new DeleteGroupPanel(componentId, model));
@@ -69,14 +77,14 @@ public class GroupTablePanel extends Panel {
 		add(dataTable);
 	}
 
-	class ViewPanel extends Panel {
+	class DetailPanel extends Panel {
 		/**
 		 * @param id component id
 		 * @param model model for contact
 		 */
-		public ViewPanel(String id, IModel<Group> model) {
+		public DetailPanel(String id, IModel<Group> model) {
 			super(id, model);
-			add(new Link("view") {
+			add(new Link("details") {
 				@Override
 				public void onClick() {
 					String groupId = ((Group)getParent().getDefaultModelObject()).getGroupId();
@@ -102,6 +110,33 @@ public class GroupTablePanel extends Panel {
 				}
 			});
 			add(form);
+		}
+	}
+
+	class BestTraderPanel extends Panel {
+		/**
+		 * @param id component id
+		 * @param model model for contact
+		 */
+		public BestTraderPanel(String id, IModel<Group> model) {
+			super(id, model);
+			add(new Link("best") {
+				
+				Group group = ((Group)getParent().getDefaultModelObject());
+				
+				@Override
+				public void onClick() {
+					String traderId = DBAccess.getDAO().getBestTrader(group.getGroupId()).getTraderId();
+					TraderPage tp = new TraderPage(traderId);
+					setResponsePage(tp);
+				}
+				
+				@Override
+				public boolean isVisible() {
+					// Make visible only if there is an actual Best Trader
+					return (DBAccess.getDAO().getBestTrader(group.getGroupId()) != null);
+				}
+			});
 		}
 	}
 

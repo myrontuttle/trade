@@ -3,20 +3,26 @@
 
 	<reference id="GroupDAO" interface="com.myrontuttle.fin.trade.adapt.GroupDAO" />
   
-	<bean id="DBAccess" class="com.myrontuttle.fin.trade.web.DBAccess">
+	<bean id="DBAccess" class="com.myrontuttle.fin.trade.web.data.DBAccess">
 		<property name="groupDAO" ref="GroupDAO" />
 	</bean>
 	
 	<reference id="EvolveService" interface="com.myrontuttle.fin.trade.adapt.EvolveService" />
   
-	<bean id="EvolveAccess" class="com.myrontuttle.fin.trade.web.EvolveAccess">
+	<bean id="EvolveAccess" class="com.myrontuttle.fin.trade.web.service.EvolveAccess">
 		<property name="evolveService" ref="EvolveService" />
 	</bean>
 	
 	<reference id="TradeStrategyService" interface="com.myrontuttle.fin.trade.api.TradeStrategyService" />
   
-	<bean id="StrategyAccess" class="com.myrontuttle.fin.trade.web.StrategyAccess">
+	<bean id="StrategyAccess" class="com.myrontuttle.fin.trade.web.service.StrategyAccess">
 		<property name="tradeStrategyService" ref="TradeStrategyService" />
+	</bean>
+
+	<reference id="ScreenerService" interface="com.myrontuttle.fin.trade.api.ScreenerService" />
+  
+	<bean id="ScreenerAccess" class="com.myrontuttle.fin.trade.web.service.ScreenerAccess">
+		<property name="screenerService" ref="ScreenerService" />
 	</bean>
 
 	<service interface="org.ops4j.pax.wicket.api.WebApplicationFactory" >

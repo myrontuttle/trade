@@ -163,4 +163,40 @@ public class GroupDAOImpl implements GroupDAO {
 		Trader trader = em.find(Trader.class, traderId);
 		trader.addTradeInstruction(instruction);
 	}
+
+	@Override
+	public List<SavedScreen> findScreensForTrader(String traderId) {
+		return em.createQuery(
+				"SELECT s FROM SavedScreens s WHERE s.traderId = :traderId", 
+				SavedScreen.class).setParameter("traderId", traderId).getResultList();
+	}
+
+	@Override
+	public List<SavedAlert> findAlertsForTrader(String traderId) {
+		return em.createQuery(
+				"SELECT a FROM SavedAlerts a WHERE a.traderId = :traderId", 
+				SavedAlert.class).setParameter("traderId", traderId).getResultList();
+	}
+
+	@Override
+	public List<TradeInstruction> findInstructionsForTrader(String traderId) {
+		return em.createQuery(
+				"SELECT t FROM TradeInstructions t WHERE t.traderId = :traderId", 
+				TradeInstruction.class).setParameter("traderId", traderId).getResultList();
+	}
+
+	@Override
+	public SavedScreen findScreen(String savedScreenId) {
+		return em.find(SavedScreen.class, savedScreenId);
+	}
+
+	@Override
+	public SavedAlert findAlert(String savedAlertId) {
+		return em.find(SavedAlert.class, savedAlertId);
+	}
+
+	@Override
+	public TradeInstruction findTradeInstruction(String tradeInstructionId) {
+		return em.find(TradeInstruction.class, tradeInstructionId);
+	}
 }

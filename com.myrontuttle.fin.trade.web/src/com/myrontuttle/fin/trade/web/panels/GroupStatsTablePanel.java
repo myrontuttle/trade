@@ -25,7 +25,6 @@ public class GroupStatsTablePanel extends Panel {
 
 		columns.add(new PropertyColumn<GroupStats, String>(new Model<String>("ID"), "statsId", "statsId"));
 		columns.add(new PropertyColumn(new Model<String>("Recorded"), "recordedTime"));
-		columns.add(new PropertyColumn(new Model<String>("Best Candidate"), "bestCandidateId"));
 		columns.add(new PropertyColumn(new Model<String>("Best Fitness"), "bestCandidateFitness"));
 		columns.add(new PropertyColumn(new Model<String>("Mean Fitness"), "meanFitness"));
 		columns.add(new PropertyColumn(new Model<String>("Fitness StdDev"), "fitnessStandardDeviation"));

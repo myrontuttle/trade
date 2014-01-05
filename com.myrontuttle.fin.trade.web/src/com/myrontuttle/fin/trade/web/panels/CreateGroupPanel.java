@@ -16,8 +16,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 
 import com.myrontuttle.fin.trade.adapt.Group;
-import com.myrontuttle.fin.trade.web.StrategyAccess;
 import com.myrontuttle.fin.trade.web.data.DBAccess;
+import com.myrontuttle.fin.trade.web.service.StrategyAccess;
 
 public class CreateGroupPanel extends Panel {
 

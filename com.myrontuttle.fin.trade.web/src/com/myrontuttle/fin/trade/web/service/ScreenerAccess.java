@@ -13,7 +13,7 @@ public class ScreenerAccess {
 		return screenerService;
 	}
 
-	public void setScreenerServiceService(ScreenerService screenerService) {
+	public void setScreenerService(ScreenerService screenerService) {
 		ScreenerAccess.screenerService = screenerService;
 	}
 

@@ -116,16 +116,15 @@ public class GroupTablePanel extends Panel {
 	class BestTraderPanel extends Panel {
 		/**
 		 * @param id component id
-		 * @param model model for contact
+		 * @param model model for Group
 		 */
 		public BestTraderPanel(String id, IModel<Group> model) {
 			super(id, model);
 			add(new Link("best") {
 				
-				Group group = ((Group)getParent().getDefaultModelObject());
-				
 				@Override
 				public void onClick() {
+					Group group = ((Group)getParent().getDefaultModelObject());
 					String traderId = DBAccess.getDAO().getBestTrader(group.getGroupId()).getTraderId();
 					TraderPage tp = new TraderPage(traderId);
 					setResponsePage(tp);
@@ -134,6 +133,7 @@ public class GroupTablePanel extends Panel {
 				@Override
 				public boolean isVisible() {
 					// Make visible only if there is an actual Best Trader
+					Group group = ((Group)getParent().getDefaultModelObject());
 					return (DBAccess.getDAO().getBestTrader(group.getGroupId()) != null);
 				}
 			});

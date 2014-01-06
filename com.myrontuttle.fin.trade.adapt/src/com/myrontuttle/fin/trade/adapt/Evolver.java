@@ -48,6 +48,7 @@ public class Evolver implements EvolveService {
 		public void populationUpdate(PopulationStats<? extends int[]> data) {
 			// Save the best trader for the group
 			Candidate best = groupDAO.findCandidateByGenome(data.getBestCandidate());
+			best.setGenome(Candidate.parseGenomeString(best.getGenomeString()));
 
 			Trader trader = new Trader();
 			trader.setGroupId(data.getPopulationId());

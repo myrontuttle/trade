@@ -40,18 +40,15 @@ public class Trader implements Serializable {
 	@Lob
 	private String genomeString;
 	
-	@Column(name = "SavedScreens")
-	@OneToMany(mappedBy = "trader", targetEntity = Trader.class,
+	@OneToMany(mappedBy = "trader", targetEntity = SavedScreen.class,
 				fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Collection<SavedScreen> savedScreens;
 	
-	@Column(name = "SavedAlerts")
-	@OneToMany(mappedBy = "trader", targetEntity = Trader.class,
+	@OneToMany(mappedBy = "trader", targetEntity = SavedAlert.class,
 				fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Collection<SavedAlert> savedAlerts;
 
-	@Column(name = "TradeInstructions")
-	@OneToMany(mappedBy = "trader", targetEntity = Trader.class,
+	@OneToMany(mappedBy = "trader", targetEntity = TradeInstruction.class,
 				fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Collection<TradeInstruction> tradeInstructions;
 	

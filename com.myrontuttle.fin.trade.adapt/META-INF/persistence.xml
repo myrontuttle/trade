@@ -6,9 +6,13 @@
     <persistence-unit name="AdaptPersistanceUnit" transaction-type="JTA">
     	<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
         <jta-data-source>osgi:service/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/h2ds)</jta-data-source>
+        <class>com.myrontuttle.fin.trade.adapt.Group</class>
         <class>com.myrontuttle.fin.trade.adapt.Candidate</class>
         <class>com.myrontuttle.fin.trade.adapt.GroupStats</class>
-        <class>com.myrontuttle.fin.trade.adapt.Group</class>
+        <class>com.myrontuttle.fin.trade.adapt.Trader</class>
+        <class>com.myrontuttle.fin.trade.adapt.SavedAlert</class>
+        <class>com.myrontuttle.fin.trade.adapt.SavedScreen</class>
+        <class>com.myrontuttle.fin.trade.adapt.TradeInstruction</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
        
         <properties>

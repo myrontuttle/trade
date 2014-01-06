@@ -26,7 +26,7 @@ public class SavedAlert implements Serializable {
 	@Column(name = "TraderId")
 	private String traderId;
 	
-	@ManyToOne(optional = true)
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "TraderId", referencedColumnName = "TraderId")
 	private Trader trader;
 

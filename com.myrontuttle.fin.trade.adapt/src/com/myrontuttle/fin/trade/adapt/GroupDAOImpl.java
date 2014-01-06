@@ -3,6 +3,7 @@ package com.myrontuttle.fin.trade.adapt;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 
 import com.myrontuttle.sci.evolve.PopulationStats;
 
@@ -140,9 +141,13 @@ public class GroupDAOImpl implements GroupDAO {
 
 	@Override
 	public Trader getBestTrader(String groupId) {
-		return em.createQuery(
-				"SELECT b FROM BestTraders b WHERE b.groupId = :groupId", 
-				Trader.class).setParameter("groupId", groupId).getSingleResult();
+		try {
+			return em.createQuery(
+					"SELECT t FROM Traders t WHERE t.groupId = :groupId", 
+					Trader.class).setParameter("groupId", groupId).getSingleResult();
+		} catch (NoResultException nre) {
+			return null;
+		}
 	}
 
 	@Override

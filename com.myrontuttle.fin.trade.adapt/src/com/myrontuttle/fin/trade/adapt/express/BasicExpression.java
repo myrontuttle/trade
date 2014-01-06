@@ -270,7 +270,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		SelectedAlert[] selected = new SelectedAlert[symbols.length * group.getAlertsPerSymbol()];
 		
 		int position = getAlertStartPosition(group);
-		
+		int s = 0;
 		for (int i=0; i<symbols.length; i++) {
 			for (int j=0; j<group.getAlertsPerSymbol(); j++) {
 
@@ -294,8 +294,9 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 				}
 				String selectedCondition = alertService.parseCondition(alert, symbols[i], 
 																		params);
-				selected[i + j] = new SelectedAlert(id, selectedCondition, 
+				selected[s] = new SelectedAlert(id, selectedCondition, 
 													symbols[i], params);
+				s++;
 				position += ALERT_GENE_LENGTH;
 			}
 		}

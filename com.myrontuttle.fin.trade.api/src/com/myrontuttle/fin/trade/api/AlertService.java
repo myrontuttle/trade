@@ -49,7 +49,8 @@ public interface AlertService {
 	 * @param params Values to fill in to the alert
 	 * @return parsed condition string
 	 */
-	public String parseCondition(AvailableAlert alert, String symbol, double... params);
+	public String parseCondition(AvailableAlert alert, String symbol, 
+			double... params) throws Exception;
 
 	/**
 	 * Returns the potentially calculated lower bound for a condition and criteriaIndex
@@ -59,7 +60,8 @@ public interface AlertService {
 	 * @param criteriaIndex The number of the criteria to get the bound for
 	 * @return The lower bound
 	 */
-	public double getLowerDouble(String userId, int id, String symbol, int criteriaIndex);
+	public double getLowerDouble(String userId, int id, String symbol, 
+			int criteriaIndex) throws Exception;
 
 	/**
 	 * Returns the potentially calculated upper bound for a condition and criteriaIndex
@@ -69,7 +71,8 @@ public interface AlertService {
 	 * @param criteriaIndex The number of the criteria to get the bound for
 	 * @return The upper bound
 	 */
-	public double getUpperDouble(String userId, int id, String symbol, int criteriaIndex);
+	public double getUpperDouble(String userId, int id, String symbol, 
+			int criteriaIndex) throws Exception;
 	
 	/**
 	 * Returns the length of a list criteria
@@ -78,7 +81,7 @@ public interface AlertService {
 	 * @param criteriaIndex The number of the criteria to get the bound for
 	 * @return The upper bound
 	 */
-	public int getListLength(String userId, int id, int criteriaIndex);
+	public int getListLength(String userId, int id, int criteriaIndex) throws Exception;
 	
 	/**
 	 * Adds the customer email and delivery format if it isn't already there

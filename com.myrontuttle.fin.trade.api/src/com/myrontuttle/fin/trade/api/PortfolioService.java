@@ -57,14 +57,14 @@ public interface PortfolioService {
 	 * @param userId
 	 * @return An array of order types available from this portfolio for opening a position
 	 */
-	public String[] openOrderTypesAvailable(String userId);
+	public String[] openOrderTypesAvailable(String userId) throws Exception ;
 	
 	/**
 	 * Indicates whether an order type would benefit from a price increase
 	 * @param orderType From the openOrderTypesAvailable
 	 * @return True if rising prices would result in a better outcome for a holding
 	 */
-	public boolean priceRiseGood(String orderType);
+	public boolean priceRiseGood(String orderType) throws Exception ;
 	
 	/**
 	 * Open a position with a particular order type
@@ -80,7 +80,7 @@ public interface PortfolioService {
 	 * @param userId
 	 * @return An array of order types available from this portfolio for closing a position
 	 */
-	public String[] closeOrderTypesAvailable(String userId);
+	public String[] closeOrderTypesAvailable(String userId) throws Exception ;
 	
 	/**
 	 * Close a position with a particular order type

@@ -131,7 +131,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		// Get screener possibilities
 		AvailableScreenCriteria[] availableScreenCriteria = null;
 		try {
-			availableScreenCriteria = screenerService.getAvailableCriteria(group.getGroupId());
+			availableScreenCriteria = screenerService.getAvailableCriteria(group.getFullGroupId());
 		} catch (Exception e) {
 			System.out.println("Error getting screener criteria: " + e.getMessage());
 			e.printStackTrace();
@@ -254,17 +254,16 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	 * @param symbols The symbols found during screening
 	 * @return A set of alert criteria selected by this candidate
 	 */
-	public SelectedAlert[] expressAlertGenes(Candidate candidate, Group group, String[] symbols) {
+	public SelectedAlert[] expressAlertGenes(Candidate candidate, Group group, 
+			String[] symbols) throws Exception {
 
 		int[] genome = candidate.getGenome();
 		
 		// Get alert possibilities
 		AvailableAlert[] availableAlerts = null;
-		try {
-			availableAlerts = alertService.getAvailableAlerts(group.getGroupId());
-		} catch (Exception e) {
-			System.out.println("Error getting alerts available: " + e.getMessage());
-			return null;
+		availableAlerts = alertService.getAvailableAlerts(group.getGroupId());
+		if (availableAlerts == null) {
+			throw new Exception("No available alerts for " + group.getGroupId());
 		}
 		
 		SelectedAlert[] selected = new SelectedAlert[symbols.length * group.getAlertsPerSymbol()];
@@ -397,6 +396,8 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		
 		// Find the group
 		Group group = groupDAO.findGroup(groupId);
+
+		candidate.setFullCandidateId(group.getIdPrepend() + candidate.getCandidateId());
 
 		// Get criteria to screen against
 		SelectedScreenCriteria[] screenCriteria = expressScreenerGenes(candidate, group);

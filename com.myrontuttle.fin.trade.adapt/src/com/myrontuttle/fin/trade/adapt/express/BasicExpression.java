@@ -124,17 +124,16 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	 * @param group The candidates group
 	 * @return A set of screener criteria selected by this candidate
 	 */
-	public SelectedScreenCriteria[] expressScreenerGenes(Candidate candidate, Group group) {
+	public SelectedScreenCriteria[] expressScreenerGenes(Candidate candidate, Group group) 
+			throws Exception {
 		
 		int[] genome = candidate.getGenome();
 
 		// Get screener possibilities
-		AvailableScreenCriteria[] availableScreenCriteria = null;
-		try {
-			availableScreenCriteria = screenerService.getAvailableCriteria(group.getFullGroupId());
-		} catch (Exception e) {
-			System.out.println("Error getting screener criteria: " + e.getMessage());
-			e.printStackTrace();
+		AvailableScreenCriteria[] availableScreenCriteria = 
+				screenerService.getAvailableCriteria(group.getFullGroupId());
+		if (availableScreenCriteria == null) {
+			throw new Exception("No available screen criteria for " + group.getFullGroupId());
 		}
 
 		// Start at the first screen gene
@@ -160,7 +159,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	}
 	
 	public String[] getScreenSymbols(Candidate candidate, Group group, 
-										SelectedScreenCriteria[] screenCriteria) {
+										SelectedScreenCriteria[] screenCriteria) throws Exception {
 		String[] symbols = null;
 		int[] genome = candidate.getGenome();
 
@@ -170,65 +169,56 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		}
 		int sortGene = transpose(genome[SCREEN_SORT_POSITION], group.getGeneUpperValue(), 
 									0, screenCriteria.length - 1);
-		try {
-			String[] screenSymbols = screenerService.screen(
-											group.getGroupId(),
-											screenCriteria,
-											screenCriteria[sortGene].getName(),
-											group.getMaxSymbolsPerScreen());
-			if (screenSymbols.length > group.getMaxSymbolsPerScreen()) {
-				symbols = new String[group.getMaxSymbolsPerScreen()];
-				System.arraycopy(screenSymbols, 0, symbols, 0, group.getMaxSymbolsPerScreen());
-			} else {
-				symbols = new String[screenSymbols.length];
-				System.arraycopy(screenSymbols, 0, symbols, 0, symbols.length);
-			}
-		} catch (Exception e2) {
-			System.out.println("Error screening for symbols: " + e2.getMessage());
-			e2.printStackTrace();
+
+		String[] screenSymbols = screenerService.screen(
+										group.getFullGroupId(),
+										screenCriteria,
+										screenCriteria[sortGene].getName(),
+										group.getMaxSymbolsPerScreen());
+		
+		if (screenSymbols == null) {
+			throw new Exception("No symbols found for " + group.getFullGroupId());
 		}
+		if (screenSymbols.length > group.getMaxSymbolsPerScreen()) {
+			symbols = new String[group.getMaxSymbolsPerScreen()];
+			System.arraycopy(screenSymbols, 0, symbols, 0, group.getMaxSymbolsPerScreen());
+		} else {
+			symbols = new String[screenSymbols.length];
+			System.arraycopy(screenSymbols, 0, symbols, 0, symbols.length);
+		}
+		
 		return symbols;
 	}
 	
-	String setupWatchlist(Candidate candidate, Group group, String[] symbols) {
+	String setupWatchlist(Candidate candidate, Group group, String[] symbols) throws Exception {
 		String watchlistId = null;
-		String candidateId = candidate.getCandidateId();
+		String candidateId = candidate.getFullCandidateId();
 		String groupId = group.getGroupId();
 		String name = WATCH_NAME_PREFIX + GROUP + groupId + CANDIDATE + candidateId;
-		try {
-			watchlistId = watchlistService.create(candidateId, name);
-		} catch (Exception e1) {
-			System.out.println("Error creating watchlist: " + e1.getMessage());
-			e1.printStackTrace();
+		watchlistId = watchlistService.create(candidateId, name);
+		if (watchlistId == null) {
+			throw new Exception("Error creating watchlist: " + name);
 		}
 
 		// Add stocks to a watchlist
 		for (int i=0; i<symbols.length; i++) {
-			try {
-				watchlistService.addHolding(candidateId, watchlistId, symbols[i]);
-			} catch (Exception e) {
-				System.out.println("Error adding " + symbols[i] + " to watchlist: " + name);
-				e.printStackTrace();
-			}
+			watchlistService.addHolding(candidateId, watchlistId, symbols[i]);
 		}
 		
 		return watchlistId;
 	}
 	
-	String setupPortfolio(Candidate candidate, Group group) {
+	String setupPortfolio(Candidate candidate, Group group) throws Exception {
 		String portfolioId = null;
-		String candidateId = candidate.getCandidateId();
+		String candidateId = candidate.getFullCandidateId();
 		String name = PORT_NAME_PREFIX + GROUP + group.getGroupId() + CANDIDATE + candidateId;
-		try {
-			portfolioId = portfolioService.create(candidateId, name);
-			portfolioService.addCashTransaction(candidateId, portfolioId, 
-												group.getStartingCash(), 
-												true, true);
-		} catch (Exception e) {
-			System.out.println("Error creating portfolio: " + name);
-			System.out.println("Portfolio Id: " + portfolioId);
-			e.printStackTrace();
+		portfolioId = portfolioService.create(candidateId, name);
+		if (portfolioId == null) {
+			throw new Exception("Error creating portfolio: " + name);
 		}
+		portfolioService.addCashTransaction(candidateId, portfolioId, 
+											group.getStartingCash(), 
+											true, true);
 		
 		return portfolioId;
 	}
@@ -260,10 +250,9 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		int[] genome = candidate.getGenome();
 		
 		// Get alert possibilities
-		AvailableAlert[] availableAlerts = null;
-		availableAlerts = alertService.getAvailableAlerts(group.getGroupId());
+		AvailableAlert[] availableAlerts = alertService.getAvailableAlerts(group.getFullGroupId());
 		if (availableAlerts == null) {
-			throw new Exception("No available alerts for " + group.getGroupId());
+			throw new Exception("No available alerts for " + group.getFullGroupId());
 		}
 		
 		SelectedAlert[] selected = new SelectedAlert[symbols.length * group.getAlertsPerSymbol()];
@@ -281,12 +270,12 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 				double[] params = new double[criteriaTypes.length];
 				for (int k=0; k<criteriaTypes.length; k++) {
 					if (criteriaTypes[k].equals(AvailableAlert.DOUBLE)) {
-						double upper = alertService.getUpperDouble(group.getGroupId(), id, symbols[i], k);
-						double lower = alertService.getLowerDouble(group.getGroupId(), id, symbols[i], k);
+						double upper = alertService.getUpperDouble(group.getFullGroupId(), id, symbols[i], k);
+						double lower = alertService.getLowerDouble(group.getFullGroupId(), id, symbols[i], k);
 						params[k] = transpose(genome[position + 1], group.getGeneUpperValue(),
 												lower, upper);
 					} else if (criteriaTypes[k].equals(AvailableAlert.LIST)) {
-						int upper = alertService.getListLength(group.getGroupId(), id, k);
+						int upper = alertService.getListLength(group.getFullGroupId(), id, k);
 						params[k] = transpose(genome[position + 1], group.getGeneUpperValue(), 
 												0, upper);
 					}
@@ -303,20 +292,11 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		return selected;
 	}
 	
-	void setupAlerts(String groupId, SelectedAlert[] openAlerts, String groupEmail) {
+	void setupAlerts(Group group, SelectedAlert[] openAlerts) throws Exception {
 
-		try {
-			alertService.addAlertDestination(groupId, groupEmail, "EMAIL");
-		} catch (Exception e) {
-			System.out.println("Unable to add alert profile. " + e.getMessage());
-			e.printStackTrace();
-		}
-		try {
-			alertService.setupAlerts(groupId, openAlerts);
-		} catch (Exception e) {
-			System.out.println("Error creating alerts: " + e.getMessage());
-			e.printStackTrace();
-		}
+		alertService.addAlertDestination(group.getFullGroupId(), group.getAlertAddress(), "EMAIL");
+
+		alertService.setupAlerts(group.getFullGroupId(), openAlerts);
 	}
 
 	/**
@@ -333,7 +313,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	 * @param symbols The symbols found during screening
 	 * @return A set of alert criteria selected by this candidate
 	 */
-	public Trade[] expressTradeGenes(Candidate candidate, Group group, String[] symbols) {
+	public Trade[] expressTradeGenes(Candidate candidate, Group group, String[] symbols) throws Exception {
 
 		String candidateId = candidate.getCandidateId();
 		int[] genome = candidate.getGenome();
@@ -341,8 +321,16 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		Trade[] trades = new Trade[symbols.length];
 		
 		TradeStrategy tradeStrategy = tradeStrategyService.getTradeStrategy(group.getTradeStrategy());
+		
+		int openOrderTypes;
+		try {
+			openOrderTypes = portfolioService.openOrderTypesAvailable(candidateId).length;
+		} catch (Exception e) {
+			System.out.println("Unable to get openOrderTypesAvailable from Portfolio Service. Using 1");
+			openOrderTypes = 1;
+		}
 
-		tradeStrategy.setOrderTypesAvailable(portfolioService.openOrderTypesAvailable(candidateId).length);
+		tradeStrategy.setOrderTypesAvailable(openOrderTypes);
 		
 		AvailableStrategyParameter[] availableParameters = tradeStrategy.availableParameters();
 		
@@ -369,20 +357,14 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	}
 	
 	void setupAlertReceiver(SelectedAlert[] openAlerts, String portfolioId, Trade[] tradesToMake, 
-								Group group) {
+								Group group) throws Exception {
 		AlertTrade[] alertTrades = new AlertTrade[openAlerts.length];
 		for (int i=0; i<tradesToMake.length; i++) {
 			for (int j=0; j<group.getAlertsPerSymbol(); j++) {
 				alertTrades[i+j] = new AlertTrade(openAlerts[i+j], portfolioId, tradesToMake[i]);
 			}
 		}
-		try {
-			alertReceiver.watchFor(alertTrades);
-		} catch (Exception e) {
-			System.out.println("Error preparing to watch for alerts: " + 
-								e.getMessage());
-			e.printStackTrace();
-		}
+		alertReceiver.watchFor(alertTrades);
 	}
 
 	@Override
@@ -426,7 +408,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 		// Create (symbols*alertsPerSymbol) alerts for stocks
 		SelectedAlert[] openAlerts = expressAlertGenes(candidate, group, symbols);
-		setupAlerts(groupId, openAlerts, group.getAlertAddress());
+		setupAlerts(group, openAlerts);
 		
 		// Create (symbol) trades to be made when alerts are triggered
 		Trade[] tradesToMake = expressTradeGenes(candidate, group, symbols);

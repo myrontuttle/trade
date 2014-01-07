@@ -12,6 +12,7 @@
     	<form wicket:id="updateGroupForm">
     		<table cellpadding="2" cellspacing="2">
     			<tr>
+    				<td>ID Prepend<br /><input type="text" wicket:id="idPrepend"/></td>
     				<td>Alert Address<br /><input type="text" wicket:id="alertAddress"/></td>
     				<td>Frequency of Evaluation<br /> 
     					<span wicket:id="frequency">Frequency</span>
@@ -34,6 +35,7 @@
         			<td>Allow Short Sells (When Available)<br />
 						<input type="checkbox" wicket:id="allowShorting" />
 					</td>
+					<td>&nbsp;</td>
     			</tr>
     			<tr>
     				<td>Number of Screens<br /><span wicket:id="numberOfScreens">Screens</span></td>
@@ -48,6 +50,7 @@
     			<tr>
     				<td><button wicket:id="removeCandidates" type="submit">Remove All Candidates</button></td>
     				<td><button wicket:id="removeStats" type="submit">Remove All Stats</button></td>
+    				<td>&nbsp;</td>
     				<td>&nbsp;</td>
     				<td>&nbsp;</td>
     				<td><button wicket:id="update" type="submit">Update Group</button></td>

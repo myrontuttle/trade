@@ -62,24 +62,30 @@ public class Evolver implements EvolveService {
 			if (group.getExpressionStrategy().equals(Group.BASIC_EXPRESSION)) {
 				BasicExpression<int[]> expression = new BasicExpression<int[]>();
 				
-				SelectedScreenCriteria[] screenCriteria = expression.expressScreenerGenes(best, group);
-				for (SelectedScreenCriteria criteria : screenCriteria) {
-					groupDAO.addSavedScreen(new SavedScreen(trader.getTraderId(), criteria), 
-											trader.getTraderId());
-				}
-				
-				String[] symbols = expression.getScreenSymbols(best, group, screenCriteria);
-				
-				SelectedAlert[] alerts = expression.expressAlertGenes(best, group, symbols);
-				for (SelectedAlert alert : alerts) {
-					groupDAO.addSavedAlert(new SavedAlert(trader.getTraderId(), alert), 
-							trader.getTraderId());
-				}
-				
-				Trade[] trades = expression.expressTradeGenes(best, group, symbols);
-				for (Trade trade : trades) {
-					groupDAO.addTradeInstruction(new TradeInstruction(trader.getTraderId(), trade), 
-							trader.getTraderId());
+				try {
+					SelectedScreenCriteria[] screenCriteria = expression.expressScreenerGenes(best, group);
+					for (SelectedScreenCriteria criteria : screenCriteria) {
+						groupDAO.addSavedScreen(new SavedScreen(trader.getTraderId(), criteria), 
+												trader.getTraderId());
+					}
+					
+					String[] symbols = expression.getScreenSymbols(best, group, screenCriteria);
+					
+					SelectedAlert[] alerts = expression.expressAlertGenes(best, group, symbols);
+					for (SelectedAlert alert : alerts) {
+						groupDAO.addSavedAlert(new SavedAlert(trader.getTraderId(), alert), 
+								trader.getTraderId());
+					}
+					
+					Trade[] trades = expression.expressTradeGenes(best, group, symbols);
+					for (Trade trade : trades) {
+						groupDAO.addTradeInstruction(new TradeInstruction(trader.getTraderId(), trade), 
+								trader.getTraderId());
+					}
+				} catch (Exception e) {
+					System.out.println("Unable to express candidate " + 
+							best.getFullCandidateId());
+					e.printStackTrace();
 				}
 			}
 

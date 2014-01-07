@@ -381,40 +381,46 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 		candidate.setFullCandidateId(group.getIdPrepend() + candidate.getCandidateId());
 
-		// Get criteria to screen against
-		SelectedScreenCriteria[] screenCriteria = expressScreenerGenes(candidate, group);
-		
-		// Get a list of symbols from the Screener Service
-		String[] symbols = getScreenSymbols(candidate, group, screenCriteria);
-		
-		// If the screener didn't produce any symbols there's no point using the other services
-		if (symbols == null || symbols.length == 0) {
-			return candidate;
-		}
-		
-		// Create a watchlist
-		String watchlistId = setupWatchlist(candidate, group, symbols);
-		candidate.setWatchlistId(watchlistId);
-		
-		// Prepare portfolio
-		String portfolioId = setupPortfolio(candidate, group);
+		try {
+			// Get criteria to screen against
+			SelectedScreenCriteria[] screenCriteria = expressScreenerGenes(candidate, group);
+			
+			// Get a list of symbols from the Screener Service
+			String[] symbols = getScreenSymbols(candidate, group, screenCriteria);
+			
+			// If the screener didn't produce any symbols there's no point using the other services
+			if (symbols == null || symbols.length == 0) {
+				return candidate;
+			}
+			
+			// Create a watchlist
+			String watchlistId = setupWatchlist(candidate, group, symbols);
+			candidate.setWatchlistId(watchlistId);
+			
+			// Prepare portfolio
+			String portfolioId = setupPortfolio(candidate, group);
 
-		// No point continuing if there's no portfolio to track trades
-		if (portfolioId == null || portfolioId == "") {
-			return candidate;
-		} else {
-			candidate.setPortfolioId(portfolioId);
-		}
+			// No point continuing if there's no portfolio to track trades
+			if (portfolioId == null || portfolioId == "") {
+				return candidate;
+			} else {
+				candidate.setPortfolioId(portfolioId);
+			}
 
-		// Create (symbols*alertsPerSymbol) alerts for stocks
-		SelectedAlert[] openAlerts = expressAlertGenes(candidate, group, symbols);
-		setupAlerts(group, openAlerts);
-		
-		// Create (symbol) trades to be made when alerts are triggered
-		Trade[] tradesToMake = expressTradeGenes(candidate, group, symbols);
-		
-		// Create listener for alerts to move stocks to portfolio
-		setupAlertReceiver(openAlerts, portfolioId, tradesToMake, group);
+			// Create (symbols*alertsPerSymbol) alerts for stocks
+			SelectedAlert[] openAlerts = expressAlertGenes(candidate, group, symbols);
+			setupAlerts(group, openAlerts);
+			
+			// Create (symbol) trades to be made when alerts are triggered
+			Trade[] tradesToMake = expressTradeGenes(candidate, group, symbols);
+			
+			// Create listener for alerts to move stocks to portfolio
+			setupAlertReceiver(openAlerts, portfolioId, tradesToMake, group);
+		} catch (Exception e) {
+			System.out.println("Unable to express candidate " + 
+					candidate.getFullCandidateId());
+			e.printStackTrace();
+		}
 
 		// Save candidate to database, and return
 		groupDAO.updateCandidate(candidate);

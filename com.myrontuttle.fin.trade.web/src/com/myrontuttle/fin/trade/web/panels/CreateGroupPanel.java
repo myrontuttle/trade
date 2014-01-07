@@ -28,6 +28,8 @@ public class CreateGroupPanel extends Panel {
 		final IModel<Group> compound = new CompoundPropertyModel<Group>(new Group());
 		final Form<Group> form = new Form<Group>("newGroupForm", compound);
 		
+		form.add(new TextField<String>("idPrepend"));
+		
 		form.add(new TextField<String>("alertAddress")
 					.add(EmailAddressValidator.getInstance()));
 		

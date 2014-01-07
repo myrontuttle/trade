@@ -41,6 +41,7 @@ public class BasicExpressionTest {
 	private final static String WID = "watchlistID";
 	private final static String PID = "portfolioID";
 	private final static String GID = "groupID";
+	private final static String GROUP_PREPEND = "";
 	private final static String LID = "LotID";
 	private final static String EMAIL = "test@test.com";
 	private final double STARTING_CASH = 10000.00;
@@ -154,6 +155,7 @@ public class BasicExpressionTest {
 		candidateA.setCandidateId(CID);
 		candidateA.setGenomeString(Candidate.generateGenomeString(genomeA));
 		candidateA.setGroupId(GID);
+		candidateA.setFullCandidateId(GROUP_PREPEND + CID);
 		candidateA.setPortfolioId(PID);
 		candidateA.setWatchlistId(WID);
 		Collection<Candidate> candidates = new ArrayList<Candidate>();
@@ -161,6 +163,7 @@ public class BasicExpressionTest {
 		
 		group1 = new Group();
 		group1.setGroupId(GID);
+		group1.setIdPrepend(GROUP_PREPEND);
 		group1.setNumberOfScreens(SCREEN_GENES);
 		group1.setMaxSymbolsPerScreen(MAX_SYMBOLS_PER_SCREEN);
 		group1.setAlertsPerSymbol(ALERTS_PER_SYMBOL);
@@ -246,7 +249,7 @@ public class BasicExpressionTest {
 	}
 
 	@Test
-	public void testExpressScreenerGenes() {
+	public void testExpressScreenerGenes() throws Exception {
 		SelectedScreenCriteria[] screenCriteria = 
 				expression.expressScreenerGenes(candidateA, group1);
 		
@@ -256,7 +259,7 @@ public class BasicExpressionTest {
 	}
 	
 	@Test
-	public void testGetScreenSymbols() {
+	public void testGetScreenSymbols() throws Exception {
 		String[] symbols = expression.getScreenSymbols(candidateA, group1, selectedScreenCriteria);
 		for (int i=0; i<symbols.length; i++) {
 			assertEquals(symbols[i], screenSymbols[i]);
@@ -264,17 +267,17 @@ public class BasicExpressionTest {
 	}
 	
 	@Test
-	public void testSetupWatchlist() {
+	public void testSetupWatchlist() throws Exception {
 		assertEquals(WID, expression.setupWatchlist(candidateA, group1, screenSymbols));
 	}
 	
 	@Test
-	public void testSetupPortfolio() {
+	public void testSetupPortfolio() throws Exception {
 		assertEquals(PID, expression.setupPortfolio(candidateA, group1));
 	}
 	
 	@Test
-	public void testExpressAlertGenes() {
+	public void testExpressAlertGenes() throws Exception {
 		SelectedAlert[] selectedAlerts = expression.expressAlertGenes(candidateA, group1,
 																	screenSymbols);
 		
@@ -286,12 +289,12 @@ public class BasicExpressionTest {
 	}
 	
 	@Test
-	public void testSetupAlerts() {
-		expression.setupAlerts(GID, selectedAlerts, EMAIL);
+	public void testSetupAlerts() throws Exception {
+		expression.setupAlerts(group1, selectedAlerts);
 	}
 	
 	@Test
-	public void testExpressTradeGenes() {
+	public void testExpressTradeGenes() throws Exception {
 		Trade[] trades = expression.expressTradeGenes(candidateA, group1, screenSymbols);
 		for (int i=0; i<trades.length; i++) {
 			assertTrue(trades[i].equals(trades[i]));
@@ -299,7 +302,7 @@ public class BasicExpressionTest {
 	}
 	
 	@Test
-	public void testSetupAlertReceiver() {
+	public void testSetupAlertReceiver() throws Exception {
 		expression.setupAlertReceiver(selectedAlerts, PID, trades, group1);
 	}
 	

@@ -29,7 +29,8 @@ public class UpdateGroupPanel extends Panel {
 		}
 		final IModel<Group> compound = new CompoundPropertyModel<Group>(group);
 		final Form<Group> form = new Form<Group>("updateGroupForm", compound);
-		
+
+		form.add(new TextField<String>("idPrepend"));
 		form.add(new TextField<String>("alertAddress")
 					.add(EmailAddressValidator.getInstance()));
 		form.add(new Label("frequency"));

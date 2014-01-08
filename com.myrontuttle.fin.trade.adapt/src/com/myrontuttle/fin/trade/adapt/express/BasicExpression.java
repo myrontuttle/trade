@@ -343,7 +343,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			tradeParameters = new Hashtable<String, Integer>(availableParameters.length);
 			
 			for (int j=0; j<availableParameters.length; j++) {
-				tradeParameters.put(availableParameters[i].getName(),
+				tradeParameters.put(availableParameters[j].getName(),
 										transpose(genome[position + 1],
 												group.getGeneUpperValue(),
 												availableParameters[i].getLower(), 

@@ -176,6 +176,36 @@ public class BoundedStrategy implements TradeStrategy {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.myrontuttle.fin.trade.api.TradeStrategy#describeTrade(java.lang.String, com.myrontuttle.fin.trade.api.Trade)
+	 */
+	@Override
+	public String[] describeTrade(String userId, Trade trade) throws Exception {
+		Hashtable<String, Integer> parameters = trade.getParameters();
+		if (parameters == null || parameters.size() == 0) {
+			return new String[0];
+		}
+		String[] desc = new String[4];
+		desc[0] = "If an alert fires for " + trade.getSymbol() + " then " + portfolioService.
+				openOrderTypesAvailable(userId)[parameters.get(OPEN_ORDER)] + " it with " +
+				parameters.get(TRADE_ALLOC) + "% of portfolio.";
+		
+		desc[1] = "If the price of " + trade.getSymbol() + " falls below " + parameters.get(PERCENT_BELOW) +
+				"% then " + portfolioService.closeOrderTypesAvailable(userId)[parameters.get(OPEN_ORDER)] + 
+				" it.";
+		
+		desc[2] = "If the price of " + trade.getSymbol() + " rises above " + parameters.get(PERCENT_ABOVE) +
+				"% then " + portfolioService.closeOrderTypesAvailable(userId)[parameters.get(OPEN_ORDER)] + 
+				" it.";
+		
+		desc[3] = "If the position in " + trade.getSymbol() + " lasts longer than " + 
+				parameters.get(TIME_LIMIT) + " " + TIME_LIMIT_UNIT.toString() + " then " + 
+				portfolioService.closeOrderTypesAvailable(userId)[parameters.get(OPEN_ORDER)] + 
+				" it.";
+				
+		return desc;
+	}
+
 	protected String openTrade(String userId, Trade trade, String portfolioId) throws Exception {
 		if (portfolioService.openOrderTypesAvailable(userId).length != 
 				portfolioService.closeOrderTypesAvailable(userId).length) {

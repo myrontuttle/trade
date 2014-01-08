@@ -43,4 +43,13 @@ public interface TradeStrategy {
 	 * @throws Exception
 	 */
 	public String takeAction(String userId, AlertAction alertAction) throws Exception;
+
+	/**
+	 * Describes the actions to be taken based on a user and trade
+	 * @param userId
+	 * @param trade
+	 * @return
+	 * @throws Exception
+	 */
+	public String[] describeTrade(String userId, Trade trade) throws Exception;
 }

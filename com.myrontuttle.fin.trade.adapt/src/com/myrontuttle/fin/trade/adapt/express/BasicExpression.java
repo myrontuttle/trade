@@ -10,6 +10,9 @@ import java.util.List;
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.Group;
 import com.myrontuttle.fin.trade.adapt.GroupDAO;
+import com.myrontuttle.fin.trade.adapt.SavedAlert;
+import com.myrontuttle.fin.trade.adapt.SavedScreen;
+import com.myrontuttle.fin.trade.adapt.TradeInstruction;
 import com.myrontuttle.fin.trade.adapt.Trader;
 import com.myrontuttle.fin.trade.api.*;
 import com.myrontuttle.fin.trade.strategies.AlertTrade;
@@ -470,10 +473,51 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		}
 	}
 	
-	public static Trader createTrader(Candidate candidate) {
+	public Trader createTrader(int[] genome, String groupId) {
+
+		// Save the best trader for the group
+		Candidate candidate = groupDAO.findCandidateByGenome(genome);
+		candidate.setGenome(Candidate.parseGenomeString(candidate.getGenomeString()));
+		
 		Trader trader = new Trader();
-		//trader.setGroupId(candidate.getGroupId());
-		//trader.setGenomeString(candidate.getGenomeString());
-		return trader;
+		trader.setGroupId(groupId);
+		trader.setGenomeString(candidate.getGenomeString());
+		
+		groupDAO.setBestTrader(trader, groupId);
+
+		// Find the group
+		Group group = groupDAO.findGroup(groupId);
+		
+		try {
+			SelectedScreenCriteria[] screenCriteria = expressScreenerGenes(candidate, group);
+			for (SelectedScreenCriteria criteria : screenCriteria) {
+				groupDAO.addSavedScreen(new SavedScreen(trader.getTraderId(), criteria), 
+										trader.getTraderId());
+			}
+			
+			String[] symbols = getScreenSymbols(candidate, group, screenCriteria);
+			
+			SelectedAlert[] alerts = expressAlertGenes(candidate, group, symbols);
+			for (SelectedAlert alert : alerts) {
+				groupDAO.addSavedAlert(new SavedAlert(trader.getTraderId(), alert), 
+						trader.getTraderId());
+			}
+
+			TradeStrategy tradeStrategy = tradeStrategyService.getTradeStrategy(group.getTradeStrategy());
+			Trade[] trades = expressTradeGenes(candidate, group, symbols);
+			for (Trade trade : trades) {
+				String[] tradeDesc = tradeStrategy.describeTrade(candidate.getFullCandidateId(), trade);
+				for (String desc : tradeDesc) {
+					groupDAO.addTradeInstruction(new TradeInstruction(trader.getTraderId(), desc), 
+							trader.getTraderId());
+				}
+			}
+			return trader;
+		} catch (Exception e) {
+			System.out.println("Unable to express candidate " + 
+					candidate.getFullCandidateId());
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

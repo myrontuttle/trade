@@ -15,7 +15,6 @@ Import-Package: com.myrontuttle.fin.trade.api,
  com.myrontuttle.sci.evolve.selection,
  com.myrontuttle.sci.evolve.termination,
  javax.persistence,
- org.apache.openjpa.persistence,
  org.joda.time;version="1.6.2",
  org.joda.time.base;version="1.6.2",
  org.osgi.framework;version="1.7.0"

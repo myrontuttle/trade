@@ -347,10 +347,10 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			
 			for (int j=0; j<availableParameters.length; j++) {
 				tradeParameters.put(availableParameters[j].getName(),
-										transpose(genome[position + 1],
+										transpose(genome[position + j],
 												group.getGeneUpperValue(),
-												availableParameters[i].getLower(), 
-												availableParameters[i].getUpper()));
+												availableParameters[j].getLower(), 
+												availableParameters[j].getUpper()));
 			}
 			
 			trades[i] = new Trade(symbols[i], tradeParameters);

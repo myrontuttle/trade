@@ -25,8 +25,7 @@ public class TraderInstructionsTablePanel extends Panel {
 
 		columns.add(new PropertyColumn<TradeInstruction, String>(new Model<String>("ID"), "tradeInstructionId", 
 						"tradeInstructionId"));
-		columns.add(new PropertyColumn(new Model<String>("Symbol"), "symbol"));
-		columns.add(new PropertyColumn(new Model<String>("Parameters"), "parameters"));
+		columns.add(new PropertyColumn(new Model<String>("Instruction"), "instruction"));
 
 		DataTable dataTable = new DefaultDataTable<TradeInstruction, String>("traderInstructions", columns,
 				new SortableInstructionDataProvider(traderId), 20);

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Trade Adapt
 Bundle-SymbolicName: com.myrontuttle.fin.trade.adapt
-Bundle-Version: 2.2.3.qualifier
+Bundle-Version: 2.2.4
 Bundle-Vendor: Myron Tuttle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Meta-Persistence: META-INF/persistence.xml

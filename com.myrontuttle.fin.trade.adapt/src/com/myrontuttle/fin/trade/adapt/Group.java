@@ -122,6 +122,11 @@ public class Group implements Serializable {
 	public void setBestTrader(Trader bestTrader) {
 		this.bestTrader = bestTrader;
 	}
+	
+	public void removeBestTrader(Trader trader) {
+		this.bestTrader = null;
+		trader.setGroup(null);
+	}
 
 	public void addGroupStats(GroupStats gs) {
 		this.stats.add(gs);

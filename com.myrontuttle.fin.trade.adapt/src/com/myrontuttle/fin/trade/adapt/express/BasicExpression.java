@@ -473,51 +473,32 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		}
 	}
 	
-	public Trader createTrader(int[] genome, String groupId) {
+	public Trader setupTrader(Candidate candidate, Group group, Trader trader) 
+			throws Exception {
 
-		// Save the best trader for the group
-		Candidate candidate = groupDAO.findCandidateByGenome(genome);
-		candidate.setGenome(Candidate.parseGenomeString(candidate.getGenomeString()));
+		SelectedScreenCriteria[] screenCriteria = expressScreenerGenes(candidate, group);
+		for (SelectedScreenCriteria criteria : screenCriteria) {
+			groupDAO.addSavedScreen(new SavedScreen(trader.getTraderId(), criteria), 
+									trader.getTraderId());
+		}
 		
-		Trader trader = new Trader();
-		trader.setGroupId(groupId);
-		trader.setGenomeString(candidate.getGenomeString());
+		String[] symbols = getScreenSymbols(candidate, group, screenCriteria);
 		
-		groupDAO.setBestTrader(trader, groupId);
+		SelectedAlert[] alerts = expressAlertGenes(candidate, group, symbols);
+		for (SelectedAlert alert : alerts) {
+			groupDAO.addSavedAlert(new SavedAlert(trader.getTraderId(), alert), 
+					trader.getTraderId());
+		}
 
-		// Find the group
-		Group group = groupDAO.findGroup(groupId);
-		
-		try {
-			SelectedScreenCriteria[] screenCriteria = expressScreenerGenes(candidate, group);
-			for (SelectedScreenCriteria criteria : screenCriteria) {
-				groupDAO.addSavedScreen(new SavedScreen(trader.getTraderId(), criteria), 
-										trader.getTraderId());
-			}
-			
-			String[] symbols = getScreenSymbols(candidate, group, screenCriteria);
-			
-			SelectedAlert[] alerts = expressAlertGenes(candidate, group, symbols);
-			for (SelectedAlert alert : alerts) {
-				groupDAO.addSavedAlert(new SavedAlert(trader.getTraderId(), alert), 
+		TradeStrategy tradeStrategy = tradeStrategyService.getTradeStrategy(group.getTradeStrategy());
+		Trade[] trades = expressTradeGenes(candidate, group, symbols);
+		for (Trade trade : trades) {
+			String[] tradeDesc = tradeStrategy.describeTrade(candidate.getFullCandidateId(), trade);
+			for (String desc : tradeDesc) {
+				groupDAO.addTradeInstruction(new TradeInstruction(trader.getTraderId(), desc), 
 						trader.getTraderId());
 			}
-
-			TradeStrategy tradeStrategy = tradeStrategyService.getTradeStrategy(group.getTradeStrategy());
-			Trade[] trades = expressTradeGenes(candidate, group, symbols);
-			for (Trade trade : trades) {
-				String[] tradeDesc = tradeStrategy.describeTrade(candidate.getFullCandidateId(), trade);
-				for (String desc : tradeDesc) {
-					groupDAO.addTradeInstruction(new TradeInstruction(trader.getTraderId(), desc), 
-							trader.getTraderId());
-				}
-			}
-			return trader;
-		} catch (Exception e) {
-			System.out.println("Unable to express candidate " + 
-					candidate.getFullCandidateId());
-			e.printStackTrace();
-			return null;
 		}
+		return trader;
 	}
 }

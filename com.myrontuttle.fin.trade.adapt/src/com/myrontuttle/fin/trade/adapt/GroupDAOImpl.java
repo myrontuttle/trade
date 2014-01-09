@@ -56,11 +56,13 @@ public class GroupDAOImpl implements GroupDAO {
 	}
 	
 	public Candidate findCandidateByGenome(int[] genome) {
-		return em.createQuery(
+		Candidate candidate = em.createQuery(
 				"SELECT c FROM Candidates c WHERE c.genomeString = :genomeString", 
 					Candidate.class).
 				setParameter("genomeString", Candidate.generateGenomeString(genome)).
 				getSingleResult();
+		candidate.setGenome(genome);
+		return candidate;
 	}
 	
 	public Candidate updateCandidate(Candidate candidate) {
@@ -148,6 +150,14 @@ public class GroupDAOImpl implements GroupDAO {
 		} catch (NoResultException nre) {
 			return null;
 		}
+	}
+
+	@Override
+	public void removeTrader(String traderId) {
+		Trader trader = em.find(Trader.class, traderId);
+		Group group = em.find(Group.class, trader.getGroupId());
+		group.removeBestTrader(trader);
+		em.remove(trader);
 	}
 
 	@Override

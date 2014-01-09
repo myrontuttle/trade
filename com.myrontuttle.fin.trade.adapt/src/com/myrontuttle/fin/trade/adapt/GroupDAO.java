@@ -47,6 +47,8 @@ public interface GroupDAO {
 	public Trader findTrader(String traderId);
 	
 	public Trader getBestTrader(String groupId);
+	
+	public void removeTrader(String traderId);
 
 	public void addSavedScreen(SavedScreen screen, String traderId);
 	

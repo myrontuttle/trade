@@ -43,13 +43,35 @@ public class Evolver implements EvolveService {
 																		new UserAbort() };
 	private final EvolutionObserver<int[]> dbObserver = new EvolutionObserver<int[]>() {
 		public void populationUpdate(PopulationStats<? extends int[]> data) {
+
+			// Find the best candidate from the group
+			Candidate candidate = groupDAO.findCandidateByGenome(data.getBestCandidate());
+			
+			Group group = groupDAO.findGroup(data.getPopulationId());
+
+			// Remove the previous best trader (if one exists)
+			Trader existingBest = group.getBestTrader();
+			if (existingBest != null) {
+				groupDAO.removeTrader(existingBest.getTraderId());
+			}
 			
 			// Save the best trader
-			Group group = groupDAO.findGroup(data.getPopulationId());
+			Trader trader = new Trader();
+			trader.setGroupId(group.getGroupId());
+			trader.setGenomeString(candidate.getGenomeString());
+			
+			groupDAO.setBestTrader(trader, group.getGroupId());
 
 			if (group.getExpressionStrategy().equals(Group.BASIC_EXPRESSION)) {
 				BasicExpression<int[]> expression = new BasicExpression<int[]>();
-				expression.createTrader(data.getBestCandidate(), data.getPopulationId());
+
+				try {
+					expression.setupTrader(candidate, group, trader);
+				} catch (Exception e) {
+					System.out.println("Unable to setup trader " + 
+							candidate.getFullCandidateId());
+					e.printStackTrace();
+				}
 			}
 
 			// Use data to update group

@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     version="1.0">
 
-    <persistence-unit name="AdaptPersistanceUnit" transaction-type="JTA">
+    <persistence-unit name="AdaptPU" transaction-type="JTA">
     	<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
         <jta-data-source>osgi:service/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/h2ds)</jta-data-source>
         <class>com.myrontuttle.fin.trade.adapt.Group</class>

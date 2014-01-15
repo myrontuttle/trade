@@ -11,7 +11,7 @@
 	<reference id="AlertReceiverService" interface="com.myrontuttle.fin.trade.api.AlertReceiverService" />
 	
 	<bean id="GroupDAOImpl" class="com.myrontuttle.fin.trade.adapt.GroupDAOImpl" scope="singleton">
-		<jpa:context unitname="AdaptPersistanceUnit" property="entityManager" />
+		<jpa:context unitname="AdaptPU" property="entityManager" />
       	<tx:transaction method="*" value="Required"/>
 	</bean>
 	

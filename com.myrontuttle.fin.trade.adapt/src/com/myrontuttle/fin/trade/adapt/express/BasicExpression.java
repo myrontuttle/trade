@@ -393,6 +393,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			
 			// If the screener didn't produce any symbols there's no point using the other services
 			if (symbols == null || symbols.length == 0) {
+				System.out.println("No symbols found for candidate " + candidate.getFullCandidateId());
 				return candidate;
 			}
 			
@@ -405,6 +406,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 			// No point continuing if there's no portfolio to track trades
 			if (portfolioId == null || portfolioId == "") {
+				System.out.println("Unable to create portfolio for " + candidate.getFullCandidateId());
 				return candidate;
 			} else {
 				candidate.setPortfolioId(portfolioId);
@@ -483,6 +485,9 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		}
 		
 		String[] symbols = getScreenSymbols(candidate, group, screenCriteria);
+		for (String symbol : symbols) {
+			groupDAO.addSymbol(symbol, trader.getTraderId());
+		}
 		
 		SelectedAlert[] alerts = expressAlertGenes(candidate, group, symbols);
 		for (SelectedAlert alert : alerts) {

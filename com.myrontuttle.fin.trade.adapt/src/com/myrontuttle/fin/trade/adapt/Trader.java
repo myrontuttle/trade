@@ -2,9 +2,12 @@ package com.myrontuttle.fin.trade.adapt;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -44,6 +47,14 @@ public class Trader implements Serializable {
 				fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Collection<SavedScreen> savedScreens;
 	
+	@ElementCollection
+	@CollectionTable(
+			name="Symbol",
+			joinColumns=@JoinColumn(name="TraderId")
+	)
+	@Column(name="SYMBOLS")
+	private List<String> symbols;
+	
 	@OneToMany(mappedBy = "trader", targetEntity = SavedAlert.class,
 				fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Collection<SavedAlert> savedAlerts;
@@ -65,6 +76,16 @@ public class Trader implements Serializable {
 		if (savedScreens.contains(s)) {
 			savedScreens.remove(s);
 			s.setTrader(null);
+		}
+	}
+
+	public void addSymbol(String s) {
+		this.symbols.add(s);
+	}
+	
+	public void removeSymbol(String s) {
+		if (symbols.contains(s)) {
+			symbols.remove(s);
 		}
 	}
 	
@@ -134,6 +155,14 @@ public class Trader implements Serializable {
 
 	public void setSavedScreens(Collection<SavedScreen> savedScreens) {
 		this.savedScreens = savedScreens;
+	}
+
+	public List<String> getSymbols() {
+		return symbols;
+	}
+
+	public void setSymbols(List<String> symbols) {
+		this.symbols = symbols;
 	}
 
 	public Collection<SavedAlert> getSavedAlerts() {

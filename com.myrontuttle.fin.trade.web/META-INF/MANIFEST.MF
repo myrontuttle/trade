@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Trade Web
 Bundle-SymbolicName: com.myrontuttle.fin.trade.web
-Bundle-Version: 2.2.3
+Bundle-Version: 2.3.0
 Bundle-Vendor: Myron Tuttle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: com.myrontuttle.fin.trade.adapt,
@@ -20,6 +20,7 @@ Import-Package: com.myrontuttle.fin.trade.adapt,
  org.apache.wicket.markup.html.basic;version="6.0.0",
  org.apache.wicket.markup.html.form;version="6.0.0",
  org.apache.wicket.markup.html.link;version="6.0.0",
+ org.apache.wicket.markup.html.list;version="6.11.0",
  org.apache.wicket.markup.html.panel;version="6.0.0",
  org.apache.wicket.markup.repeater;version="6.0.0",
  org.apache.wicket.markup.repeater.data;version="6.0.0",

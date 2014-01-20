@@ -167,6 +167,12 @@ public class GroupDAOImpl implements GroupDAO {
 	}
 
 	@Override
+	public void addSymbol(String symbol, String traderId) {
+		Trader trader = em.find(Trader.class, traderId);
+		trader.addSymbol(symbol);
+	}
+
+	@Override
 	public void addSavedAlert(SavedAlert alert, String traderId) {
 		Trader trader = em.find(Trader.class, traderId);
 		trader.addAlert(alert);
@@ -184,6 +190,12 @@ public class GroupDAOImpl implements GroupDAO {
 		return em.createQuery(
 				"SELECT s FROM SavedScreens s WHERE s.traderId = :traderId", 
 				SavedScreen.class).setParameter("traderId", traderId).getResultList();
+	}
+
+	@Override
+	public List<String> findSymbolsForTrader(String traderId) {
+		Trader trader = em.find(Trader.class, traderId);
+		return trader.getSymbols();
 	}
 
 	@Override

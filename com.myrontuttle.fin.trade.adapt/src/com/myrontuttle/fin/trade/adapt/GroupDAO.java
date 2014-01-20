@@ -55,6 +55,10 @@ public interface GroupDAO {
 	public List<SavedScreen> findScreensForTrader(String traderId);
 	
 	public SavedScreen findScreen(String savedScreenId);
+
+	public void addSymbol(String symbol, String traderId);
+	
+	public List<String> findSymbolsForTrader(String traderId);
 	
 	public List<SavedAlert> findAlertsForTrader(String traderId);
 	

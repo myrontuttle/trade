@@ -135,7 +135,8 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		// Get screener possibilities
 		AvailableScreenCriteria[] availableScreenCriteria = 
 				screenerService.getAvailableCriteria(group.getFullGroupId());
-		if (availableScreenCriteria == null) {
+		if (availableScreenCriteria == null || availableScreenCriteria.length <= 0 || 
+				availableScreenCriteria[0] == null) {
 			throw new Exception("No available screen criteria for " + group.getFullGroupId());
 		}
 
@@ -166,10 +167,6 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		String[] symbols = null;
 		int[] genome = candidate.getGenome();
 
-		if (screenCriteria.length == 0) {
-			// All of the screen symbols are turned off and we won't get any symbols from screening
-			return symbols;
-		}
 		int sortGene = transpose(genome[SCREEN_SORT_POSITION], group.getGeneUpperValue(), 
 									0, screenCriteria.length - 1);
 
@@ -180,7 +177,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 										group.getMaxSymbolsPerScreen());
 		
 		if (screenSymbols == null) {
-			throw new Exception("No symbols found for " + group.getFullGroupId());
+			throw new Exception("No symbols found for candidate " + candidate.getFullCandidateId());
 		}
 		if (screenSymbols.length > group.getMaxSymbolsPerScreen()) {
 			symbols = new String[group.getMaxSymbolsPerScreen()];
@@ -205,7 +202,9 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 		// Add stocks to a watchlist
 		for (int i=0; i<symbols.length; i++) {
-			watchlistService.addHolding(candidateId, watchlistId, symbols[i]);
+			if (symbols[i] != null) {
+				watchlistService.addHolding(candidateId, watchlistId, symbols[i]);
+			}
 		}
 		
 		return watchlistId;
@@ -387,12 +386,18 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		try {
 			// Get criteria to screen against
 			SelectedScreenCriteria[] screenCriteria = expressScreenerGenes(candidate, group);
+
+			if (screenCriteria.length == 0) {
+				// All of the screen symbols are turned off and we won't get any symbols from screening
+				System.out.println("No active screen criteria for " + candidate.getFullCandidateId());
+				return candidate;
+			}
 			
 			// Get a list of symbols from the Screener Service
 			String[] symbols = getScreenSymbols(candidate, group, screenCriteria);
 			
 			// If the screener didn't produce any symbols there's no point using the other services
-			if (symbols == null || symbols.length == 0) {
+			if (symbols.length == 0) {
 				System.out.println("No symbols found for candidate " + candidate.getFullCandidateId());
 				return candidate;
 			}
@@ -479,17 +484,26 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			throws Exception {
 
 		SelectedScreenCriteria[] screenCriteria = expressScreenerGenes(candidate, group);
+		if (screenCriteria.length == 0) {
+			return trader;
+		}
 		for (SelectedScreenCriteria criteria : screenCriteria) {
 			groupDAO.addSavedScreen(new SavedScreen(trader.getTraderId(), criteria), 
 									trader.getTraderId());
 		}
 		
 		String[] symbols = getScreenSymbols(candidate, group, screenCriteria);
+		if (symbols == null || symbols.length == 0) {
+			return trader;
+		}
 		for (String symbol : symbols) {
 			groupDAO.addSymbol(symbol, trader.getTraderId());
 		}
 		
 		SelectedAlert[] alerts = expressAlertGenes(candidate, group, symbols);
+		if (alerts.length == 0) {
+			return trader;
+		}
 		for (SelectedAlert alert : alerts) {
 			groupDAO.addSavedAlert(new SavedAlert(trader.getTraderId(), alert), 
 					trader.getTraderId());

@@ -69,7 +69,7 @@ public class Evolver implements EvolveService {
 					expression.setupTrader(candidate, group, trader);
 				} catch (Exception e) {
 					System.out.println("Unable to setup trader " + 
-							candidate.getFullCandidateId());
+							candidate.getCandidateId());
 					e.printStackTrace();
 				}
 			}

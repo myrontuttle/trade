@@ -30,7 +30,7 @@ public class CandidateTablePanel extends Panel {
 
 		List<IColumn<Candidate, String>> columns = new ArrayList<IColumn<Candidate, String>>();
 
-		columns.add(new PropertyColumn<Candidate, String>(new Model<String>("ID"), "fullCandidateId", "fullCandidateId"));
+		columns.add(new PropertyColumn<Candidate, String>(new Model<String>("ID"), "candidateId", "candidateId"));
 		columns.add(new PropertyColumn(new Model<String>("Watchlist"), "watchlistId"));
 		columns.add(new PropertyColumn(new Model<String>("Portfolio"), "portfolioId"));
 

@@ -29,9 +29,6 @@ public class Group implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private String groupId;
 	
-	@Column(name = "IDPrepend")
-	private String idPrepend;
-	
 	@OneToMany(mappedBy = "group", targetEntity = Candidate.class,
 			fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Collection<Candidate> candidates;
@@ -148,18 +145,6 @@ public class Group implements Serializable {
 
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
-	}
-
-	public String getIdPrepend() {
-		return idPrepend;
-	}
-
-	public void setIdPrepend(String idPrepend) {
-		this.idPrepend = idPrepend;
-	}
-	
-	public String getFullGroupId() {
-		return idPrepend + groupId;
 	}
 
 	public Collection<Candidate> getCandidates() {

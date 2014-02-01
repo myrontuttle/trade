@@ -30,9 +30,6 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	@JoinColumn(name = "GroupId", referencedColumnName = "GroupId")
 	private Group group;
 	
-	@Column(name = "FullCandidateId")
-	private String fullCandidateId;
-	
 	@Transient
 	private int[] genome;
 	
@@ -69,14 +66,6 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	}	
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
-	}
-
-	public String getFullCandidateId() {
-		return fullCandidateId;
-	}
-
-	public void setFullCandidateId(String fullCandidateId) {
-		this.fullCandidateId = fullCandidateId;
 	}
 
 	public Group getGroup() {

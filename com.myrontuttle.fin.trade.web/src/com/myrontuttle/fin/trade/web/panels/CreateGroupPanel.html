@@ -12,7 +12,6 @@
     	<form wicket:id="newGroupForm">
     		<table cellpadding="2" cellspacing="2">
     			<tr>
-    				<td>ID Prepend<br /><input type="text" wicket:id="idPrepend"/></td>
     				<td>Alert Address<br /><input type="text" wicket:id="alertAddress"/></td>
     				<td>Frequency of Evaluation<br /> 
     					<select wicket:id="frequency">
@@ -43,7 +42,6 @@
     				<td>Allow Short Sells (When Available)<br />
 						<input type="checkbox" wicket:id="allowShorting" />
 					</td>
-					<td>&nbsp;</td>
     			</tr>
     			<tr>
     				<td>Number of Screens<br /><input type="text" wicket:id="numberOfScreens"/></td>
@@ -53,6 +51,8 @@
         			<td>Activate<br />
 						<input type="checkbox" wicket:id="active" />
 					</td>
+				</tr>
+				<tr>
     				<td><button wicket:id="create" type="submit">Create</button></td>
     			</tr>
     		</table>

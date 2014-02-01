@@ -41,7 +41,6 @@ public class BasicExpressionTest {
 	private final static String WID = "watchlistID";
 	private final static String PID = "portfolioID";
 	private final static String GID = "groupID";
-	private final static String GROUP_PREPEND = "";
 	private final static String LID = "LotID";
 	private final static String EMAIL = "test@test.com";
 	private final double STARTING_CASH = 10000.00;
@@ -155,7 +154,6 @@ public class BasicExpressionTest {
 		candidateA.setCandidateId(CID);
 		candidateA.setGenomeString(Candidate.generateGenomeString(genomeA));
 		candidateA.setGroupId(GID);
-		candidateA.setFullCandidateId(GROUP_PREPEND + CID);
 		candidateA.setPortfolioId(PID);
 		candidateA.setWatchlistId(WID);
 		Collection<Candidate> candidates = new ArrayList<Candidate>();
@@ -163,7 +161,6 @@ public class BasicExpressionTest {
 		
 		group1 = new Group();
 		group1.setGroupId(GID);
-		group1.setIdPrepend(GROUP_PREPEND);
 		group1.setNumberOfScreens(SCREEN_GENES);
 		group1.setMaxSymbolsPerScreen(MAX_SYMBOLS_PER_SCREEN);
 		group1.setAlertsPerSymbol(ALERTS_PER_SYMBOL);

@@ -28,18 +28,16 @@ public class CreateGroupPanel extends Panel {
 		final IModel<Group> compound = new CompoundPropertyModel<Group>(new Group());
 		final Form<Group> form = new Form<Group>("newGroupForm", compound);
 		
-		form.add(new TextField<String>("idPrepend"));
-		
 		form.add(new TextField<String>("alertAddress")
 					.add(EmailAddressValidator.getInstance()));
 		
 		List<String> frequencies = Arrays.asList(Group.DAILY, Group.WEEKLY);
 		form.add(new DropDownChoice<String>("frequency", frequencies));
 
-		List<String> expressions = Arrays.asList(Group.NO_EXPRESSION, Group.BASIC_EXPRESSION);
+		List<String> expressions = Arrays.asList(Group.BASIC_EXPRESSION,Group.NO_EXPRESSION);
 		form.add(new DropDownChoice<String>("expressionStrategy", expressions));
 
-		List<String> evaluators = Arrays.asList(Group.RANDOM_EVALUATOR, Group.BASIC_EVALUATOR);
+		List<String> evaluators = Arrays.asList(Group.BASIC_EVALUATOR,Group.RANDOM_EVALUATOR);
 		form.add(new DropDownChoice<String>("evaluationStrategy", evaluators));
 
 		List<String> tradeStrategies = Arrays.

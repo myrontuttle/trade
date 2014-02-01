@@ -34,10 +34,10 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	// Genome positions
 	public static final int SCREEN_SORT_POSITION = 0;
 	
-	public static final String PORT_NAME_PREFIX = "PORT";
-	public static final String WATCH_NAME_PREFIX = "WATCH";
-	public static final String GROUP = "GROUP";
-	public static final String CANDIDATE = "CANDIDATE";
+	public static final String PORT_NAME_PREFIX = "P";
+	public static final String WATCH_NAME_PREFIX = "W";
+	public static final String GROUP = "G";
+	public static final String CANDIDATE = "C";
 	
 	// Managed by Blueprint
 	private static ScreenerService screenerService;
@@ -134,10 +134,10 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 		// Get screener possibilities
 		AvailableScreenCriteria[] availableScreenCriteria = 
-				screenerService.getAvailableCriteria(group.getFullGroupId());
+				screenerService.getAvailableCriteria(group.getGroupId());
 		if (availableScreenCriteria == null || availableScreenCriteria.length <= 0 || 
 				availableScreenCriteria[0] == null) {
-			throw new Exception("No available screen criteria for " + group.getFullGroupId());
+			throw new Exception("No available screen criteria for " + group.getGroupId());
 		}
 
 		// Start at the first screen gene
@@ -171,13 +171,13 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 									0, screenCriteria.length - 1);
 
 		String[] screenSymbols = screenerService.screen(
-										group.getFullGroupId(),
+										group.getGroupId(),
 										screenCriteria,
 										screenCriteria[sortGene].getName(),
 										group.getMaxSymbolsPerScreen());
 		
 		if (screenSymbols == null) {
-			throw new Exception("No symbols found for candidate " + candidate.getFullCandidateId());
+			throw new Exception("No symbols found for candidate " + candidate.getCandidateId());
 		}
 		if (screenSymbols.length > group.getMaxSymbolsPerScreen()) {
 			symbols = new String[group.getMaxSymbolsPerScreen()];
@@ -192,7 +192,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	
 	String setupWatchlist(Candidate candidate, Group group, String[] symbols) throws Exception {
 		String watchlistId = null;
-		String candidateId = candidate.getFullCandidateId();
+		String candidateId = candidate.getCandidateId();
 		String groupId = group.getGroupId();
 		String name = WATCH_NAME_PREFIX + GROUP + groupId + CANDIDATE + candidateId;
 		watchlistId = watchlistService.create(candidateId, name);
@@ -212,7 +212,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	
 	String setupPortfolio(Candidate candidate, Group group) throws Exception {
 		String portfolioId = null;
-		String candidateId = candidate.getFullCandidateId();
+		String candidateId = candidate.getCandidateId();
 		String name = PORT_NAME_PREFIX + GROUP + group.getGroupId() + CANDIDATE + candidateId;
 		portfolioId = portfolioService.create(candidateId, name);
 		if (portfolioId == null) {
@@ -252,9 +252,9 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		int[] genome = candidate.getGenome();
 		
 		// Get alert possibilities
-		AvailableAlert[] availableAlerts = alertService.getAvailableAlerts(group.getFullGroupId());
+		AvailableAlert[] availableAlerts = alertService.getAvailableAlerts(group.getGroupId());
 		if (availableAlerts == null) {
-			throw new Exception("No available alerts for " + group.getFullGroupId());
+			throw new Exception("No available alerts for " + group.getGroupId());
 		}
 		
 		SelectedAlert[] selected = new SelectedAlert[symbols.length * group.getAlertsPerSymbol()];
@@ -272,12 +272,12 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 				double[] params = new double[criteriaTypes.length];
 				for (int k=0; k<criteriaTypes.length; k++) {
 					if (criteriaTypes[k].equals(AvailableAlert.DOUBLE)) {
-						double upper = alertService.getUpperDouble(group.getFullGroupId(), id, symbols[i], k);
-						double lower = alertService.getLowerDouble(group.getFullGroupId(), id, symbols[i], k);
+						double upper = alertService.getUpperDouble(group.getGroupId(), id, symbols[i], k);
+						double lower = alertService.getLowerDouble(group.getGroupId(), id, symbols[i], k);
 						params[k] = transpose(genome[position + 1], group.getGeneUpperValue(),
 												lower, upper);
 					} else if (criteriaTypes[k].equals(AvailableAlert.LIST)) {
-						int upper = alertService.getListLength(group.getFullGroupId(), id, k);
+						int upper = alertService.getListLength(group.getGroupId(), id, k);
 						params[k] = transpose(genome[position + 1], group.getGeneUpperValue(), 
 												0, upper);
 					}
@@ -296,9 +296,9 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	
 	void setupAlerts(Group group, SelectedAlert[] openAlerts) throws Exception {
 
-		alertService.addAlertDestination(group.getFullGroupId(), group.getAlertAddress(), "EMAIL");
+		alertService.addAlertDestination(group.getGroupId(), group.getAlertAddress(), "EMAIL");
 
-		alertService.setupAlerts(group.getFullGroupId(), openAlerts);
+		alertService.setupAlerts(group.getGroupId(), openAlerts);
 	}
 
 	/**
@@ -372,6 +372,9 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	@Override
 	public Candidate express(int[] genome, String groupId) {
 		
+		if (genome == null || genome.length == 0) {
+			System.out.println("No Genome to Express");
+		}
 		Candidate candidate = new Candidate();
 		candidate.setGenome(genome);
 		candidate.setGroupId(groupId);
@@ -381,15 +384,13 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		// Find the group
 		Group group = groupDAO.findGroup(groupId);
 
-		candidate.setFullCandidateId(group.getIdPrepend() + candidate.getCandidateId());
-
 		try {
 			// Get criteria to screen against
 			SelectedScreenCriteria[] screenCriteria = expressScreenerGenes(candidate, group);
 
 			if (screenCriteria.length == 0) {
 				// All of the screen symbols are turned off and we won't get any symbols from screening
-				System.out.println("No active screen criteria for " + candidate.getFullCandidateId());
+				System.out.println("No active screen criteria for " + candidate.getCandidateId());
 				return candidate;
 			}
 			
@@ -398,7 +399,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			
 			// If the screener didn't produce any symbols there's no point using the other services
 			if (symbols.length == 0) {
-				System.out.println("No symbols found for candidate " + candidate.getFullCandidateId());
+				System.out.println("No symbols found for candidate " + candidate.getCandidateId());
 				return candidate;
 			}
 			
@@ -411,7 +412,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 			// No point continuing if there's no portfolio to track trades
 			if (portfolioId == null || portfolioId == "") {
-				System.out.println("Unable to create portfolio for " + candidate.getFullCandidateId());
+				System.out.println("Unable to create portfolio for " + candidate.getCandidateId());
 				return candidate;
 			} else {
 				candidate.setPortfolioId(portfolioId);
@@ -428,7 +429,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			setupAlertReceiver(openAlerts, portfolioId, tradesToMake, group);
 		} catch (Exception e) {
 			System.out.println("Unable to express candidate " + 
-					candidate.getFullCandidateId());
+					candidate.getCandidateId());
 			e.printStackTrace();
 		}
 
@@ -512,7 +513,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		TradeStrategy tradeStrategy = tradeStrategyService.getTradeStrategy(group.getTradeStrategy());
 		Trade[] trades = expressTradeGenes(candidate, group, symbols);
 		for (Trade trade : trades) {
-			String[] tradeDesc = tradeStrategy.describeTrade(candidate.getFullCandidateId(), trade);
+			String[] tradeDesc = tradeStrategy.describeTrade(candidate.getCandidateId(), trade);
 			for (String desc : tradeDesc) {
 				groupDAO.addTradeInstruction(new TradeInstruction(trader.getTraderId(), desc), 
 						trader.getTraderId());

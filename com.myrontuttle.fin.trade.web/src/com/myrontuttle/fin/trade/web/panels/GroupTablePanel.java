@@ -34,7 +34,7 @@ public class GroupTablePanel extends Panel {
 
 		List<IColumn<Group, String>> columns = new ArrayList<IColumn<Group, String>>();
 		
-		columns.add(new PropertyColumn<Group, String>(new Model<String>("ID"), "fullGroupId", "fullGroupId"));
+		columns.add(new PropertyColumn<Group, String>(new Model<String>("ID"), "groupId", "groupId"));
 		columns.add(new PropertyColumn(new Model<String>("Alert Address"), "alertAddress"));
 		columns.add(new PropertyColumn(new Model<String>("Frequency"), "frequency"));
 		columns.add(new PropertyColumn(new Model<String>("Active"), "active"));

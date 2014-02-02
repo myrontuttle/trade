@@ -40,6 +40,9 @@ public class GroupStats implements Serializable {
 	
 	@Column(name = "GenerationNumber")
     private int generationNumber;
+	
+	@Column(name = "Variability")
+	private double variability;
 
 	@Version
     @Column(name = "RecordedTime")
@@ -49,13 +52,14 @@ public class GroupStats implements Serializable {
 
 	public GroupStats(String groupId, double bestCandidateFitness,
 			double meanFitness, double fitnessStandardDeviation,
-			int generationNumber) {
+			int generationNumber, double variability) {
 		super();
 		this.groupId = groupId;
 		this.bestCandidateFitness = bestCandidateFitness;
 		this.meanFitness = meanFitness;
 		this.fitnessStandardDeviation = fitnessStandardDeviation;
 		this.generationNumber = generationNumber;
+		this.variability = variability;
 	}
 
 	public String getStatsId() {
@@ -112,6 +116,14 @@ public class GroupStats implements Serializable {
 
 	public void setGenerationNumber(int generationNumber) {
 		this.generationNumber = generationNumber;
+	}
+
+	public double getVariability() {
+		return variability;
+	}
+
+	public void setVariability(double variability) {
+		this.variability = variability;
 	}
 
 	public Date getRecordedTime() {

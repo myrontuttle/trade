@@ -441,7 +441,34 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 	@Override
 	public void candidatesExpressed(
-			List<ExpressedCandidate<int[]>> expressedCandidates) {
+			List<ExpressedCandidate<int[]>> expressedCandidates, String populationId) {
+		
+		// Determine average Hamming distance
+		int[] genomeA;
+		int[] genomeB;
+		int distance;
+		int hammingPairings = 0;
+		double hammingSum = 0.0;
+		for (int i=0; i<expressedCandidates.size(); i++) {
+			genomeA = expressedCandidates.get(i).getGenome();
+			for (int j=i+1; j<expressedCandidates.size(); j++) {
+				genomeB = expressedCandidates.get(j).getGenome();
+				distance = 0;
+				for (int k = 0; k < genomeA.length; k++) {
+					if (genomeA[k] != genomeB[k]) {
+						distance++;
+					}
+				}
+				hammingPairings++;
+				hammingSum += distance;
+			}
+		}
+		
+		double meanHammingDistance = hammingSum / hammingPairings;
+		
+		Group group = groupDAO.findGroup(populationId);
+		group.setVariability(meanHammingDistance);
+		groupDAO.updateGroup(group);
 	}
 	
 	/**

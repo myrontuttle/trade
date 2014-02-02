@@ -16,7 +16,7 @@ public class NoExpression implements ExpressionStrategy<int[]> {
 
 	@Override
 	public void candidatesExpressed(
-			List<ExpressedCandidate<int[]>> expressedCandidates) {
+			List<ExpressedCandidate<int[]>> expressedCandidates, String populationId) {
 		// TODO Auto-generated method stub
 	}
 

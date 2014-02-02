@@ -2,7 +2,7 @@ package com.myrontuttle.fin.trade.web.panels;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Panel;
 
 import com.myrontuttle.fin.trade.web.pages.MainPage;
@@ -11,6 +11,9 @@ import com.myrontuttle.fin.trade.web.pages.MainPage;
  * Navigation panel
  */
 public final class HeaderPanel extends Panel {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Construct.
 	 * 
@@ -22,12 +25,7 @@ public final class HeaderPanel extends Panel {
 		super(id);
 
 		add(new Label("siteTitle", siteTitle));
-		add(new Link("mainPage") {
-			@Override
-			public void onClick() {
-				setResponsePage(new MainPage());
-			}
-		});
+		add(new BookmarkablePageLink<Object>("mainPage", MainPage.class));
 
 	}
 }

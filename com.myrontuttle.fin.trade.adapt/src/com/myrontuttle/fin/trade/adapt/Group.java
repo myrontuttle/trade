@@ -88,6 +88,9 @@ public class Group implements Serializable {
 	@Column(name = "Active")
 	private boolean active;
 	
+	@Column(name = "Variability")
+	private double variability;
+	
 	// Group Stats
 	@OneToMany(mappedBy = "group", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private ArrayList<GroupStats> stats;
@@ -289,6 +292,14 @@ public class Group implements Serializable {
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	public double getVariability() {
+		return variability;
+	}
+
+	public void setVariability(double variability) {
+		this.variability = variability;
 	}
 
 	public ArrayList<GroupStats> getStats() {

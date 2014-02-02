@@ -6,7 +6,6 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 
@@ -19,16 +18,10 @@ public class UpdateGroupPanel extends Panel {
 
 	Group group;
 	
-	public UpdateGroupPanel(String id, String groupId) {
+	public UpdateGroupPanel(String id, IModel<Group> model) {
 		super(id);
-		if (groupId != null) {
-			group = DBAccess.getDAO().findGroup(groupId);
-		}
-		if (group == null) {
-			group = new Group();
-		}
-		final IModel<Group> compound = new CompoundPropertyModel<Group>(group);
-		final Form<Group> form = new Form<Group>("updateGroupForm", compound);
+		
+		final Form<Group> form = new Form<Group>("updateGroupForm", model);
 
 		form.add(new TextField<String>("alertAddress")
 					.add(EmailAddressValidator.getInstance()));
@@ -65,7 +58,7 @@ public class UpdateGroupPanel extends Panel {
         });
 		form.add(new Button("update") {
             public void onSubmit() {
-            	group = DBAccess.getDAO().updateGroup((Group)compound.getObject());
+            	group = DBAccess.getDAO().updateGroup((Group)getParent().getDefaultModelObject());
             }
         });
         

@@ -65,7 +65,6 @@ public class BasicEvaluator implements ExpressedFitnessEvaluator<int[]> {
 			e.printStackTrace();
 			return 0;
 		}
-		return (balance >= startingCash) ? 
-					balance - startingCash : 0;
+		return (balance >= startingCash) ? balance - startingCash : 0;
 	}
 }

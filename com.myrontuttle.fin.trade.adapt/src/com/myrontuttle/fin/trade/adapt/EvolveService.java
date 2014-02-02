@@ -8,6 +8,8 @@ import org.joda.time.DateTime;
  */
 public interface EvolveService {
 	
+	public void createInitialCandidates(String groupId);
+	
 	public void evolveNow(String groupId);
 	
 	public void evolveAllNow();

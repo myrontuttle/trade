@@ -41,6 +41,10 @@ public class Evolver implements EvolveService {
 	
 	private final TerminationCondition[] terminationConditions = new TerminationCondition[]{
 																		new UserAbort() };
+	/**
+	 * The Evolution Observer is notified after the population is evaluated and sorted
+	 * @param groupId
+	 */
 	private final EvolutionObserver<int[]> dbObserver = new EvolutionObserver<int[]>() {
 		public void populationUpdate(PopulationStats<? extends int[]> data) {
 
@@ -154,6 +158,29 @@ public class Evolver implements EvolveService {
 		} else {
 			return new RandomEvaluator();
 		}
+	}
+	
+	/**
+	 * Creates the first candidates for this group
+	 * @param groupId
+	 */
+	public void createInitialCandidates(String groupId) {
+
+		Group group = groupDAO.findGroup(groupId);
+		
+		int size = group.getSize();
+
+		ExpressionStrategy<int[]> expressionStrategy = getExpressionStrategy(group);
+		int genomeLength = expressionStrategy.getGenomeLength(groupId);
+		
+		ExpressedFitnessEvaluator<int[]> evaluator = getEvaluator(group);
+		
+		EvolutionEngine<int[]> engine = createEngine(genomeLength, 
+														group.getGeneUpperValue(), 
+														group.getMutationFactor(),
+														expressionStrategy, evaluator);
+		
+		engine.expressInitialPopulation(groupId, size);
 	}
 	
 	/*

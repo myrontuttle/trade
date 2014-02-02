@@ -17,6 +17,7 @@ import org.apache.wicket.validation.validator.EmailAddressValidator;
 
 import com.myrontuttle.fin.trade.adapt.Group;
 import com.myrontuttle.fin.trade.web.data.DBAccess;
+import com.myrontuttle.fin.trade.web.service.EvolveAccess;
 import com.myrontuttle.fin.trade.web.service.StrategyAccess;
 
 public class CreateGroupPanel extends Panel {
@@ -85,6 +86,7 @@ public class CreateGroupPanel extends Panel {
             	Group group = (Group)compound.getObject();
             	group.setStartTime(new Date());
             	DBAccess.getDAO().saveGroup(group);
+            	EvolveAccess.getEvolveService().createInitialCandidates(group.getGroupId());
             }
         });
         

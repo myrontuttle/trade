@@ -85,12 +85,13 @@ public class GroupDAOImpl implements GroupDAO {
 	}
 	
 	public void updateGroupStats(PopulationStats<? extends int[]> data) {
+
+		Group group = em.find(Group.class, data.getPopulationId());
 		
 		GroupStats stats = new GroupStats(data.getPopulationId(), 
 				data.getBestCandidateFitness(), data.getMeanFitness(), 
-				data.getFitnessStandardDeviation(), data.getGenerationNumber());
-		
-		Group group = em.find(Group.class, data.getPopulationId());
+				data.getFitnessStandardDeviation(), data.getGenerationNumber(),
+				group.getVariability());
 		
 		group.setGeneration(data.getGenerationNumber());
 

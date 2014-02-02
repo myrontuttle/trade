@@ -21,8 +21,6 @@ import com.myrontuttle.fin.trade.adapt.Group;
 import com.myrontuttle.fin.trade.web.data.DBAccess;
 import com.myrontuttle.fin.trade.web.data.SortableGroupDataProvider;
 import com.myrontuttle.fin.trade.web.pages.GroupPage;
-import com.myrontuttle.fin.trade.web.pages.TraderPage;
-import com.myrontuttle.fin.trade.web.service.EvolveAccess;
 
 public class GroupTablePanel extends Panel {
 	
@@ -41,7 +39,9 @@ public class GroupTablePanel extends Panel {
 		columns.add(new PropertyColumn(new Model<String>("Size"), "size"));
 		columns.add(new PropertyColumn(new Model<String>("Elites"), "eliteCount"));
 		columns.add(new PropertyColumn(new Model<String>("Created On"), "startTime"));
+		columns.add(new PropertyColumn(new Model<String>("Generation"), "generation"));
 		columns.add(new PropertyColumn(new Model<String>("Last Updated"), "updatedTime"));
+		columns.add(new PropertyColumn(new Model<String>("Variability"), "variability"));
 
 		columns.add(new AbstractColumn<Group, String>(new Model<String>("Details")) {
 			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
@@ -90,51 +90,6 @@ public class GroupTablePanel extends Panel {
 					String groupId = ((Group)getParent().getDefaultModelObject()).getGroupId();
 					GroupPage gp = new GroupPage(groupId);
 					setResponsePage(gp);
-				}
-			});
-		}
-	}
-
-	class EvolveGroupPanel extends Panel {
-		/**
-		 * @param id component id
-		 * @param model model for contact
-		 */
-		public EvolveGroupPanel(String id, IModel<Group> model) {
-			super(id, model);
-			final Form<Group> form = new Form<Group>("evolveGroupForm", model);
-			form.add(new Button("evolve") {
-				public void onSubmit() {
-					String groupId = ((Group)getParent().getDefaultModelObject()).getGroupId();
-					EvolveAccess.getEvolveService().evolveNow(groupId);
-				}
-			});
-			add(form);
-		}
-	}
-
-	class BestTraderPanel extends Panel {
-		/**
-		 * @param id component id
-		 * @param model model for Group
-		 */
-		public BestTraderPanel(String id, IModel<Group> model) {
-			super(id, model);
-			add(new Link("best") {
-				
-				@Override
-				public void onClick() {
-					Group group = ((Group)getParent().getDefaultModelObject());
-					String traderId = DBAccess.getDAO().getBestTrader(group.getGroupId()).getTraderId();
-					TraderPage tp = new TraderPage(traderId);
-					setResponsePage(tp);
-				}
-				
-				@Override
-				public boolean isVisible() {
-					// Make visible only if there is an actual Best Trader
-					Group group = ((Group)getParent().getDefaultModelObject());
-					return (DBAccess.getDAO().getBestTrader(group.getGroupId()) != null);
 				}
 			});
 		}

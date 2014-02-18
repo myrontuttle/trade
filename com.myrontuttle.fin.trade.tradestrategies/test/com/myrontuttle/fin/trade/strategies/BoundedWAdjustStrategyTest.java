@@ -13,8 +13,11 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
+import com.myrontuttle.fin.trade.api.AlertOrder;
 import com.myrontuttle.fin.trade.api.AlertReceiverService;
 import com.myrontuttle.fin.trade.api.AlertService;
+import com.myrontuttle.fin.trade.api.AlertTrade;
+import com.myrontuttle.fin.trade.api.AlertTradeAdjustment;
 import com.myrontuttle.fin.trade.api.AvailableAlert;
 import com.myrontuttle.fin.trade.api.Order;
 import com.myrontuttle.fin.trade.api.PortfolioService;

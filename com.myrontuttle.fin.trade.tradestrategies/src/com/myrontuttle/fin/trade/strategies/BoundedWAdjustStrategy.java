@@ -4,9 +4,13 @@ import java.util.Hashtable;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 
+import com.myrontuttle.fin.trade.api.ActionType;
 import com.myrontuttle.fin.trade.api.AlertAction;
+import com.myrontuttle.fin.trade.api.AlertOrder;
 import com.myrontuttle.fin.trade.api.AlertReceiverService;
 import com.myrontuttle.fin.trade.api.AlertService;
+import com.myrontuttle.fin.trade.api.AlertTrade;
+import com.myrontuttle.fin.trade.api.AlertTradeAdjustment;
 import com.myrontuttle.fin.trade.api.AvailableAlert;
 import com.myrontuttle.fin.trade.api.Order;
 import com.myrontuttle.fin.trade.api.PortfolioService;

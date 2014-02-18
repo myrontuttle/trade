@@ -1,8 +1,5 @@
-package com.myrontuttle.fin.trade.strategies;
+package com.myrontuttle.fin.trade.api;
 
-import com.myrontuttle.fin.trade.api.AlertAction;
-import com.myrontuttle.fin.trade.api.SelectedAlert;
-import com.myrontuttle.fin.trade.api.Trade;
 
 public class AlertTrade extends AlertAction {
 

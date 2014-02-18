@@ -3,6 +3,7 @@ package com.myrontuttle.fin.trade.strategies;
 import java.util.concurrent.ScheduledFuture;
 
 import com.myrontuttle.fin.trade.api.AlertAction;
+import com.myrontuttle.fin.trade.api.AlertOrder;
 import com.myrontuttle.fin.trade.api.AlertReceiverService;
 import com.myrontuttle.fin.trade.api.AlertService;
 import com.myrontuttle.fin.trade.api.Order;

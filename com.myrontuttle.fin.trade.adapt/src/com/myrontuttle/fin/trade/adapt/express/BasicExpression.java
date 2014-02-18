@@ -7,17 +7,10 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import com.myrontuttle.fin.trade.adapt.Candidate;
-import com.myrontuttle.fin.trade.adapt.Group;
-import com.myrontuttle.fin.trade.adapt.GroupDAO;
-import com.myrontuttle.fin.trade.adapt.SavedAlert;
-import com.myrontuttle.fin.trade.adapt.SavedScreen;
-import com.myrontuttle.fin.trade.adapt.TradeInstruction;
-import com.myrontuttle.fin.trade.adapt.Trader;
+import com.myrontuttle.fin.trade.adapt.*;
 import com.myrontuttle.fin.trade.api.*;
-import com.myrontuttle.fin.trade.strategies.AlertTrade;
-import com.myrontuttle.sci.evolve.ExpressedCandidate;
-import com.myrontuttle.sci.evolve.ExpressionStrategy;
+import com.myrontuttle.sci.evolve.api.ExpressedCandidate;
+import com.myrontuttle.sci.evolve.api.ExpressionStrategy;
 
 /**
  * Expresses a genome of int[] into a TradingStrategy
@@ -469,6 +462,29 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		Group group = groupDAO.findGroup(populationId);
 		group.setVariability(meanHammingDistance);
 		groupDAO.updateGroup(group);
+	}
+
+	@Override
+	public void destroy(int[] genome, String populationId) {
+		Candidate c = groupDAO.findCandidateByGenome(genome);
+		
+		try {
+			// Remove Watchlist
+			watchlistService.delete(c.getCandidateId(), c.getWatchlistId());
+
+			// Remove Portfolio
+			portfolioService.delete(c.getCandidateId(), c.getPortfolioId());
+			
+			// Remove Alerts
+			alertService.removeAllAlerts(c.getGroupId());
+			
+		} catch (Exception e) {
+			System.out.println("Unable to destroy candidate " + 
+					c.getCandidateId());
+			e.printStackTrace();
+		}
+		
+		groupDAO.removeCandidate(c.getCandidateId());
 	}
 	
 	/**

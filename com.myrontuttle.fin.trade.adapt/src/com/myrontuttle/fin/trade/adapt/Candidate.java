@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 import javax.persistence.*;
 
-import com.myrontuttle.sci.evolve.ExpressedCandidate;
+import com.myrontuttle.sci.evolve.api.ExpressedCandidate;
 
 /**
  * A candidate which expresses a trading strategy

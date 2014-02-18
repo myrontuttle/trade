@@ -3,8 +3,8 @@ package com.myrontuttle.fin.trade.adapt.express;
 import java.util.List;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
-import com.myrontuttle.sci.evolve.ExpressedCandidate;
-import com.myrontuttle.sci.evolve.ExpressionStrategy;
+import com.myrontuttle.sci.evolve.api.ExpressedCandidate;
+import com.myrontuttle.sci.evolve.api.ExpressionStrategy;
 
 public class NoExpression implements ExpressionStrategy<int[]> {
 
@@ -23,6 +23,12 @@ public class NoExpression implements ExpressionStrategy<int[]> {
 	@Override
 	public int getGenomeLength(String populationId) {
 		return 0;
+	}
+
+	@Override
+	public void destroy(int[] candidate, String populationId) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

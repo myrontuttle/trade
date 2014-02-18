@@ -2,7 +2,7 @@ package com.myrontuttle.fin.trade.adapt;
 
 import java.util.List;
 
-import com.myrontuttle.sci.evolve.PopulationStats;
+import com.myrontuttle.sci.evolve.api.PopulationStats;
 
 public interface GroupDAO {
 

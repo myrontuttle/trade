@@ -16,13 +16,15 @@ import com.myrontuttle.fin.trade.adapt.eval.BasicEvaluator;
 import com.myrontuttle.fin.trade.adapt.eval.RandomEvaluator;
 import com.myrontuttle.fin.trade.adapt.express.BasicExpression;
 import com.myrontuttle.fin.trade.adapt.express.NoExpression;
-import com.myrontuttle.sci.evolve.*;
+import com.myrontuttle.sci.evolve.api.*;
+import com.myrontuttle.sci.evolve.engines.GenerationalEvolutionEngine;
 import com.myrontuttle.sci.evolve.factories.IntArrayFactory;
 import com.myrontuttle.sci.evolve.operators.EvolutionPipeline;
 import com.myrontuttle.sci.evolve.operators.IntArrayCrossover;
 import com.myrontuttle.sci.evolve.operators.IntArrayMutation;
 import com.myrontuttle.sci.evolve.selection.RouletteWheelSelection;
 import com.myrontuttle.sci.evolve.termination.*;
+import com.myrontuttle.sci.evolve.util.RNG;
 
 public class Evolver implements EvolveService {
 
@@ -49,7 +51,7 @@ public class Evolver implements EvolveService {
 		public void populationUpdate(PopulationStats<? extends int[]> data) {
 
 			// Find the best candidate from the group
-			Candidate candidate = groupDAO.findCandidateByGenome(data.getBestCandidate());
+			Candidate bestCandidate = groupDAO.findCandidateByGenome(data.getBestCandidate());
 			
 			Group group = groupDAO.findGroup(data.getPopulationId());
 
@@ -62,7 +64,7 @@ public class Evolver implements EvolveService {
 			// Save the best trader
 			Trader trader = new Trader();
 			trader.setGroupId(group.getGroupId());
-			trader.setGenomeString(candidate.getGenomeString());
+			trader.setGenomeString(bestCandidate.getGenomeString());
 			
 			groupDAO.setBestTrader(trader, group.getGroupId());
 
@@ -70,19 +72,23 @@ public class Evolver implements EvolveService {
 				BasicExpression<int[]> expression = new BasicExpression<int[]>();
 
 				try {
-					expression.setupTrader(candidate, group, trader);
+					expression.setupTrader(bestCandidate, group, trader);
 				} catch (Exception e) {
 					System.out.println("Unable to setup trader " + 
-							candidate.getCandidateId());
+							bestCandidate.getCandidateId());
 					e.printStackTrace();
+				}
+
+				// Remove candidates so as not to create duplicates
+				List<Candidate> oldCandidates = groupDAO.findCandidatesInGroup(data.getPopulationId());
+				for (Candidate c : oldCandidates) {
+					expression.destroy(c.getGenome(), data.getPopulationId());
 				}
 			}
 
 			// Use data to update group
 			groupDAO.updateGroupStats(data);
 
-			// Remove candidates so as not to create duplicates
-			groupDAO.removeAllCandidates(data.getPopulationId());
 		}
 	};
 	

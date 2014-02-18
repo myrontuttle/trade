@@ -5,7 +5,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
-import com.myrontuttle.sci.evolve.PopulationStats;
+import com.myrontuttle.sci.evolve.api.PopulationStats;
 
 public class GroupDAOImpl implements GroupDAO {
 

@@ -18,22 +18,7 @@ import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.Group;
 import com.myrontuttle.fin.trade.adapt.GroupDAO;
 import com.myrontuttle.fin.trade.adapt.express.BasicExpression;
-import com.myrontuttle.fin.trade.api.AlertReceiverService;
-import com.myrontuttle.fin.trade.api.AlertService;
-import com.myrontuttle.fin.trade.api.AvailableAlert;
-import com.myrontuttle.fin.trade.api.AvailableScreenCriteria;
-import com.myrontuttle.fin.trade.api.PortfolioService;
-import com.myrontuttle.fin.trade.api.QuoteService;
-import com.myrontuttle.fin.trade.api.ScreenerService;
-import com.myrontuttle.fin.trade.api.SelectedAlert;
-import com.myrontuttle.fin.trade.api.SelectedScreenCriteria;
-import com.myrontuttle.fin.trade.api.Trade;
-import com.myrontuttle.fin.trade.api.TradeStrategy;
-import com.myrontuttle.fin.trade.api.TradeStrategyService;
-import com.myrontuttle.fin.trade.api.WatchlistService;
-import com.myrontuttle.fin.trade.strategies.AlertTrade;
-import com.myrontuttle.fin.trade.strategies.BoundedStrategy;
-import com.myrontuttle.fin.trade.strategies.BoundedWAdjustStrategy;
+import com.myrontuttle.fin.trade.api.*;
 
 public class BasicExpressionTest {
 
@@ -132,9 +117,16 @@ public class BasicExpressionTest {
 	};
 	
 	private String[] openOrderTypes = new String[]{ BUY, SHORT };
+	
+	private AvailableStrategyParameter[] availableParameters = new AvailableStrategyParameter[]{
+			new AvailableStrategyParameter("openOrderType", 0, 0),
+			new AvailableStrategyParameter("tradeAllocation", 0, 100),
+			new AvailableStrategyParameter("percentBelow", 0, 100),
+			new AvailableStrategyParameter("timeLimit", 60, 60*60*24),
+			new AvailableStrategyParameter("percentAbove", 0, 100)
+	};
 
 	Hashtable<String, Integer> params1 = new Hashtable<String, Integer>(5);
-
 
 	Hashtable<String, Integer> params2 = new Hashtable<String, Integer>(5);
 
@@ -172,17 +164,17 @@ public class BasicExpressionTest {
 		group1.setExpressionStrategy("BasicExpression");
 		group1.setTradeStrategy(BOUNDED_STRAT);
 
-		params1.put(BoundedWAdjustStrategy.OPEN_ORDER, 0);
-		params1.put(BoundedWAdjustStrategy.TRADE_ALLOC, 37);
-		params1.put(BoundedWAdjustStrategy.PERCENT_BELOW, 24);
-		params1.put(BoundedWAdjustStrategy.TIME_LIMIT, 60);
-		params1.put(BoundedWAdjustStrategy.PERCENT_ABOVE, 88);
+		params1.put("openOrderType", 0);
+		params1.put("tradeAllocation", 37);
+		params1.put("percentBelow", 24);
+		params1.put("timeLimit", 60);
+		params1.put("percentAbove", 88);
 		
-		params2.put(BoundedWAdjustStrategy.OPEN_ORDER, 1);
-		params2.put(BoundedWAdjustStrategy.TRADE_ALLOC, 25);
-		params2.put(BoundedWAdjustStrategy.PERCENT_BELOW, 66);
-		params2.put(BoundedWAdjustStrategy.TIME_LIMIT, 86400);
-		params2.put(BoundedWAdjustStrategy.PERCENT_ABOVE, 75);
+		params2.put("openOrderType", 1);
+		params2.put("tradeAllocation", 25);
+		params2.put("percentBelow", 66);
+		params2.put("timeLimit", 86400);
+		params2.put("percentAbove", 75);
 		
 	    // Create mocks
 		screenerService = mock(ScreenerService.class);
@@ -191,9 +183,9 @@ public class BasicExpressionTest {
 		portfolioService = mock(PortfolioService.class);
 		quoteService = mock(QuoteService.class);
 		strategyService = mock(TradeStrategyService.class);
+		tradeStrategy = mock(TradeStrategy.class);
 		alertReceiver = mock(AlertReceiverService.class);
 		groupDAO = mock(GroupDAO.class);
-		tradeStrategy = new BoundedStrategy(portfolioService, quoteService, alertService, alertReceiver);
 		
 		// Describe Mocks
 		when(screenerService.getAvailableCriteria(GID)).thenReturn(availableScreenCriteria);
@@ -222,6 +214,7 @@ public class BasicExpressionTest {
 		when(alertService.setupAlerts(GID, selectedAlerts)).thenReturn(true);
 		
 		when(strategyService.getTradeStrategy(BOUNDED_STRAT)).thenReturn(tradeStrategy);
+		when(tradeStrategy.availableParameters()).thenReturn(availableParameters);
 		
 		when(groupDAO.findGroup(GID)).thenReturn(group1);
 		doAnswer(new Answer<Candidate>() {

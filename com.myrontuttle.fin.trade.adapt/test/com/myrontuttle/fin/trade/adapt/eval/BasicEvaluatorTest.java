@@ -12,7 +12,7 @@ import org.junit.Test;
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.eval.BasicEvaluator;
 import com.myrontuttle.fin.trade.api.PortfolioService;
-import com.myrontuttle.sci.evolve.ExpressedCandidate;
+import com.myrontuttle.sci.evolve.api.ExpressedCandidate;
 
 public class BasicEvaluatorTest {
 	

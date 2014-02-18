@@ -6,8 +6,8 @@ import java.util.List;
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.GroupDAO;
 import com.myrontuttle.fin.trade.api.PortfolioService;
-import com.myrontuttle.sci.evolve.ExpressedCandidate;
-import com.myrontuttle.sci.evolve.ExpressedFitnessEvaluator;
+import com.myrontuttle.sci.evolve.api.ExpressedCandidate;
+import com.myrontuttle.sci.evolve.api.ExpressedFitnessEvaluator;
 
 /**
  * Setup how strategies are evaluated

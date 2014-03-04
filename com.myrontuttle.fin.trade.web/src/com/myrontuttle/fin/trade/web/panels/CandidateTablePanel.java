@@ -19,6 +19,7 @@ import org.apache.wicket.model.Model;
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.web.data.DBAccess;
 import com.myrontuttle.fin.trade.web.data.SortableCandidateDataProvider;
+import com.myrontuttle.fin.trade.web.service.EvolveAccess;
 
 public class CandidateTablePanel extends Panel {
 	
@@ -61,6 +62,8 @@ public class CandidateTablePanel extends Panel {
 			form.add(new Button("delete") {
 				public void onSubmit() {
 					Candidate candidate = ((Candidate)getParent().getDefaultModelObject());
+					EvolveAccess.getEvolveService().deleteCandidateExpression(
+							candidate.getGroupId(), candidate.getGenome());
 					DBAccess.getDAO().removeCandidate(candidate.getCandidateId());
 				}
 			});

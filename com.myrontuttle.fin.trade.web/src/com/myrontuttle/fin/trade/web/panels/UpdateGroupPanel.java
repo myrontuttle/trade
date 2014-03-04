@@ -9,8 +9,10 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 
+import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.Group;
 import com.myrontuttle.fin.trade.web.data.DBAccess;
+import com.myrontuttle.fin.trade.web.service.EvolveAccess;
 
 public class UpdateGroupPanel extends Panel {
 
@@ -48,7 +50,12 @@ public class UpdateGroupPanel extends Panel {
 
 		form.add(new Button("removeCandidates") {
             public void onSubmit() {
-            	DBAccess.getDAO().removeAllCandidates(group.getGroupId());
+            	for (Candidate c : group.getCandidates()) {
+            		EvolveAccess.getEvolveService().deleteCandidateExpression(
+            				group.getGroupId(), 
+            				c.getGenome());
+            		DBAccess.getDAO().removeCandidate(c.getCandidateId());
+            	}
             }
         });
 		form.add(new Button("removeStats") {

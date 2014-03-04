@@ -21,6 +21,7 @@ import com.myrontuttle.fin.trade.adapt.Group;
 import com.myrontuttle.fin.trade.web.data.DBAccess;
 import com.myrontuttle.fin.trade.web.data.SortableGroupDataProvider;
 import com.myrontuttle.fin.trade.web.pages.GroupPage;
+import com.myrontuttle.fin.trade.web.service.EvolveAccess;
 
 public class GroupTablePanel extends Panel {
 	
@@ -107,6 +108,7 @@ public class GroupTablePanel extends Panel {
 			form.add(new Button("delete") {
 				public void onSubmit() {
 					Group group = ((Group)getParent().getDefaultModelObject());
+					EvolveAccess.getEvolveService().deleteGroupExpression(group.getGroupId());
 					DBAccess.getDAO().removeGroup(group.getGroupId());
 				}
 			});

@@ -19,5 +19,8 @@ public interface EvolveService {
 	public DateTime getNextEvolveDate();
 	
 	public boolean stopEvolving();
+	
+	public void deleteCandidateExpression(String groupId, int[] candidateGenome);
 
+	public void deleteGroupExpression(String groupId);
 }

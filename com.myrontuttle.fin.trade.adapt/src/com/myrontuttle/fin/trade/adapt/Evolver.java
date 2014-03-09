@@ -291,4 +291,29 @@ public class Evolver implements EvolveService {
 		prefs.putBoolean(EVOLVE_ACTIVE, false);
 		return true;
 	}
+
+	@Override
+	public void deleteCandidateExpression(String groupId, int[] candidateGenome) {
+		Group group = groupDAO.findGroup(groupId);
+		
+		if (group.getExpressionStrategy().equals(Group.BASIC_EXPRESSION)) {
+			BasicExpression<int[]> expression = new BasicExpression<int[]>();
+			expression.destroy(candidateGenome, groupId);
+		}
+	}
+
+	@Override
+	public void deleteGroupExpression(String groupId) {
+
+		Group group = groupDAO.findGroup(groupId);
+		
+		if (group.getExpressionStrategy().equals(Group.BASIC_EXPRESSION)) {
+			BasicExpression<int[]> expression = new BasicExpression<int[]>();
+			
+			List<Candidate> oldCandidates = groupDAO.findCandidatesInGroup(groupId);
+			for (Candidate c : oldCandidates) {
+				expression.destroy(c.getGenome(), groupId);
+			}
+		}
+	}
 }

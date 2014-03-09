@@ -6,7 +6,7 @@ import java.util.HashMap;
  * Receives and processes alerts
  * @author Myron Tuttle
  */
-public interface AlertReceiverService {
+public interface AlertReceiverService extends Service {
 
 	/**
 	 * Starts the receiver receiving alerts

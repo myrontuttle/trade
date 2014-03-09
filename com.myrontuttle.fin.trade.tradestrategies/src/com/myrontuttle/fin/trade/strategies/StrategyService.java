@@ -1,32 +1,29 @@
 package com.myrontuttle.fin.trade.strategies;
 
-import com.myrontuttle.fin.trade.api.AlertReceiverService;
-import com.myrontuttle.fin.trade.api.AlertService;
-import com.myrontuttle.fin.trade.api.PortfolioService;
-import com.myrontuttle.fin.trade.api.QuoteService;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.myrontuttle.fin.trade.api.Service;
 import com.myrontuttle.fin.trade.api.TradeStrategy;
 import com.myrontuttle.fin.trade.api.TradeStrategyService;
 
 public class StrategyService implements TradeStrategyService {
 	
-	// 1. Define strategies
-	private BoundedStrategy boundedStrategy;
-	private BoundedWAdjustStrategy boundedWAdjustStrategy;
+	private Map<String, Class<? extends TradeStrategy>> strategies;
 	
-	// 2. Add the name of the strategies
+	// 1. Add the name of the strategies
 	public static String[] availableTradeStrategies = new String[]{
 		BoundedStrategy.NAME,
 		BoundedWAdjustStrategy.NAME
 	};
 
-	// 3. Add required arguments/services to the constructor and construct the strategies
-	// 4. Make sure to add any service references/arguments to the blueprint config
-	public StrategyService(PortfolioService portfolioService, QuoteService quoteService, 
-									AlertService alertService, AlertReceiverService alertReceiver) {
-		
-		this.boundedStrategy = new BoundedStrategy(portfolioService, quoteService, alertService, alertReceiver);
-		this.boundedWAdjustStrategy = new BoundedWAdjustStrategy(portfolioService, quoteService, alertService, 
-																alertReceiver);
+	public StrategyService() {
+		strategies = new HashMap<String, Class<? extends TradeStrategy>>();
+
+		// 2. Define strategies
+		strategies.put(BoundedStrategy.NAME, BoundedStrategy.class);
+		strategies.put(BoundedWAdjustStrategy.NAME, BoundedWAdjustStrategy.class);
 	}
 
 	@Override
@@ -34,16 +31,17 @@ public class StrategyService implements TradeStrategyService {
 		return availableTradeStrategies;
 	}
 
-	// 5. Return the appropriate strategy based on the name given
 	@Override
-	public TradeStrategy getTradeStrategy(String strategyName) {
-		if (strategyName.equals(BoundedStrategy.NAME)) {
-			return boundedStrategy;
+	public TradeStrategy getTradeStrategy(String strategyName,
+			List<Service> services) throws Exception {
+		
+		if (strategies.containsKey(strategyName)) {
+			TradeStrategy ts = strategies.get(strategyName).newInstance();
+			ts.setup(services);
+			return ts;
+		} else {
+			throw new Exception("No existing strategy with name: " + strategyName);
 		}
-		if (strategyName.equals(BoundedWAdjustStrategy.NAME)) {
-			return boundedWAdjustStrategy;
-		}
-		return null;
 	}
 
 }

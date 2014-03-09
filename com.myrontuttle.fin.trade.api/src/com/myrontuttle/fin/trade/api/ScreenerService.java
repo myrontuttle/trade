@@ -7,7 +7,7 @@ package com.myrontuttle.fin.trade.api;
  * Service for screening financial instruments with a variety of criteria
  * @author Myron Tuttle
  */
-public interface ScreenerService {
+public interface ScreenerService extends Service {
 	
     /**
      * Shows the criteria available to screen against.

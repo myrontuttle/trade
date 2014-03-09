@@ -213,7 +213,7 @@ public class BasicExpressionTest {
 		when(alertService.addAlertDestination(GID, EMAIL, "EMAIL")).thenReturn(true);
 		when(alertService.setupAlerts(GID, selectedAlerts)).thenReturn(true);
 		
-		when(strategyService.getTradeStrategy(BOUNDED_STRAT)).thenReturn(tradeStrategy);
+		when(strategyService.getTradeStrategy(anyString(), anyListOf(Service.class))).thenReturn(tradeStrategy);
 		when(tradeStrategy.availableParameters()).thenReturn(availableParameters);
 		
 		when(groupDAO.findGroup(GID)).thenReturn(group1);

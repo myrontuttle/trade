@@ -4,7 +4,7 @@ package com.myrontuttle.fin.trade.api;
  * Service for creating portfolios of issue holdings 
  * @author Myron Tuttle
  */
-public interface PortfolioService {
+public interface PortfolioService extends Service {
 
 	/**
 	 * Create a new portfolio

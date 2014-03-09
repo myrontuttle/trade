@@ -8,7 +8,7 @@ package com.myrontuttle.fin.trade.api;
  * certain triggers.
  * @author Myron Tuttle
  */
-public interface AlertService {
+public interface AlertService extends Service {
 	
 	/**
 	 * Gets the alerts that are available from this service

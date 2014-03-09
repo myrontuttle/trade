@@ -2,6 +2,7 @@ package com.myrontuttle.fin.trade.strategies;
 
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -20,6 +21,7 @@ import com.myrontuttle.fin.trade.api.Order;
 import com.myrontuttle.fin.trade.api.PortfolioService;
 import com.myrontuttle.fin.trade.api.QuoteService;
 import com.myrontuttle.fin.trade.api.SelectedAlert;
+import com.myrontuttle.fin.trade.api.Service;
 import com.myrontuttle.fin.trade.api.Trade;
 import com.myrontuttle.fin.trade.api.TradeStrategy;
 
@@ -59,10 +61,10 @@ public class BoundedStrategy implements TradeStrategy {
 	public final static int PERCENT_ABOVE_LOWER = 0;
 	public final static int PERCENT_ABOVE_UPPER = 100;
 	
-	protected final PortfolioService portfolioService;
-	protected final QuoteService quoteService;
-	protected final AlertService alertService;
-	protected final AlertReceiverService alertReceiver;
+	protected PortfolioService portfolioService;
+	protected QuoteService quoteService;
+	protected AlertService alertService;
+	protected AlertReceiverService alertReceiver;
 
 	private AvailableStrategyParameter openOrderType = new AvailableStrategyParameter(OPEN_ORDER, 
 			OPEN_ORDER_LOWER,
@@ -309,5 +311,36 @@ public class BoundedStrategy implements TradeStrategy {
 				}
 			}
 		}, time, TIME_LIMIT_UNIT);
+	}
+
+	@Override
+	public void setup(List<Service> services) throws Exception {
+		for (Service s : services) {
+			if (s instanceof PortfolioService) {
+				this.portfolioService = (PortfolioService) s;
+			}
+			if (s instanceof QuoteService) {
+				this.quoteService = (QuoteService) s;
+			}
+			if (s instanceof AlertService) {
+				this.alertService = (AlertService) s;
+			}
+			if (s instanceof AlertReceiverService) {
+				this.alertReceiver = (AlertReceiverService) s;
+			}
+		}
+		
+		if (this.portfolioService == null) {
+			throw new Exception("No portfolio service defined");
+		}
+		if (this.quoteService == null) {
+			throw new Exception("No quote service defined");
+		}
+		if (this.alertService == null) {
+			throw new Exception("No alert service defined");
+		}
+		if (this.alertReceiver == null) {
+			throw new Exception("No alert receiver service defined");
+		}
 	}
 }

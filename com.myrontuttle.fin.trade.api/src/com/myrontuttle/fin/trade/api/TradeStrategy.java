@@ -1,6 +1,7 @@
 package com.myrontuttle.fin.trade.api;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Determines the behavior for entering, adjusting, and exiting a trade
@@ -17,6 +18,13 @@ public interface TradeStrategy {
 	 * @return A description of this strategy
 	 */
 	public String getDescription();
+	
+	/**
+	 * Setup services
+	 * @param services
+	 * @throws Exception
+	 */
+	public void setup(List<Service> services) throws Exception;
 	
 	/**
 	 * @return The list of parameters needed for this strategy

@@ -88,6 +88,9 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 
 	@Override
 	public int[] getGenome() {
+		if (genome == null) {
+			setGenome(parseGenomeString(genomeString));
+		}
 		return genome;
 	}
 	

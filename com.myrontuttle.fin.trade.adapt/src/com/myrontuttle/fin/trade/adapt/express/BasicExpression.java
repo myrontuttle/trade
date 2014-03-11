@@ -4,6 +4,7 @@
 package com.myrontuttle.fin.trade.adapt.express;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -491,7 +492,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			
 		} catch (Exception e) {
 			System.out.println("Unable to destroy candidate with genome: " + 
-					genome);
+					Arrays.toString(genome));
 			e.printStackTrace();
 		}
 		

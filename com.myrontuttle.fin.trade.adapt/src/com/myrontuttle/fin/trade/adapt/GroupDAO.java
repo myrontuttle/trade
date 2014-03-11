@@ -20,7 +20,7 @@ public interface GroupDAO {
 	
 	public List<Candidate> findCandidatesInGroup(String groupId);
 	
-	public Candidate findCandidateByGenome(int[] genome);
+	public Candidate findCandidateByGenome(int[] genome) throws Exception;
 	
 	public Candidate findCandidate(String candidateId);
 	

@@ -474,9 +474,10 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 	@Override
 	public void destroy(int[] genome, String populationId) {
-		Candidate c = groupDAO.findCandidateByGenome(genome);
 		
 		try {
+			Candidate c = groupDAO.findCandidateByGenome(genome);
+			
 			// Remove Watchlist
 			watchlistService.delete(c.getCandidateId(), c.getWatchlistId());
 
@@ -486,13 +487,14 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			// Remove Alerts
 			alertService.removeAllAlerts(c.getGroupId());
 			
+			groupDAO.removeCandidate(c.getCandidateId());
+			
 		} catch (Exception e) {
-			System.out.println("Unable to destroy candidate " + 
-					c.getCandidateId());
+			System.out.println("Unable to destroy candidate with genome: " + 
+					genome);
 			e.printStackTrace();
 		}
 		
-		groupDAO.removeCandidate(c.getCandidateId());
 	}
 	
 	/**

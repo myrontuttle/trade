@@ -1,5 +1,6 @@
 package com.myrontuttle.fin.trade.adapt;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -55,14 +56,19 @@ public class GroupDAOImpl implements GroupDAO {
 				Candidate.class).setParameter("groupId", groupId).getResultList();
 	}
 	
-	public Candidate findCandidateByGenome(int[] genome) {
-		Candidate candidate = em.createQuery(
+	public Candidate findCandidateByGenome(int[] genome) throws Exception {
+		List<Candidate> candidates = em.createQuery(
 				"SELECT c FROM Candidates c WHERE c.genomeString = :genomeString", 
 					Candidate.class).
 				setParameter("genomeString", Candidate.generateGenomeString(genome)).
-				getSingleResult();
-		candidate.setGenome(genome);
-		return candidate;
+				getResultList();
+		if (candidates.size() > 0) {
+			Candidate c = candidates.get(0);
+			c.setGenome(genome);
+			return c;
+		} else {
+			throw new Exception("No candidate found with genome: " + Arrays.toString(genome));
+		}
 	}
 	
 	public Candidate updateCandidate(Candidate candidate) {

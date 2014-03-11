@@ -1,6 +1,7 @@
 package com.myrontuttle.fin.trade.adapt;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -50,35 +51,45 @@ public class Evolver implements EvolveService {
 	private final EvolutionObserver<int[]> dbObserver = new EvolutionObserver<int[]>() {
 		public void populationUpdate(PopulationStats<? extends int[]> data) {
 
-			// Find the best candidate from the group
-			Candidate bestCandidate = groupDAO.findCandidateByGenome(data.getBestCandidate());
-			
 			Group group = groupDAO.findGroup(data.getPopulationId());
-
-			// Remove the previous best trader (if one exists)
-			Trader existingBest = group.getBestTrader();
-			if (existingBest != null) {
-				groupDAO.removeTrader(existingBest.getTraderId());
+			
+			// Find the best candidate from the group
+			Candidate bestCandidate = null;
+			Trader trader = null;
+			try {
+				bestCandidate = groupDAO.findCandidateByGenome(data.getBestCandidate());
+				
+				// Remove the previous best trader (if one exists)
+				Trader existingBest = group.getBestTrader();
+				if (existingBest != null) {
+					groupDAO.removeTrader(existingBest.getTraderId());
+				}
+				
+				// Save the best trader
+				trader = new Trader();
+				trader.setGroupId(group.getGroupId());
+				trader.setGenomeString(bestCandidate.getGenomeString());
+				groupDAO.setBestTrader(trader, group.getGroupId());
+				
+			} catch (Exception e1) {
+				System.out.println("Can't find best candidate with genome: " + 
+										Arrays.toString(data.getBestCandidate()));
 			}
-			
-			// Save the best trader
-			Trader trader = new Trader();
-			trader.setGroupId(group.getGroupId());
-			trader.setGenomeString(bestCandidate.getGenomeString());
-			
-			groupDAO.setBestTrader(trader, group.getGroupId());
 
 			if (group.getExpressionStrategy().equals(Group.BASIC_EXPRESSION)) {
 				BasicExpression<int[]> expression = new BasicExpression<int[]>();
 
-				try {
-					expression.setupTrader(bestCandidate, group, trader);
-				} catch (Exception e) {
-					System.out.println("Unable to setup trader " + 
-							bestCandidate.getCandidateId());
-					e.printStackTrace();
+				// Express Trader
+				if (trader != null && bestCandidate != null) {
+					try {
+						expression.setupTrader(bestCandidate, group, trader);
+					} catch (Exception e) {
+						System.out.println("Unable to setup trader " + 
+								bestCandidate.getCandidateId());
+						e.printStackTrace();
+					}
 				}
-
+				
 				// Remove candidates so as not to create duplicates
 				List<Candidate> oldCandidates = groupDAO.findCandidatesInGroup(data.getPopulationId());
 				for (Candidate c : oldCandidates) {

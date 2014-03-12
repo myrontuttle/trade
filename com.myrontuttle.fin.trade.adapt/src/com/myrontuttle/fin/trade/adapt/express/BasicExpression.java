@@ -478,12 +478,16 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		
 		try {
 			Candidate c = groupDAO.findCandidateByGenome(genome);
-			
+
 			// Remove Watchlist
-			watchlistService.delete(c.getCandidateId(), c.getWatchlistId());
+			if (c.getWatchlistId() != null) {
+				watchlistService.delete(c.getCandidateId(), c.getWatchlistId());
+			}
 
 			// Remove Portfolio
-			portfolioService.delete(c.getCandidateId(), c.getPortfolioId());
+			if (c.getPortfolioId() != null) {
+				portfolioService.delete(c.getCandidateId(), c.getPortfolioId());
+			}
 			
 			// Remove Alerts
 			alertService.removeAllAlerts(c.getGroupId());

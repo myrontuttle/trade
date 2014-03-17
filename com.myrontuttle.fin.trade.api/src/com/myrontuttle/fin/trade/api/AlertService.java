@@ -99,7 +99,7 @@ public interface AlertService extends Service {
 	 * @param SelectedAlert Alerts to setup
 	 * @return Indicates if the alert was set up successfully
 	 */
-	public boolean setupAlerts(String userId, SelectedAlert... alerts) throws Exception;
+	public SelectedAlert[] setupAlerts(String userId, SelectedAlert... alerts) throws Exception;
 	
 	/**
 	 * Returns the alerts that have been setup

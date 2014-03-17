@@ -211,7 +211,7 @@ public class BasicExpressionTest {
 		when(alertService.parseCondition(priceBelowAlert, screenSymbols[0], new double[]{400.0})).
 			thenReturn(actualCondition);
 		when(alertService.addAlertDestination(GID, EMAIL, "EMAIL")).thenReturn(true);
-		when(alertService.setupAlerts(GID, selectedAlerts)).thenReturn(true);
+		when(alertService.setupAlerts(GID, selectedAlerts)).thenReturn(selectedAlerts);
 		
 		when(strategyService.getTradeStrategy(anyString(), anyListOf(Service.class))).thenReturn(tradeStrategy);
 		when(tradeStrategy.availableParameters()).thenReturn(availableParameters);

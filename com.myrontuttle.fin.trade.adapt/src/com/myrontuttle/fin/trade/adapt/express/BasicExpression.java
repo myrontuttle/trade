@@ -296,11 +296,11 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		return selected;
 	}
 	
-	void setupAlerts(Group group, SelectedAlert[] openAlerts) throws Exception {
+	SelectedAlert[] setupAlerts(Group group, SelectedAlert[] openAlerts) throws Exception {
 
 		alertService.addAlertDestination(group.getGroupId(), group.getAlertAddress(), "EMAIL");
 
-		alertService.setupAlerts(group.getGroupId(), openAlerts);
+		return (alertService.setupAlerts(group.getGroupId(), openAlerts));
 	}
 
 	/**
@@ -422,7 +422,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 			// Create (symbols*alertsPerSymbol) alerts for stocks
 			SelectedAlert[] openAlerts = expressAlertGenes(candidate, group, symbols);
-			setupAlerts(group, openAlerts);
+			openAlerts = setupAlerts(group, openAlerts);
 			
 			// Create (symbol) trades to be made when alerts are triggered
 			Trade[] tradesToMake = expressTradeGenes(candidate, group, symbols);
@@ -471,6 +471,9 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		Group group = groupDAO.findGroup(populationId);
 		group.setVariability(meanHammingDistance);
 		groupDAO.updateGroup(group);
+		
+		//TODO: Start alert receiver to listen for alerts
+		//alertReceiver.startReceiving(group.getTradeStrategy(), userId, connectionDetails);
 	}
 
 	@Override

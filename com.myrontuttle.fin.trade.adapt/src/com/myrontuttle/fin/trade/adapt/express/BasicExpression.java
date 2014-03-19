@@ -39,7 +39,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	private static AlertService alertService;
 	private static PortfolioService portfolioService;
 	private static TradeStrategyService tradeStrategyService;
-	private static AlertReceiverService alertReceiver;
+	private static AlertReceiver alertReceiver;
 	
 	private static List<Service> allServices = new ArrayList<Service>();
 	
@@ -90,11 +90,11 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		allServices.add(tradeStrategyService);
 	}
 
-	public static AlertReceiverService getAlertReceiver() {
+	public static AlertReceiver getAlertReceiver() {
 		return alertReceiver;
 	}
 
-	public void setAlertReceiver(AlertReceiverService alertReceiver) {
+	public void setAlertReceiver(AlertReceiver alertReceiver) {
 		BasicExpression.alertReceiver = alertReceiver;
 		allServices.add(alertReceiver);
 	}
@@ -360,15 +360,26 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		return trades;
 	}
 	
-	void setupAlertReceiver(SelectedAlert[] openAlerts, String portfolioId, Trade[] tradesToMake, 
+	void setupAlertReceiver(SelectedAlert[] openAlerts, Candidate candidate, 
+								String portfolioId, Trade[] tradesToMake, 
 								Group group) throws Exception {
 		AlertTrade[] alertTrades = new AlertTrade[openAlerts.length];
 		for (int i=0; i<tradesToMake.length; i++) {
 			for (int j=0; j<group.getAlertsPerSymbol(); j++) {
-				alertTrades[i+j] = new AlertTrade(openAlerts[i+j], portfolioId, tradesToMake[i]);
+				alertTrades[i+j] = new AlertTrade(openAlerts[i+j], candidate.getCandidateId(), 
+														portfolioId, tradesToMake[i]);
 			}
 		}
 		alertReceiver.watchFor(alertTrades);
+	}
+
+	@Override
+	public void beforeExpression(String populationId) {
+
+		Group group = groupDAO.findGroup(populationId);
+		//TODO: Start alert receiver to listen for alerts
+		//alertReceiver.startReceiving(group.getTradeStrategy(), userId, connectionDetails);
+		
 	}
 
 	@Override
@@ -428,7 +439,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			Trade[] tradesToMake = expressTradeGenes(candidate, group, symbols);
 			
 			// Create listener for alerts to move stocks to portfolio
-			setupAlertReceiver(openAlerts, portfolioId, tradesToMake, group);
+			setupAlertReceiver(openAlerts, candidate, portfolioId, tradesToMake, group);
 		} catch (Exception e) {
 			System.out.println("Unable to express candidate " + 
 					candidate.getCandidateId());
@@ -472,8 +483,6 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		group.setVariability(meanHammingDistance);
 		groupDAO.updateGroup(group);
 		
-		//TODO: Start alert receiver to listen for alerts
-		//alertReceiver.startReceiving(group.getTradeStrategy(), userId, connectionDetails);
 	}
 
 	@Override

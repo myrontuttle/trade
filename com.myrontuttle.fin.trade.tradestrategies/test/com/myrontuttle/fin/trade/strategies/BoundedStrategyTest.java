@@ -12,7 +12,7 @@ import org.junit.rules.ExpectedException;
 import static org.mockito.Mockito.*;
 
 import com.myrontuttle.fin.trade.api.AlertOrder;
-import com.myrontuttle.fin.trade.api.AlertReceiverService;
+import com.myrontuttle.fin.trade.api.AlertReceiver;
 import com.myrontuttle.fin.trade.api.AlertService;
 import com.myrontuttle.fin.trade.api.AlertTrade;
 import com.myrontuttle.fin.trade.api.AvailableAlert;
@@ -27,7 +27,7 @@ public class BoundedStrategyTest {
 	private PortfolioService portfolioService;
 	private QuoteService quoteService;
 	private AlertService alertService;
-	private AlertReceiverService alertReceiverService;
+	private AlertReceiver alertReceiver;
 	
 	private BoundedStrategy bs;
 	
@@ -64,7 +64,7 @@ public class BoundedStrategyTest {
 		portfolioService = mock(PortfolioService.class);
 		quoteService = mock(QuoteService.class);
 		alertService = mock(AlertService.class);
-		alertReceiverService = mock(AlertReceiverService.class);
+		alertReceiver = mock(AlertReceiver.class);
 
 	    // Arrange mocks
 		when(portfolioService.openOrderTypesAvailable(userId)).thenReturn(new String[]{"buy", "short sell"});
@@ -79,7 +79,7 @@ public class BoundedStrategyTest {
 		when(alertService.getPriceAboveAlert(userId)).thenReturn(priceAboveAlert);
 		
 		bs = new BoundedStrategy(portfolioService, quoteService, 
-										alertService, alertReceiverService);
+										alertService, alertReceiver);
 	}
 
 	@Test
@@ -101,17 +101,17 @@ public class BoundedStrategyTest {
 		
 		Trade tradeMsft = new Trade(avgSymbol, params);
 		SelectedAlert openAlert = new SelectedAlert(1, "Price went up", avgSymbol, null);
-		AlertTrade at = new AlertTrade(openAlert, richPortfolio, tradeMsft);
+		AlertTrade at = new AlertTrade(openAlert, userId, richPortfolio, tradeMsft);
 				
 		// Test
-		String openTradeId = bs.takeAction(userId, at);
+		String openTradeId = bs.takeAction(at);
 		assertTrue(openTradeId != null);
 		
 		SelectedAlert closeAlert = new SelectedAlert(0, "Price went down", avgSymbol, null);
 		Order closeOrder = new Order(openTradeId, "sell", avgSymbol, 10);
-		AlertOrder ao = new AlertOrder(closeAlert, richPortfolio, closeOrder);
+		AlertOrder ao = new AlertOrder(closeAlert, userId, richPortfolio, closeOrder);
 		
-		assertEquals(bs.takeAction(userId, ao), openTradeId);
+		assertEquals(bs.takeAction(ao), openTradeId);
 	}
 
 	@Test
@@ -133,11 +133,11 @@ public class BoundedStrategyTest {
 		
 		Trade tradeBrk = new Trade(expensiveSymbol, params);
 		SelectedAlert openAlert = new SelectedAlert(1, "Price went up", avgSymbol, null);
-		AlertTrade atb = new AlertTrade(openAlert, poorPortfolio, tradeBrk);
+		AlertTrade atb = new AlertTrade(openAlert, userId, poorPortfolio, tradeBrk);
 
 		// Test
 		exception.expect(Exception.class);
-		String openTradeId = bs.takeAction(userId, atb);
+		String openTradeId = bs.takeAction(atb);
 		assertTrue(openTradeId == null);
 	}
 

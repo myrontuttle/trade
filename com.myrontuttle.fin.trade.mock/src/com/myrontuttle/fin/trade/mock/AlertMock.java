@@ -81,9 +81,9 @@ public class AlertMock implements AlertService {
 	}
 
 	@Override
-	public boolean setupAlerts(String userId, SelectedAlert... alerts)
+	public SelectedAlert[] setupAlerts(String userId, SelectedAlert... alerts)
 			throws Exception {
-		return false;
+		return selectedAlerts;
 	}
 
 	@Override

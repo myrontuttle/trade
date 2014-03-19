@@ -17,7 +17,7 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.search.FlagTerm;
 
-import com.myrontuttle.fin.trade.api.AlertReceiverService;
+import com.myrontuttle.fin.trade.api.AlertReceiver;
 
 /**
  * Code for reading unread mails from an email account (including Google Mail).
@@ -25,8 +25,7 @@ import com.myrontuttle.fin.trade.api.AlertReceiverService;
  */
 public class MailRetriever implements Runnable {
 	
-	private final String userId;
-	private final AlertReceiverService alertReceiver;
+	private final AlertReceiver alertReceiver;
 	private final String host;
 	private final int port;
 	private final String user;
@@ -35,9 +34,8 @@ public class MailRetriever implements Runnable {
 	private final Properties props;
 
 	// Constructor of the class.
-	public MailRetriever(String userId, AlertReceiverService alertReceiver, String host, 
+	public MailRetriever(AlertReceiver alertReceiver, String host, 
 					int port, String user, String password) {
-		this.userId = userId;
 		this.alertReceiver = alertReceiver;
 		this.host = host;
 		this.port = port;
@@ -91,7 +89,7 @@ public class MailRetriever implements Runnable {
 				}
 
 				System.out.println("Retrieved email: " + subject);
-				if (alertReceiver.matchAlert(userId, subject) > 0) {
+				if (alertReceiver.matchAlert(subject) > 0) {
 					System.out.println("Email matched!");
 					inbox.setFlags(new Message[] {message}, new Flags(Flags.Flag.SEEN), true);
 				} else {

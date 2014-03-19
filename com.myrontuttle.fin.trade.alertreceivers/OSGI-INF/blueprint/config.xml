@@ -2,9 +2,8 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
     
-	<bean id="EmailAlertReceiver" class="com.myrontuttle.fin.trade.alertreceivers.EmailAlertReceiver">
-	</bean>
+	<bean id="ReceiverService" class="com.myrontuttle.fin.trade.alertreceivers.ReceiverService" />
 
-	<service ref="EmailAlertReceiver" interface="com.myrontuttle.fin.trade.api.AlertReceiverService" />
+	<service ref="ReceiverService" interface="com.myrontuttle.fin.trade.api.AlertReceiverService" />
 	
 </blueprint>

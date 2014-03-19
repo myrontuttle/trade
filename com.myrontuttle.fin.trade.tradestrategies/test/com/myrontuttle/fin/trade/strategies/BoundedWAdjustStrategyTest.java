@@ -14,7 +14,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 import com.myrontuttle.fin.trade.api.AlertOrder;
-import com.myrontuttle.fin.trade.api.AlertReceiverService;
+import com.myrontuttle.fin.trade.api.AlertReceiver;
 import com.myrontuttle.fin.trade.api.AlertService;
 import com.myrontuttle.fin.trade.api.AlertTrade;
 import com.myrontuttle.fin.trade.api.AlertTradeAdjustment;
@@ -30,7 +30,7 @@ public class BoundedWAdjustStrategyTest {
 	private PortfolioService portfolioService;
 	private QuoteService quoteService;
 	private AlertService alertService;
-	private AlertReceiverService alertReceiverService;
+	private AlertReceiver alertReceiver;
 	
 	private BoundedWAdjustStrategy bwas;
 	
@@ -67,7 +67,7 @@ public class BoundedWAdjustStrategyTest {
 		portfolioService = mock(PortfolioService.class);
 		quoteService = mock(QuoteService.class);
 		alertService = mock(AlertService.class);
-		alertReceiverService = mock(AlertReceiverService.class);
+		alertReceiver = mock(AlertReceiver.class);
 
 	    // Arrange mocks
 		when(portfolioService.openOrderTypesAvailable(userId)).thenReturn(new String[]{"buy", "short sell"});
@@ -82,7 +82,7 @@ public class BoundedWAdjustStrategyTest {
 		when(alertService.getPriceAboveAlert(userId)).thenReturn(priceAboveAlert);
 		
 		bwas = new BoundedWAdjustStrategy(portfolioService, quoteService, 
-										alertService, alertReceiverService);
+										alertService, alertReceiver);
 	}
 
 	@Test
@@ -104,23 +104,23 @@ public class BoundedWAdjustStrategyTest {
 		
 		Trade tradeMsft = new Trade(avgSymbol, params);
 		SelectedAlert openAlert = new SelectedAlert(1, "Price went up", avgSymbol, null);
-		AlertTrade atb = new AlertTrade(openAlert, richPortfolio, tradeMsft);
+		AlertTrade atb = new AlertTrade(openAlert, userId, richPortfolio, tradeMsft);
 				
 		// Test
-		String openTradeId = bwas.takeAction(userId, atb);
+		String openTradeId = bwas.takeAction(atb);
 		assertTrue(openTradeId != null);
 
 		SelectedAlert adjustAlert = new SelectedAlert(1, "Price went up again", avgSymbol, null);
-		AlertTradeAdjustment ata = new AlertTradeAdjustment(adjustAlert, richPortfolio, openTradeId);
+		AlertTradeAdjustment ata = new AlertTradeAdjustment(adjustAlert, userId, richPortfolio, openTradeId);
 		
-		String adjustTradeId = bwas.takeAction(userId, ata);
+		String adjustTradeId = bwas.takeAction(ata);
 		assertEquals(openTradeId, adjustTradeId);
 		
 		SelectedAlert closeAlert = new SelectedAlert(0, "Price went down", avgSymbol, null);
 		Order closeOrder = new Order(openTradeId, "sell", avgSymbol, 10);
-		AlertOrder ao = new AlertOrder(closeAlert, richPortfolio, closeOrder);
+		AlertOrder ao = new AlertOrder(closeAlert, userId, richPortfolio, closeOrder);
 		
-		assertEquals(bwas.takeAction(userId, ao), openTradeId);
+		assertEquals(bwas.takeAction(ao), openTradeId);
 	}
 
 	@Test
@@ -142,11 +142,11 @@ public class BoundedWAdjustStrategyTest {
 
 		Trade tradeBrk = new Trade(expensiveSymbol, params);
 		SelectedAlert openAlert = new SelectedAlert(1, "Price went up", avgSymbol, null);
-		AlertTrade atb = new AlertTrade(openAlert, poorPortfolio, tradeBrk);
+		AlertTrade atb = new AlertTrade(openAlert, userId, poorPortfolio, tradeBrk);
 
 		// Test
 		exception.expect(Exception.class);
-		String openTradeId = bwas.takeAction(userId, atb);
+		String openTradeId = bwas.takeAction(atb);
 		assertTrue(openTradeId == null);
 	}
 

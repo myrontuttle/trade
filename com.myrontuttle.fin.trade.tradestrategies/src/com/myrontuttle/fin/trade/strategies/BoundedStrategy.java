@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 import com.myrontuttle.fin.trade.api.ActionType;
 import com.myrontuttle.fin.trade.api.AlertAction;
 import com.myrontuttle.fin.trade.api.AlertOrder;
-import com.myrontuttle.fin.trade.api.AlertReceiverService;
+import com.myrontuttle.fin.trade.api.AlertReceiver;
 import com.myrontuttle.fin.trade.api.AlertService;
 import com.myrontuttle.fin.trade.api.AlertTrade;
 import com.myrontuttle.fin.trade.api.AvailableAlert;
@@ -64,7 +64,7 @@ public class BoundedStrategy implements TradeStrategy {
 	protected PortfolioService portfolioService;
 	protected QuoteService quoteService;
 	protected AlertService alertService;
-	protected AlertReceiverService alertReceiver;
+	protected AlertReceiver alertReceiver;
 
 	private AvailableStrategyParameter openOrderType = new AvailableStrategyParameter(OPEN_ORDER, 
 			OPEN_ORDER_LOWER,
@@ -94,7 +94,7 @@ public class BoundedStrategy implements TradeStrategy {
 	protected HashMap<String, BoundedTrade> openTrades;
 	
 	public BoundedStrategy(PortfolioService portfolioService, QuoteService quoteService, 
-									AlertService alertService, AlertReceiverService alertReceiver) {
+									AlertService alertService, AlertReceiver alertReceiver) {
 		this.portfolioService = portfolioService;
 		this.quoteService = quoteService;
 		this.alertService = alertService;
@@ -169,14 +169,14 @@ public class BoundedStrategy implements TradeStrategy {
 	 * @see com.myrontuttle.fin.trade.api.TradeStrategy#takeAction(com.myrontuttle.fin.trade.api.AlertAction)
 	 */
 	@Override
-	public String takeAction(String userId, AlertAction alertAction) throws Exception {
+	public String takeAction(AlertAction alertAction) throws Exception {
 		String actionType = alertAction.getActionType();
 		if (actionType.equals(ActionType.TRADE.toString())) {
 			AlertTrade at = (AlertTrade)alertAction;
-			return openTrade(userId, at.getTrade(), at.getPortfolioId());
+			return openTrade(at.getActionType(), at.getTrade(), at.getPortfolioId());
 		} else if (actionType.equals(ActionType.ORDER.toString())) {
 			AlertOrder ao = (AlertOrder)alertAction;
-			return closeTrade(userId, ao.getOrder(), ao.getPortfolioId());
+			return closeTrade(ao.getActionType(), ao.getOrder(), ao.getPortfolioId());
 		}
 		return null;
 	}
@@ -292,7 +292,7 @@ public class BoundedStrategy implements TradeStrategy {
 														trade.getSymbol(), 
 														loss);
 		alertService.setupAlerts(userId, stopLossAlert);
-		AlertOrder stopLoss = new AlertOrder(stopLossAlert, portfolioId, closeOrder);
+		AlertOrder stopLoss = new AlertOrder(stopLossAlert, userId, portfolioId, closeOrder);
 		alertReceiver.watchFor(stopLoss);
 		
 		return stopLoss;
@@ -325,8 +325,8 @@ public class BoundedStrategy implements TradeStrategy {
 			if (s instanceof AlertService) {
 				this.alertService = (AlertService) s;
 			}
-			if (s instanceof AlertReceiverService) {
-				this.alertReceiver = (AlertReceiverService) s;
+			if (s instanceof AlertReceiver) {
+				this.alertReceiver = (AlertReceiver) s;
 			}
 		}
 		

@@ -46,7 +46,7 @@ public class BasicExpressionTest {
 	private PortfolioService portfolioService;
 	private QuoteService quoteService;
 	private TradeStrategyService strategyService;
-	private AlertReceiverService alertReceiver;
+	private AlertReceiver alertReceiver;
 	private TradeStrategy tradeStrategy;
 	private GroupDAO groupDAO;
 	
@@ -135,7 +135,7 @@ public class BasicExpressionTest {
 			new Trade(screenSymbols[1], params2)
 	};
 	private AlertTrade[] alertTrade = new AlertTrade[] {
-			new AlertTrade(selectedAlerts[0], PID, trades[0])
+			new AlertTrade(selectedAlerts[0], CID, PID, trades[0])
 	};
 	
 	@Before
@@ -184,7 +184,7 @@ public class BasicExpressionTest {
 		quoteService = mock(QuoteService.class);
 		strategyService = mock(TradeStrategyService.class);
 		tradeStrategy = mock(TradeStrategy.class);
-		alertReceiver = mock(AlertReceiverService.class);
+		alertReceiver = mock(AlertReceiver.class);
 		groupDAO = mock(GroupDAO.class);
 		
 		// Describe Mocks
@@ -293,7 +293,7 @@ public class BasicExpressionTest {
 	
 	@Test
 	public void testSetupAlertReceiver() throws Exception {
-		expression.setupAlertReceiver(selectedAlerts, PID, trades, group1);
+		expression.setupAlertReceiver(selectedAlerts, candidateA, PID, trades, group1);
 	}
 	
 	@Test

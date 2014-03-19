@@ -7,8 +7,8 @@ public class AlertTrade extends AlertAction {
 
 	private final Trade trade;
 	
-	public AlertTrade(SelectedAlert alert, String portfolioId, Trade trade) {
-		super(alert, portfolioId);
+	public AlertTrade(SelectedAlert alert, String userId, String portfolioId, Trade trade) {
+		super(alert, userId, portfolioId);
 		this.trade = trade;
 	}
 

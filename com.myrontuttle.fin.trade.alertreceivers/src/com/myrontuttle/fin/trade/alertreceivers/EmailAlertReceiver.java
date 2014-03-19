@@ -9,15 +9,17 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.myrontuttle.fin.trade.api.AlertAction;
-import com.myrontuttle.fin.trade.api.AlertReceiverService;
+import com.myrontuttle.fin.trade.api.AlertReceiver;
 import com.myrontuttle.fin.trade.api.TradeStrategy;
 
 /**
  * Receives alerts sent via email
  * @author Myron Tuttle
  */
-public class EmailAlertReceiver implements AlertReceiverService {
+public class EmailAlertReceiver implements AlertReceiver {
 
+	public final static String NAME = "EmailAlert";
+	
 	private final static int NUM_THREADS = 1;
 	private final static int PERIOD = 60;
 	private final static int IMAPS_PORT = 993;
@@ -36,7 +38,7 @@ public class EmailAlertReceiver implements AlertReceiverService {
 	 * @see com.myrontuttle.adaptivetrader.AlertReceiver#startReceiving(TradeStrategy, String, HashMap<String, String>)
 	 */
 	@Override
-	public boolean startReceiving(TradeStrategy tradeStrategy, String userId, 
+	public boolean startReceiving(TradeStrategy tradeStrategy,
 									HashMap<String, String> connectionDetails) {
 		this.tradeStrategy = tradeStrategy;
 		String host = connectionDetails.get("host");
@@ -57,7 +59,7 @@ public class EmailAlertReceiver implements AlertReceiverService {
 			} catch (NumberFormatException nfe) {
 				port = IMAPS_PORT;
 			}
-	    	MailRetriever mailRetriever = new MailRetriever(userId, this, host, port, user, password);
+	    	MailRetriever mailRetriever = new MailRetriever(this, host, port, user, password);
 	        this.sf = ses.scheduleAtFixedRate(mailRetriever, 0, period, TimeUnit.SECONDS);
 
 	        this.ses = Executors.newScheduledThreadPool(NUM_THREADS);
@@ -109,13 +111,13 @@ public class EmailAlertReceiver implements AlertReceiverService {
 	 * @return The number of time the condition matched an existing alert's condition
 	 */
 	@Override
-	public int matchAlert(String userId, String condition) {
+	public int matchAlert(String condition) {
 		int matches = 0;
 		for (AlertAction action : alertActionList) {
 			if (action.getAlert().getCondition().matches(condition)) {
 				System.out.println("Alert Matched");
 				try {
-					tradeStrategy.takeAction(userId, action);
+					tradeStrategy.takeAction(action);
 				} catch (Exception e) {
 					System.out.println("Unable to affect trade." + e.getMessage());
 				}

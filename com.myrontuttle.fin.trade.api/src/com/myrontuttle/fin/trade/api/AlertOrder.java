@@ -7,8 +7,8 @@ public class AlertOrder extends AlertAction {
 
 	private final Order order;
 	
-	public AlertOrder(SelectedAlert alert, String portfolioId, Order order) {
-		super(alert, portfolioId);
+	public AlertOrder(SelectedAlert alert, String userId, String portfolioId, Order order) {
+		super(alert, userId, portfolioId);
 		this.order = order;
 	}
 

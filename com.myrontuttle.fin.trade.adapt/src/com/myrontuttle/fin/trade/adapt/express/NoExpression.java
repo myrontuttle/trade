@@ -9,6 +9,12 @@ import com.myrontuttle.sci.evolve.api.ExpressionStrategy;
 public class NoExpression implements ExpressionStrategy<int[]> {
 
 	@Override
+	public void beforeExpression(String populationId) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
 	public ExpressedCandidate<int[]> express(int[] candidate,
 			String populationId) {
 		return new Candidate("C", populationId, candidate, "", 0.0);
@@ -30,5 +36,4 @@ public class NoExpression implements ExpressionStrategy<int[]> {
 		// TODO Auto-generated method stub
 		
 	}
-
 }

@@ -7,7 +7,7 @@ import java.util.concurrent.ScheduledFuture;
 import com.myrontuttle.fin.trade.api.ActionType;
 import com.myrontuttle.fin.trade.api.AlertAction;
 import com.myrontuttle.fin.trade.api.AlertOrder;
-import com.myrontuttle.fin.trade.api.AlertReceiverService;
+import com.myrontuttle.fin.trade.api.AlertReceiver;
 import com.myrontuttle.fin.trade.api.AlertService;
 import com.myrontuttle.fin.trade.api.AlertTrade;
 import com.myrontuttle.fin.trade.api.AlertTradeAdjustment;
@@ -36,7 +36,7 @@ public class BoundedWAdjustStrategy extends BoundedStrategy implements TradeStra
 			"percent loss. Adjusts the bounds if a gain is reached.";
 
 	public BoundedWAdjustStrategy(PortfolioService portfolioService, QuoteService quoteService, 
-									AlertService alertService, AlertReceiverService alertReceiver) {
+									AlertService alertService, AlertReceiver alertReceiver) {
 		super(portfolioService, quoteService, alertService, alertReceiver);
 	}
 
@@ -54,17 +54,17 @@ public class BoundedWAdjustStrategy extends BoundedStrategy implements TradeStra
 	 * @see com.myrontuttle.fin.trade.api.TradeStrategy#takeAction(com.myrontuttle.fin.trade.api.AlertAction)
 	 */
 	@Override
-	public String takeAction(String userId, AlertAction alertAction) throws Exception {
+	public String takeAction(AlertAction alertAction) throws Exception {
 		String actionType = alertAction.getActionType();
 		if (actionType.equals(ActionType.TRADE.toString())) {
 			AlertTrade at = (AlertTrade)alertAction;
-			return openTrade(userId, at.getTrade(), at.getPortfolioId());
+			return openTrade(at.getUserId(), at.getTrade(), at.getPortfolioId());
 		} else if (actionType.equals(ActionType.TRADE_ADJUSTMENT.toString())) {
 			AlertTradeAdjustment ata = (AlertTradeAdjustment)alertAction;
-			return adjustTrade(userId, ata.getTradeId());
+			return adjustTrade(ata.getUserId(), ata.getTradeId());
 		} else if (actionType.equals(ActionType.ORDER.toString())) {
 			AlertOrder ao = (AlertOrder)alertAction;
-			return closeTrade(userId, ao.getOrder(), ao.getPortfolioId());
+			return closeTrade(ao.getUserId(), ao.getOrder(), ao.getPortfolioId());
 		}
 		return null;
 	}
@@ -227,7 +227,7 @@ public class BoundedWAdjustStrategy extends BoundedStrategy implements TradeStra
 											trade.getSymbol(),
 											adjustmentPrice);
 		alertService.setupAlerts(userId, adjustmentAlert);
-		AlertTradeAdjustment adjustment = new AlertTradeAdjustment(adjustmentAlert, portfolioId, tradeId);
+		AlertTradeAdjustment adjustment = new AlertTradeAdjustment(adjustmentAlert, userId, portfolioId, tradeId);
 		alertReceiver.watchFor(adjustment);
 		
 		return adjustment;

@@ -4,7 +4,7 @@ import java.util.concurrent.ScheduledFuture;
 
 import com.myrontuttle.fin.trade.api.AlertAction;
 import com.myrontuttle.fin.trade.api.AlertOrder;
-import com.myrontuttle.fin.trade.api.AlertReceiverService;
+import com.myrontuttle.fin.trade.api.AlertReceiver;
 import com.myrontuttle.fin.trade.api.AlertService;
 import com.myrontuttle.fin.trade.api.Order;
 import com.myrontuttle.fin.trade.api.Trade;
@@ -34,7 +34,7 @@ public class BoundedTrade {
 		this.inTheMoney = inTheMoney;
 	}
 	
-	public void closeTrade(String userId, AlertService alertService, AlertReceiverService alertReceiver) throws Exception {
+	public void closeTrade(String userId, AlertService alertService, AlertReceiver alertReceiver) throws Exception {
 		alertService.removeAlert(userId, outOfTheMoney.getAlert());
 		alertReceiver.stopWatchingFor(outOfTheMoney);
 		timeLimit.cancel(false);
@@ -59,7 +59,7 @@ public class BoundedTrade {
 	}
 
 	public void setOutOfTheMoney(String userId, AlertOrder priceReached, AlertService alertService, 
-								AlertReceiverService alertReceiver) throws Exception {
+								AlertReceiver alertReceiver) throws Exception {
 		alertService.setupAlerts(userId, priceReached.getAlert());
 		alertService.removeAlert(userId, this.outOfTheMoney.getAlert());
 		
@@ -83,7 +83,7 @@ public class BoundedTrade {
 	}
 
 	public void setInTheMoney(String userId, AlertAction priceReached, AlertService alertService, 
-			AlertReceiverService alertReceiver) throws Exception {
+			AlertReceiver alertReceiver) throws Exception {
 		alertService.setupAlerts(userId, priceReached.getAlert());
 		alertService.removeAlert(userId, this.inTheMoney.getAlert());
 		

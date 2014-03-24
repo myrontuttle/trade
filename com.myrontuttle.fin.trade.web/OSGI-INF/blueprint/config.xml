@@ -18,6 +18,12 @@
 	<bean id="StrategyAccess" class="com.myrontuttle.fin.trade.web.service.StrategyAccess">
 		<property name="tradeStrategyService" ref="TradeStrategyService" />
 	</bean>
+	
+	<reference id="AlertReceiverService" interface="com.myrontuttle.fin.trade.api.AlertReceiverService" />
+  
+	<bean id="AlertReceiverAccess" class="com.myrontuttle.fin.trade.web.service.AlertReceiverAccess">
+		<property name="alertReceiverService" ref="AlertReceiverService" />
+	</bean>
 
 	<reference id="ScreenerService" interface="com.myrontuttle.fin.trade.api.ScreenerService" />
   

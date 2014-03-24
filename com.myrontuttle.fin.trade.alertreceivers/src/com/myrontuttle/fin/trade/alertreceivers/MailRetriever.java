@@ -47,6 +47,22 @@ public class MailRetriever implements Runnable {
 		props.setProperty("mail.store.protocol", "imaps");
 	}
 	
+	public String getHost() {
+		return host;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
 	public void run() {
 
 		if (host == null || user == null || password == null) {

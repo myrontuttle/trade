@@ -321,6 +321,8 @@ public class Evolver implements EvolveService {
 		if (group.getExpressionStrategy().equals(Group.BASIC_EXPRESSION)) {
 			BasicExpression<int[]> expression = new BasicExpression<int[]>();
 			
+			BasicExpression.getAlertReceiverService().removeAlertReceiver(groupId);
+			
 			List<Candidate> oldCandidates = groupDAO.findCandidatesInGroup(groupId);
 			for (Candidate c : oldCandidates) {
 				expression.destroy(c.getGenome(), groupId);

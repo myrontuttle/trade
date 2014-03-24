@@ -9,6 +9,11 @@ import java.util.HashMap;
 public interface AlertReceiver extends Service {
 
 	/**
+	 * @return The name of this strategy
+	 */
+	public String getName();
+	
+	/**
 	 * Starts the receiver receiving alerts
 	 * @param tradeStrategy The strategy that receives notifications of received alerts
 	 * @param userId
@@ -35,6 +40,12 @@ public interface AlertReceiver extends Service {
 	 * @param alertAction to be removed
 	 */
 	public void stopWatchingFor(AlertAction alertAction);
+
+	/**
+	 * Removes all alerts belonging to a user from the list of alerts being watched for
+	 * @param userId to have alertActions to be removed
+	 */
+	public void stopWatchingAll(String userId);
 	
 	/**
 	 * Tries to match a condition received with an existing alert

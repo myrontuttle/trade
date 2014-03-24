@@ -19,19 +19,38 @@ import com.myrontuttle.fin.trade.api.TradeStrategy;
 public class EmailAlertReceiver implements AlertReceiver {
 
 	public final static String NAME = "EmailAlert";
+	public final static String HOST = "Host";
+	public final static String PORT = "Port";
+	public final static String USER = "User";
+	public final static String PASS = "Password";
+	public final static String PERIOD = "Period";
 	
 	private final static int NUM_THREADS = 1;
-	private final static int PERIOD = 60;
+	private final static int DEFAULT_PERIOD = 60;
 	private final static int IMAPS_PORT = 993;
+	private final static int IMAP_PORT = 143;
+	private final static int POP_PORT = 110;
+	
+	private final static String GOOGLE_HOST = "imap.google.com";
+
+	private final ScheduledExecutorService ses;
+	private ScheduledFuture<?> sf;
 	
 	private TradeStrategy tradeStrategy;
 	private List<AlertAction> alertActionList;
-
-	private ScheduledExecutorService ses;
-	private ScheduledFuture<?> sf;
+	
+	private boolean receiving;
+	private MailRetriever mailRetriever;
 
 	public EmailAlertReceiver() {
 		this.alertActionList = new LinkedList<AlertAction>();
+		this.receiving = false;
+        this.ses = Executors.newScheduledThreadPool(NUM_THREADS);
+	}
+
+	@Override
+	public String getName() {
+		return NAME;
 	}
 
 	/* (non-Javadoc)
@@ -41,28 +60,43 @@ public class EmailAlertReceiver implements AlertReceiver {
 	public boolean startReceiving(TradeStrategy tradeStrategy,
 									HashMap<String, String> connectionDetails) {
 		this.tradeStrategy = tradeStrategy;
-		String host = connectionDetails.get("host");
-		String user = connectionDetails.get("user");
-		String password = connectionDetails.get("password");
+		String host = connectionDetails.get(HOST);
+		String user = connectionDetails.get(USER);
+		String password = connectionDetails.get(PASS);
 		
 		if (host == null || user == null || password == null) {
 			return false;
 		} else {
 			int period, port;
 			try {
-				period = Integer.parseInt(connectionDetails.get("period"));
+				period = Integer.parseInt(connectionDetails.get(PERIOD));
 			} catch (NumberFormatException nfe) {
-				period = PERIOD;
+				period = DEFAULT_PERIOD;
 			}
 			try {
-				port = Integer.parseInt(connectionDetails.get("port"));
+				port = Integer.parseInt(connectionDetails.get(PORT));
 			} catch (NumberFormatException nfe) {
-				port = IMAPS_PORT;
+				if (host.equals(GOOGLE_HOST)) {
+					port = IMAPS_PORT;
+				} else if (host.contains("imap")) {
+					port = IMAP_PORT;
+				} else {
+					port = POP_PORT;
+				}
 			}
-	    	MailRetriever mailRetriever = new MailRetriever(this, host, port, user, password);
-	        this.sf = ses.scheduleAtFixedRate(mailRetriever, 0, period, TimeUnit.SECONDS);
-
-	        this.ses = Executors.newScheduledThreadPool(NUM_THREADS);
+			if (!receiving) {
+		    	this.mailRetriever = new MailRetriever(this, host, port, user, password);
+		    	this.sf = ses.scheduleAtFixedRate(mailRetriever, 0, period, TimeUnit.SECONDS);
+				
+			} else if ((!host.equals(mailRetriever.getHost()) ||
+				port != mailRetriever.getPort() ||
+				!user.equals(mailRetriever.getUser()) ||
+				!password.equals(mailRetriever.getPassword()) )) {
+				this.sf.cancel(true);
+				this.mailRetriever = new MailRetriever(this, host, port, user, password);
+			    this.sf = ses.scheduleAtFixedRate(mailRetriever, 0, period, TimeUnit.SECONDS);
+			}
+	        this.receiving = true;
 	        return true;
 		}
 	}
@@ -77,6 +111,7 @@ public class EmailAlertReceiver implements AlertReceiver {
 	        // Close scheduled service
 	        sf.cancel(true);
 	        ses.shutdown();
+	        receiving = false;
 		} catch (SecurityException se) {
 			System.out.println("Unable to stop receiving email. " + se.getMessage());
 			return false;
@@ -100,6 +135,18 @@ public class EmailAlertReceiver implements AlertReceiver {
 	@Override
 	public void stopWatchingFor(AlertAction alertAction) {
 		alertActionList.remove(alertAction);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.myrontuttle.adaptivetrader.AlertReceiver#stopWatchingAll(String)
+	 */
+	@Override
+	public void stopWatchingAll(String userId) {
+		for (AlertAction alertAction : alertActionList) {
+			if (alertAction.getUserId().equals(userId)) {
+				alertActionList.remove(alertAction);
+			}
+		}
 	}
 	
 	/**

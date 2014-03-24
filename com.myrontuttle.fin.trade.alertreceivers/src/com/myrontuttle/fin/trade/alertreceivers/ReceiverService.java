@@ -8,34 +8,41 @@ import com.myrontuttle.fin.trade.api.AlertReceiverService;
 
 public class ReceiverService implements AlertReceiverService {
 
-	private Map<String, Class<? extends AlertReceiver>> receivers;
+	private Map<String, AlertReceiver> receivers;
 
-	// 1. Add the name of the strategies
+	// Add the name of any additional strategies here
 	public static String[] availableAlertReceivers = new String[]{
 		EmailAlertReceiver.NAME
 	};
 	
 	public ReceiverService() {
-		receivers = new HashMap<String, Class<? extends AlertReceiver>>();
-
-		// 2. Define strategies
-		receivers.put(EmailAlertReceiver.NAME, EmailAlertReceiver.class);
+		receivers = new HashMap<String, AlertReceiver>();
 	}
 	
 	@Override
-	public String[] availableAlertReceivers() {
+	public String[] availableReceiverTypes() {
 		return availableAlertReceivers;
 	}
 
 	@Override
-	public AlertReceiver getAlertReceiver(String receiverName) throws Exception {
+	public AlertReceiver getAlertReceiver(String receiverId, String receiverType) throws Exception {
 
-		if (receivers.containsKey(receiverName)) {
-			AlertReceiver ar = receivers.get(receiverName).newInstance();
-			return ar;
+		if (receivers.containsKey(receiverId)) {
+			return receivers.get(receiverId);
 		} else {
-			throw new Exception("No existing receiver with name: " + receiverName);
+			if (receiverType.equals(EmailAlertReceiver.NAME)) {
+				EmailAlertReceiver ear = new EmailAlertReceiver();
+				receivers.put(receiverId, ear);
+				return ear;
+			} else {
+				throw new Exception(receiverType + " is not a valid receiver type");
+			}
 		}
+	}
+
+	@Override
+	public void removeAlertReceiver(String receiverId) {
+		receivers.remove(receiverId);
 	}
 
 }

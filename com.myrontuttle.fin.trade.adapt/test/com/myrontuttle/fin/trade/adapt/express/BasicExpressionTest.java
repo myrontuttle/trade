@@ -9,8 +9,6 @@ import java.util.Hashtable;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -46,7 +44,7 @@ public class BasicExpressionTest {
 	private PortfolioService portfolioService;
 	private QuoteService quoteService;
 	private TradeStrategyService strategyService;
-	private AlertReceiver alertReceiver;
+	private AlertReceiverService alertReceiverService;
 	private TradeStrategy tradeStrategy;
 	private GroupDAO groupDAO;
 	
@@ -159,7 +157,7 @@ public class BasicExpressionTest {
 		group1.setGeneUpperValue(100);
 		group1.setActive(true);
 		group1.setStartingCash(STARTING_CASH);
-		group1.setAlertAddress(EMAIL);
+		group1.setAlertUser(EMAIL);
 		group1.setCandidates(candidates);
 		group1.setExpressionStrategy("BasicExpression");
 		group1.setTradeStrategy(BOUNDED_STRAT);
@@ -184,7 +182,7 @@ public class BasicExpressionTest {
 		quoteService = mock(QuoteService.class);
 		strategyService = mock(TradeStrategyService.class);
 		tradeStrategy = mock(TradeStrategy.class);
-		alertReceiver = mock(AlertReceiver.class);
+		alertReceiverService = mock(AlertReceiverService.class);
 		groupDAO = mock(GroupDAO.class);
 		
 		// Describe Mocks
@@ -229,7 +227,7 @@ public class BasicExpressionTest {
 		
 		// Assign services
 		expression = new BasicExpression<int[]>();
-		expression.setAlertReceiver(alertReceiver);
+		expression.setAlertReceiverService(alertReceiverService);
 		expression.setAlertService(alertService);
 		expression.setTradeStrategyService(strategyService);
 		expression.setPortfolioService(portfolioService);

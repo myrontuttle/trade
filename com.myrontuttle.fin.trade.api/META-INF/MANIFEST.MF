@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Trade API
 Bundle-SymbolicName: com.myrontuttle.fin.trade.api
-Bundle-Version: 3.3.0
+Bundle-Version: 3.3.1
 Bundle-Vendor: Myron tuttle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: com.myrontuttle.fin.trade.api

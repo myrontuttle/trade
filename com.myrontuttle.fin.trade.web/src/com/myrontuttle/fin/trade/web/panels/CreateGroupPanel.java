@@ -17,6 +17,7 @@ import org.apache.wicket.validation.validator.EmailAddressValidator;
 
 import com.myrontuttle.fin.trade.adapt.Group;
 import com.myrontuttle.fin.trade.web.data.DBAccess;
+import com.myrontuttle.fin.trade.web.service.AlertReceiverAccess;
 import com.myrontuttle.fin.trade.web.service.EvolveAccess;
 import com.myrontuttle.fin.trade.web.service.StrategyAccess;
 
@@ -28,9 +29,21 @@ public class CreateGroupPanel extends Panel {
 		super(id);
 		final IModel<Group> compound = new CompoundPropertyModel<Group>(new Group());
 		final Form<Group> form = new Form<Group>("newGroupForm", compound);
+
+		List<String> alertReceivers = Arrays.
+					asList(AlertReceiverAccess.getAlertReceiverService().availableReceiverTypes());
+		form.add(new DropDownChoice<String>("alertReceiver", alertReceivers));
 		
-		form.add(new TextField<String>("alertAddress")
+		form.add(new TextField<String>("alertUser")
 					.add(EmailAddressValidator.getInstance()));
+
+		form.add(new TextField<String>("alertHost")
+						.setRequired(true)
+						.add(new AttributeModifier("value", "imap.gmail.com")));
+
+		form.add(new TextField<String>("alertPassword")
+						.setRequired(true));
+		
 		
 		List<String> frequencies = Arrays.asList(Group.DAILY, Group.WEEKLY);
 		form.add(new DropDownChoice<String>("frequency", frequencies));

@@ -1,9 +1,14 @@
 package com.myrontuttle.fin.trade.web.panels;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -12,6 +17,7 @@ import org.apache.wicket.validation.validator.EmailAddressValidator;
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.Group;
 import com.myrontuttle.fin.trade.web.data.DBAccess;
+import com.myrontuttle.fin.trade.web.service.AlertReceiverAccess;
 import com.myrontuttle.fin.trade.web.service.EvolveAccess;
 
 public class UpdateGroupPanel extends Panel {
@@ -25,8 +31,17 @@ public class UpdateGroupPanel extends Panel {
 		
 		final Form<Group> form = new Form<Group>("updateGroupForm", model);
 
-		form.add(new TextField<String>("alertAddress")
+		List<String> alertReceivers = Arrays.
+					asList(AlertReceiverAccess.getAlertReceiverService().availableReceiverTypes());
+		form.add(new DropDownChoice<String>("alertReceiver", alertReceivers));
+		form.add(new TextField<String>("alertUser")
 					.add(EmailAddressValidator.getInstance()));
+		form.add(new TextField<String>("alertHost")
+						.setRequired(true)
+						.add(new AttributeModifier("value", "imap.gmail.com")));
+		form.add(new TextField<String>("alertPassword")
+						.setRequired(true));
+		
 		form.add(new Label("frequency"));
 		form.add(new Label("expressionStrategy"));
 		form.add(new Label("evaluationStrategy"));

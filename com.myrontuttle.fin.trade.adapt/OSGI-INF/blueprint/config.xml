@@ -34,7 +34,7 @@
 		<property name="alertService" ref="AlertService" />
 		<property name="portfolioService" ref="PortfolioService" />
 		<property name="tradeStrategyService" ref="TradeStrategyService" />
-		<property name="alertReceiver" ref="AlertReceiverService" />
+		<property name="alertReceiverService" ref="AlertReceiverService" />
 		<property name="groupDAO" ref="GroupDAOImpl" />
 	</bean>
 	

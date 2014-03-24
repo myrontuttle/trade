@@ -5,6 +5,7 @@ package com.myrontuttle.fin.trade.adapt.express;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	private static AlertService alertService;
 	private static PortfolioService portfolioService;
 	private static TradeStrategyService tradeStrategyService;
-	private static AlertReceiver alertReceiver;
+	private static AlertReceiverService alertReceiverService;
 	
 	private static List<Service> allServices = new ArrayList<Service>();
 	
@@ -90,13 +91,13 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		allServices.add(tradeStrategyService);
 	}
 
-	public static AlertReceiver getAlertReceiver() {
-		return alertReceiver;
+	public static AlertReceiverService getAlertReceiverService() {
+		return alertReceiverService;
 	}
 
-	public void setAlertReceiver(AlertReceiver alertReceiver) {
-		BasicExpression.alertReceiver = alertReceiver;
-		allServices.add(alertReceiver);
+	public void setAlertReceiverService(AlertReceiverService alertReceiverService) {
+		BasicExpression.alertReceiverService = alertReceiverService;
+		allServices.add(alertReceiverService);
 	}
 
 	public static GroupDAO getGroupDAO() {
@@ -298,7 +299,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	
 	SelectedAlert[] setupAlerts(Group group, SelectedAlert[] openAlerts) throws Exception {
 
-		alertService.addAlertDestination(group.getGroupId(), group.getAlertAddress(), "EMAIL");
+		alertService.addAlertDestination(group.getGroupId(), group.getAlertUser(), "EMAIL");
 
 		return (alertService.setupAlerts(group.getGroupId(), openAlerts));
 	}
@@ -363,6 +364,10 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	void setupAlertReceiver(SelectedAlert[] openAlerts, Candidate candidate, 
 								String portfolioId, Trade[] tradesToMake, 
 								Group group) throws Exception {
+
+		AlertReceiver alertReceiver = alertReceiverService.getAlertReceiver(group.getGroupId(), 
+																		group.getAlertReceiver());
+		
 		AlertTrade[] alertTrades = new AlertTrade[openAlerts.length];
 		for (int i=0; i<tradesToMake.length; i++) {
 			for (int j=0; j<group.getAlertsPerSymbol(); j++) {
@@ -377,9 +382,25 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	public void beforeExpression(String populationId) {
 
 		Group group = groupDAO.findGroup(populationId);
-		//TODO: Start alert receiver to listen for alerts
-		//alertReceiver.startReceiving(group.getTradeStrategy(), userId, connectionDetails);
+		HashMap<String, String> connectionDetails = new HashMap<String, String>();
 		
+		try {
+			AlertReceiver alertReceiver = alertReceiverService.getAlertReceiver(group.getGroupId(), 
+																		group.getAlertReceiver());
+
+			if (alertReceiver.getName().equals("EmailAlert")) {
+				connectionDetails.put("Host", group.getAlertHost());
+				connectionDetails.put("User", group.getAlertUser());
+				connectionDetails.put("Password", group.getAlertPassword());
+			}
+			
+			TradeStrategy tradeStrategy = tradeStrategyService.getTradeStrategy(group.getTradeStrategy(), 
+											allServices);
+			alertReceiver.startReceiving(tradeStrategy, connectionDetails);
+		} catch (Exception e) {
+			System.out.println("Error occured before expression of group: " + group.getGroupId());
+			e.printStackTrace();
+		}		
 	}
 
 	@Override
@@ -503,6 +524,9 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			
 			// Remove Alerts
 			alertService.removeAllAlerts(c.getGroupId());
+
+			AlertReceiver alertReceiver = alertReceiverService.getAlertReceiver(c.getGroupId(), null);
+			alertReceiver.stopWatchingAll(c.getCandidateId());
 			
 			groupDAO.removeCandidate(c.getCandidateId());
 			

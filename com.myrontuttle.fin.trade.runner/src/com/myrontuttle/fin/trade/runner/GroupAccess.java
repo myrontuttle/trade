@@ -40,7 +40,10 @@ public class GroupAccess {
 				System.out.println("No existing groups. Creating new group");
 				Group group = new Group();
 				System.out.println("New group created");
-				group.setAlertAddress("wsodinvestor@gmail.com");
+				group.setAlertUser("wsodinvestor@gmail.com");
+				group.setAlertHost("imap.google.com");
+				group.setAlertReceiver("EmailAlert");
+				group.setAlertPassword("");
 				group.setActive(true);
 				group.setAlertsPerSymbol(2);
 				group.setEliteCount(3);

@@ -40,7 +40,7 @@ public class Group implements Serializable {
 	@Column(name = "AlertReceiver")
 	private String alertReceiver;
 	
-	@Column(name = "AlertAddress")
+	@Column(name = "AlertUser")
 	private String alertUser;
 	
 	@Column(name = "AlertHost")

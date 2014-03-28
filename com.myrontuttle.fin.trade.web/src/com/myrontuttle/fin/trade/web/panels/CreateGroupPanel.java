@@ -45,7 +45,7 @@ public class CreateGroupPanel extends Panel {
 						.setRequired(true));
 		
 		
-		List<String> frequencies = Arrays.asList(Group.DAILY, Group.WEEKLY);
+		List<String> frequencies = Arrays.asList(Group.HOURLY, Group.DAILY, Group.WEEKLY);
 		form.add(new DropDownChoice<String>("frequency", frequencies));
 
 		List<String> expressions = Arrays.asList(Group.BASIC_EXPRESSION,Group.NO_EXPRESSION);

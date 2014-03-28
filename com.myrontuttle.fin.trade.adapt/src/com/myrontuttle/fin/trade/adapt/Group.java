@@ -16,6 +16,7 @@ public class Group implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
+	public static final String HOURLY = "HOURLY";
 	public static final String DAILY = "DAILY";
 	public static final String WEEKLY = "WEEKLY";
 

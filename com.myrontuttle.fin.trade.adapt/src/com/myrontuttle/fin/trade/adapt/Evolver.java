@@ -30,7 +30,7 @@ import com.myrontuttle.sci.evolve.util.RNG;
 public class Evolver implements EvolveService {
 
 	private final static int NUM_THREADS = 1;
-	private final static int MINUTES_IN_DAY = 60 * 24;
+	private final static int MINUTES_IN_HOUR = 60;
 	final String EVOLVE_ACTIVE = "evolve_active";
 	final String EVOLVE_HOUR = "evolve_hour";
 	final String EVOLVE_MINUTE = "evolve_minute";
@@ -113,6 +113,12 @@ public class Evolver implements EvolveService {
 					withHourOfDay(prefs.getInt(EVOLVE_HOUR, 0)).
 					withMinuteOfHour(prefs.getInt(EVOLVE_MINUTE, 0)));
 		}
+	}
+	
+	protected boolean isMarketOpenNow() {
+		// Assumes that market hours are 7:30am to 2pm weekdays
+		DateTime dt = new DateTime();
+		return (dt.getHourOfDay() >= 7 && dt.getHourOfDay() < 14 && dt.getDayOfWeek() < 6);
 	}
 	
 	protected boolean wasMarketOpenToday() {
@@ -263,7 +269,8 @@ public class Evolver implements EvolveService {
 					List<Group> groups = groupDAO.findGroups();
 					for (Group group : groups) {
 						if (group.isActive()) {
-							if ((group.getFrequency().equals(Group.DAILY) && wasMarketOpenToday()) ||
+							if ((group.getFrequency().equals(Group.HOURLY) && isMarketOpenNow()) ||
+								(group.getFrequency().equals(Group.DAILY) && wasMarketOpenToday()) ||
 								((group.getFrequency().equals(Group.WEEKLY) && isSaturday()))) {
 								evolveNow(group.getGroupId());
 							}
@@ -273,7 +280,7 @@ public class Evolver implements EvolveService {
 					System.out.println("Unable to evolve all groups. " + e.getMessage());
 				}
 			}
-		}, minutesToTime(date), MINUTES_IN_DAY, TimeUnit.MINUTES);
+		}, minutesToTime(date), MINUTES_IN_HOUR, TimeUnit.MINUTES);
 
 		prefs.putInt(EVOLVE_HOUR, date.getHourOfDay());
 		prefs.putInt(EVOLVE_MINUTE, date.getMinuteOfHour());

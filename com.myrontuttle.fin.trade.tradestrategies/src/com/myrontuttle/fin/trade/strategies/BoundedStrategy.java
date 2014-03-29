@@ -93,13 +93,7 @@ public class BoundedStrategy implements TradeStrategy {
 	private ScheduledExecutorService ses;
 	protected HashMap<String, BoundedTrade> openTrades;
 	
-	public BoundedStrategy(PortfolioService portfolioService, QuoteService quoteService, 
-									AlertService alertService, AlertReceiver alertReceiver) {
-		this.portfolioService = portfolioService;
-		this.quoteService = quoteService;
-		this.alertService = alertService;
-		this.alertReceiver = alertReceiver;
-
+	public BoundedStrategy() {
         this.ses = Executors.newScheduledThreadPool(NUM_THREADS);
         this.openTrades = new HashMap<String, BoundedTrade>();
 	}

@@ -7,14 +7,10 @@ import java.util.concurrent.ScheduledFuture;
 import com.myrontuttle.fin.trade.api.ActionType;
 import com.myrontuttle.fin.trade.api.AlertAction;
 import com.myrontuttle.fin.trade.api.AlertOrder;
-import com.myrontuttle.fin.trade.api.AlertReceiver;
-import com.myrontuttle.fin.trade.api.AlertService;
 import com.myrontuttle.fin.trade.api.AlertTrade;
 import com.myrontuttle.fin.trade.api.AlertTradeAdjustment;
 import com.myrontuttle.fin.trade.api.AvailableAlert;
 import com.myrontuttle.fin.trade.api.Order;
-import com.myrontuttle.fin.trade.api.PortfolioService;
-import com.myrontuttle.fin.trade.api.QuoteService;
 import com.myrontuttle.fin.trade.api.SelectedAlert;
 import com.myrontuttle.fin.trade.api.Trade;
 import com.myrontuttle.fin.trade.api.TradeStrategy;
@@ -35,9 +31,8 @@ public class BoundedWAdjustStrategy extends BoundedStrategy implements TradeStra
 	public final static String DESCRIPTION = "Creates bounds around a trade to exit after a certain time or " +
 			"percent loss. Adjusts the bounds if a gain is reached.";
 
-	public BoundedWAdjustStrategy(PortfolioService portfolioService, QuoteService quoteService, 
-									AlertService alertService, AlertReceiver alertReceiver) {
-		super(portfolioService, quoteService, alertService, alertReceiver);
+	public BoundedWAdjustStrategy() {
+		super();
 	}
 
 	@Override

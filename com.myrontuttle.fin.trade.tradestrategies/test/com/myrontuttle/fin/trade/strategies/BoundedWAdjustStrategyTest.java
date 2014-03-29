@@ -2,6 +2,7 @@ package com.myrontuttle.fin.trade.strategies;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.junit.Before;
@@ -23,6 +24,7 @@ import com.myrontuttle.fin.trade.api.Order;
 import com.myrontuttle.fin.trade.api.PortfolioService;
 import com.myrontuttle.fin.trade.api.QuoteService;
 import com.myrontuttle.fin.trade.api.SelectedAlert;
+import com.myrontuttle.fin.trade.api.Service;
 import com.myrontuttle.fin.trade.api.Trade;
 
 public class BoundedWAdjustStrategyTest {
@@ -81,8 +83,13 @@ public class BoundedWAdjustStrategyTest {
 		when(alertService.getPriceBelowAlert(userId)).thenReturn(priceBelowAlert);
 		when(alertService.getPriceAboveAlert(userId)).thenReturn(priceAboveAlert);
 		
-		bwas = new BoundedWAdjustStrategy(portfolioService, quoteService, 
-										alertService, alertReceiver);
+		bwas = new BoundedWAdjustStrategy();
+		ArrayList<Service> services = new ArrayList<Service>(4);
+		services.add(portfolioService);
+		services.add(quoteService);
+		services.add(alertService);
+		services.add(alertReceiver);
+		bwas.setup(services);
 	}
 
 	@Test

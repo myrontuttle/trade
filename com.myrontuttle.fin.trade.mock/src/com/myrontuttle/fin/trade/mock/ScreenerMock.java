@@ -1,5 +1,7 @@
 package com.myrontuttle.fin.trade.mock;
 
+import java.util.HashMap;
+
 import com.myrontuttle.fin.trade.api.AvailableScreenCriteria;
 import com.myrontuttle.fin.trade.api.ScreenerService;
 import com.myrontuttle.fin.trade.api.SelectedScreenCriteria;
@@ -34,6 +36,37 @@ public class ScreenerMock implements ScreenerService {
 			SelectedScreenCriteria[] selectedCriteria, String sortBy,
 			int maxSymbols) throws Exception {
 		return screenSymbols;
+	}
+
+	@Override
+	public String[] getCriteriaUsed() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setCriteriaUsed(String[] criteriaUsed) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public SelectedScreenCriteria[] getFixedCriteria() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setFixedCriteria(SelectedScreenCriteria[] fixedCriteria)
+			throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void initialize(HashMap<String, String> settings) throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

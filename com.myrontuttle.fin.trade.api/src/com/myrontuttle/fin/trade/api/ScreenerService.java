@@ -3,6 +3,8 @@
  */
 package com.myrontuttle.fin.trade.api;
 
+import java.util.HashMap;
+
 /**
  * Service for screening financial instruments with a variety of criteria
  * @author Myron Tuttle
@@ -15,6 +17,41 @@ public interface ScreenerService extends Service {
      * @return A list of available screener options.
      */
 	public AvailableScreenCriteria[] getAvailableCriteria(String userId) throws Exception;
+	
+	/**
+	 * Gets the list of criteria names which are used for screening
+	 * @return List of criteria names
+	 * @throws Exception
+	 */
+	public String[] getCriteriaUsed() throws Exception;
+	
+	/**
+	 * Sets which of the available criteria will be used for screening
+	 * @param criteriaUsed Names of the available criteria to be used for screening
+	 * @throws Exception
+	 */
+	public void setCriteriaUsed(String[] criteriaUsed) throws Exception;
+	
+	/**
+	 * Provides list of screen criteria which will always be included in screens
+	 * @return Array of SelectedScreenCriteria
+	 * @throws Exception
+	 */
+	public SelectedScreenCriteria[] getFixedCriteria() throws Exception;
+	
+	/**
+	 * Sets screen criteria which will always be included in screens
+	 * @param fixedCriteria
+	 * @throws Exception
+	 */
+	public void setFixedCriteria(SelectedScreenCriteria[] fixedCriteria) throws Exception;
+	
+	/**
+	 * Initializes the Screener service
+	 * @param settings
+	 * @throws Exception
+	 */
+	public void initialize(HashMap<String, String> settings) throws Exception;
 	
 	/**
 	 * Given a set of criteria to screen for, returns the financial instruments

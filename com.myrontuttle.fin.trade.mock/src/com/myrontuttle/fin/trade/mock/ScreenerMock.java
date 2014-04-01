@@ -69,4 +69,10 @@ public class ScreenerMock implements ScreenerService {
 		
 	}
 
+	@Override
+	public HashMap<String, String> getSettings() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

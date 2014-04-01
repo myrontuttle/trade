@@ -54,6 +54,13 @@ public interface ScreenerService extends Service {
 	public void initialize(HashMap<String, String> settings) throws Exception;
 	
 	/**
+	 * Returns settings that have been used to initialize the screener
+	 * @return
+	 * @throws Exception
+	 */
+	public HashMap<String, String> getSettings() throws Exception;
+	
+	/**
 	 * Given a set of criteria to screen for, returns the financial instruments
 	 * matching them.
 	 * @param userId

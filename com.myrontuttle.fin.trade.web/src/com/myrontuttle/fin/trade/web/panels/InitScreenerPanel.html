@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:wicket="http://wicket.sourceforge.net/" 
+	xml:lang="en" 
+	lang="en">  
+<body>
+	<wicket:panel xmlns:wicket="http://wicket.apache.org">
+		<h2>Screener Initialization</h2>
+    	<form wicket:id="sceenerInitForm">
+    		<table cellpadding="2" cellspacing="2" border="1">
+    			<tr>
+    				<td>
+						<label>Settings (name=value pairs on separate lines):</label>
+    					<textarea wicket:id="text" rows="5" cols="30"></textarea>
+    				</td>
+    				<td>	
+    					<button wicket:id="initialize" type="submit">Initialize</button>
+    				</td>
+    			</tr>
+    			<tr colspan="2">
+    				<td><span wicket:id="status">Status message</span></td>
+    			</tr>
+    		</table>
+    	</form>
+	</wicket:panel>
+</body>
+</html>

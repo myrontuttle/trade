@@ -4,6 +4,7 @@
 package com.myrontuttle.fin.trade.api;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Service for screening financial instruments with a variety of criteria
@@ -23,14 +24,14 @@ public interface ScreenerService extends Service {
 	 * @return List of criteria names
 	 * @throws Exception
 	 */
-	public String[] getCriteriaUsed() throws Exception;
+	public HashSet<String> getCriteriaUsed() throws Exception;
 	
 	/**
 	 * Sets which of the available criteria will be used for screening
 	 * @param criteriaUsed Names of the available criteria to be used for screening
 	 * @throws Exception
 	 */
-	public void setCriteriaUsed(String[] criteriaUsed) throws Exception;
+	public void setCriteriaUsed(HashSet<String> criteriaUsed) throws Exception;
 	
 	/**
 	 * Provides list of screen criteria which will always be included in screens

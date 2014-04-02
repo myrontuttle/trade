@@ -6,6 +6,7 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Panel;
 
 import com.myrontuttle.fin.trade.web.pages.MainPage;
+import com.myrontuttle.fin.trade.web.pages.ScreenerPage;
 
 /**
  * Navigation panel
@@ -26,6 +27,7 @@ public final class HeaderPanel extends Panel {
 
 		add(new Label("siteTitle", siteTitle));
 		add(new BookmarkablePageLink<Object>("mainPage", MainPage.class));
+		add(new BookmarkablePageLink<Object>("screenerPage", ScreenerPage.class));
 
 	}
 }

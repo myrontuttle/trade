@@ -1,6 +1,7 @@
 package com.myrontuttle.fin.trade.mock;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import com.myrontuttle.fin.trade.api.AvailableScreenCriteria;
 import com.myrontuttle.fin.trade.api.ScreenerService;
@@ -22,6 +23,15 @@ public class ScreenerMock implements ScreenerService {
 									 "LIKE[0]=Asia-Pacific",
 									 "LIKE[0]=Europe"})
 	};
+	
+	private SelectedScreenCriteria[] selectedScreenCriteria = 
+			new SelectedScreenCriteria[] {
+				new SelectedScreenCriteria("RCCAssetClass", "LIKE[0]=Large Cap", "OR")
+	};
+	
+	private HashSet<String> usedCriteria = new HashSet<String>();
+	
+	private HashMap<String, String> settings = new HashMap<String, String>();
 
 	private String[] screenSymbols = new String[]{"AAPL", "MSFT", "CSCO", "GM", "A"};
 	
@@ -39,21 +49,8 @@ public class ScreenerMock implements ScreenerService {
 	}
 
 	@Override
-	public String[] getCriteriaUsed() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setCriteriaUsed(String[] criteriaUsed) throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public SelectedScreenCriteria[] getFixedCriteria() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return selectedScreenCriteria;
 	}
 
 	@Override
@@ -65,14 +62,25 @@ public class ScreenerMock implements ScreenerService {
 
 	@Override
 	public void initialize(HashMap<String, String> settings) throws Exception {
+		this.settings = settings;
+	}
+
+	@Override
+	public HashMap<String, String> getSettings() throws Exception {
+		settings.put("marketer", "RT");
+		return settings;
+	}
+
+	@Override
+	public void setCriteriaUsed(HashSet<String> criteriaUsed) throws Exception {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public HashMap<String, String> getSettings() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public HashSet<String> getCriteriaUsed() throws Exception {
+		usedCriteria.add("RCCAssetClass");
+		return usedCriteria;
 	}
 
 }

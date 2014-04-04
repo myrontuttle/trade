@@ -3,6 +3,7 @@
             xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.0.0"
             xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0">
     
+	<reference id="QuoteService" interface="com.myrontuttle.fin.trade.api.QuoteService" />
 	<reference id="ScreenerService" interface="com.myrontuttle.fin.trade.api.ScreenerService" />
 	<reference id="WatchlistService" interface="com.myrontuttle.fin.trade.api.WatchlistService" />
 	<reference id="AlertService" interface="com.myrontuttle.fin.trade.api.AlertService" />

@@ -35,6 +35,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	public static final String CANDIDATE = "C";
 	
 	// Managed by Blueprint
+	private static QuoteService quoteService;	// Used in TradeStrategy
 	private static ScreenerService screenerService;
 	private static WatchlistService watchlistService;
 	private static AlertService alertService;
@@ -46,6 +47,15 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	
 	private static GroupDAO groupDAO;
 	
+	public static QuoteService getQuoteService() {
+		return quoteService;
+	}
+
+	public static void setQuoteService(QuoteService quoteService) {
+		BasicExpression.quoteService = quoteService;
+		allServices.add(quoteService);
+	}
+
 	public static ScreenerService getScreenerService() {
 		return screenerService;
 	}

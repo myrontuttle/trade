@@ -69,7 +69,6 @@ public class MailRetriever implements Runnable {
 			System.out.println("Please enter host, email, and password to use");
 			return;
 		}
-		System.out.println("Retrieving Mail");
 		try {
 			/* Create the session and get the store for read the mail. */
 			Session session = Session.getDefaultInstance(props, null);
@@ -78,8 +77,10 @@ public class MailRetriever implements Runnable {
 
 			/* Mention the folder name which you want to read. */
 			Folder inbox = store.getFolder("Inbox");
-			System.out.println("No of Unread Messages : "
-					+ inbox.getUnreadMessageCount());
+			if (inbox.getUnreadMessageCount() > 0) {
+				System.out.println("Unread Messages Found: "
+						+ inbox.getUnreadMessageCount());
+			}
 
 			/* Open the inbox using store. */
 			inbox.open(Folder.READ_WRITE);

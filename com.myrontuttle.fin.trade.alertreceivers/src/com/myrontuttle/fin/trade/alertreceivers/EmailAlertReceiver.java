@@ -31,7 +31,7 @@ public class EmailAlertReceiver implements AlertReceiver {
 	private final static int IMAP_PORT = 143;
 	private final static int POP_PORT = 110;
 	
-	private final static String GOOGLE_HOST = "imap.google.com";
+	private final static String GMAIL_HOST = "imap.gmail.com";
 
 	private final ScheduledExecutorService ses;
 	private ScheduledFuture<?> sf;
@@ -76,7 +76,7 @@ public class EmailAlertReceiver implements AlertReceiver {
 			try {
 				port = Integer.parseInt(connectionDetails.get(PORT));
 			} catch (NumberFormatException nfe) {
-				if (host.equals(GOOGLE_HOST)) {
+				if (host.equals(GMAIL_HOST)) {
 					port = IMAPS_PORT;
 				} else if (host.contains("imap")) {
 					port = IMAP_PORT;
@@ -96,6 +96,7 @@ public class EmailAlertReceiver implements AlertReceiver {
 				this.mailRetriever = new MailRetriever(this, host, port, user, password);
 			    this.sf = ses.scheduleAtFixedRate(mailRetriever, 0, period, TimeUnit.SECONDS);
 			}
+			System.out.println("Started receiving alerts for " + user + " on " + host + ":" + port);
 	        this.receiving = true;
 	        return true;
 		}
@@ -111,6 +112,7 @@ public class EmailAlertReceiver implements AlertReceiver {
 	        // Close scheduled service
 	        sf.cancel(true);
 	        ses.shutdown();
+	        System.out.println("Stopped receiving alerts");
 	        receiving = false;
 		} catch (SecurityException se) {
 			System.out.println("Unable to stop receiving email. " + se.getMessage());

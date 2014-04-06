@@ -43,17 +43,14 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	private static TradeStrategyService tradeStrategyService;
 	private static AlertReceiverService alertReceiverService;
 	
-	private static List<Service> allServices = new ArrayList<Service>();
-	
 	private static GroupDAO groupDAO;
 	
 	public static QuoteService getQuoteService() {
 		return quoteService;
 	}
 
-	public static void setQuoteService(QuoteService quoteService) {
+	public void setQuoteService(QuoteService quoteService) {
 		BasicExpression.quoteService = quoteService;
-		allServices.add(quoteService);
 	}
 
 	public static ScreenerService getScreenerService() {
@@ -62,7 +59,6 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 	public void setScreenerService(ScreenerService screenerService) {
 		BasicExpression.screenerService = screenerService;
-		allServices.add(screenerService);
 	}
 
 	public static WatchlistService getWatchlistService() {
@@ -71,7 +67,6 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 	public void setWatchlistService(WatchlistService watchlistService) {
 		BasicExpression.watchlistService = watchlistService;
-		allServices.add(watchlistService);
 	}
 
 	public static AlertService getAlertService() {
@@ -80,7 +75,6 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 	public void setAlertService(AlertService alertService) {
 		BasicExpression.alertService = alertService;
-		allServices.add(alertService);
 	}
 
 	public static PortfolioService getPortfolioService() {
@@ -89,7 +83,6 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 	public void setPortfolioService(PortfolioService portfolioService) {
 		BasicExpression.portfolioService = portfolioService;
-		allServices.add(portfolioService);
 	}
 
 	public static TradeStrategyService getTradeStrategyService() {
@@ -98,7 +91,6 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 	public void setTradeStrategyService(TradeStrategyService tradeStrategyService) {
 		BasicExpression.tradeStrategyService = tradeStrategyService;
-		allServices.add(tradeStrategyService);
 	}
 
 	public static AlertReceiverService getAlertReceiverService() {
@@ -107,7 +99,15 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 
 	public void setAlertReceiverService(AlertReceiverService alertReceiverService) {
 		BasicExpression.alertReceiverService = alertReceiverService;
-		allServices.add(alertReceiverService);
+	}
+	
+	private List<Service> bundleServices(AlertReceiver alertReceiver) {
+		List<Service> tradeStrategyServices = new ArrayList<Service>(4);
+		tradeStrategyServices.add(quoteService);
+		tradeStrategyServices.add(alertReceiver);
+		tradeStrategyServices.add(portfolioService);
+		tradeStrategyServices.add(alertService);
+		return tradeStrategyServices;
 	}
 
 	public static GroupDAO getGroupDAO() {
@@ -334,8 +334,11 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 		int[] genome = candidate.getGenome();
 		
 		Trade[] trades = new Trade[symbols.length];
-		
-		TradeStrategy tradeStrategy = tradeStrategyService.getTradeStrategy(group.getTradeStrategy(), allServices);
+
+		AlertReceiver alertReceiver = alertReceiverService.getAlertReceiver(group.getGroupId(), 
+																	group.getAlertReceiver());
+		List<Service> services = bundleServices(alertReceiver);
+		TradeStrategy tradeStrategy = tradeStrategyService.getTradeStrategy(group.getTradeStrategy(), services);
 		
 		int openOrderTypes;
 		try {
@@ -404,8 +407,8 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 				connectionDetails.put("Password", group.getAlertPassword());
 			}
 			
-			TradeStrategy tradeStrategy = tradeStrategyService.getTradeStrategy(group.getTradeStrategy(), 
-											allServices);
+			List<Service> services = bundleServices(alertReceiver);
+			TradeStrategy tradeStrategy = tradeStrategyService.getTradeStrategy(group.getTradeStrategy(), services);
 			alertReceiver.startReceiving(tradeStrategy, connectionDetails);
 		} catch (Exception e) {
 			System.out.println("Error occured before expression of group: " + group.getGroupId());
@@ -536,7 +539,9 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 			alertService.removeAllAlerts(c.getGroupId());
 
 			AlertReceiver alertReceiver = alertReceiverService.getAlertReceiver(c.getGroupId(), null);
-			alertReceiver.stopWatchingAll(c.getCandidateId());
+			if (alertReceiver != null) {
+				alertReceiver.stopWatchingAll(c.getCandidateId());
+			}
 			
 			groupDAO.removeCandidate(c.getCandidateId());
 			
@@ -614,7 +619,10 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 					trader.getTraderId());
 		}
 
-		TradeStrategy tradeStrategy = tradeStrategyService.getTradeStrategy(group.getTradeStrategy(), allServices);
+		AlertReceiver alertReceiver = alertReceiverService.getAlertReceiver(group.getGroupId(), 
+																	group.getAlertReceiver());
+		List<Service> services = bundleServices(alertReceiver);
+		TradeStrategy tradeStrategy = tradeStrategyService.getTradeStrategy(group.getTradeStrategy(), services);
 		Trade[] trades = expressTradeGenes(candidate, group, symbols);
 		for (Trade trade : trades) {
 			String[] tradeDesc = tradeStrategy.describeTrade(candidate.getCandidateId(), trade);

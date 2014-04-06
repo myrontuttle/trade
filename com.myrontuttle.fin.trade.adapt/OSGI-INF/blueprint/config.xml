@@ -30,6 +30,7 @@
 	</bean>
 	
 	<bean id="BasicExpression" class="com.myrontuttle.fin.trade.adapt.express.BasicExpression" >
+		<property name="quoteService" ref="QuoteService" />
 		<property name="screenerService" ref="ScreenerService" />
 		<property name="watchlistService" ref="WatchlistService" />
 		<property name="alertService" ref="AlertService" />

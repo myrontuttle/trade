@@ -30,6 +30,9 @@ public class ReceiverService implements AlertReceiverService {
 		if (receivers.containsKey(receiverId)) {
 			return receivers.get(receiverId);
 		} else {
+			if (receiverType == null) {
+				return null;
+			}
 			if (receiverType.equals(EmailAlertReceiver.NAME)) {
 				EmailAlertReceiver ear = new EmailAlertReceiver();
 				receivers.put(receiverId, ear);

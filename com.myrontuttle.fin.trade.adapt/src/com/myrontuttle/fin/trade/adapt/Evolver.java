@@ -276,7 +276,8 @@ public class Evolver implements EvolveService {
 						}
 					}
 				} catch (Exception e) {
-					System.out.println("Unable to evolve all groups. " + e.getMessage());
+					System.out.println("Unable to evolve all groups. ");
+					e.printStackTrace();
 				}
 			}
 		}, minutesToTime(date), MINUTES_IN_HOUR, TimeUnit.MINUTES);

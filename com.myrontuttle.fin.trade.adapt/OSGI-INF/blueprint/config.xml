@@ -24,12 +24,12 @@
 	
 	<service ref="Evolver" interface="com.myrontuttle.fin.trade.adapt.EvolveService" />
 	
-	<bean id="BasicEvaluator" class="com.myrontuttle.fin.trade.adapt.eval.BasicEvaluator">
+	<bean id="RealizedGainEvaluator" class="com.myrontuttle.fin.trade.adapt.eval.RealizedGainEvaluator">
 		<property name="portfolioService" ref="PortfolioService" />
 		<property name="groupDAO" ref="GroupDAOImpl" />
 	</bean>
 	
-	<bean id="BasicExpression" class="com.myrontuttle.fin.trade.adapt.express.BasicExpression" >
+	<bean id="SATExpression" class="com.myrontuttle.fin.trade.adapt.express.SATExpression" >
 		<property name="quoteService" ref="QuoteService" />
 		<property name="screenerService" ref="ScreenerService" />
 		<property name="watchlistService" ref="WatchlistService" />

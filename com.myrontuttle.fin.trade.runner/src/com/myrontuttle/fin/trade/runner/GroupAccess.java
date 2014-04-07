@@ -49,7 +49,7 @@ public class GroupAccess {
 				group.setEliteCount(3);
 				group.setSize(15);
 				group.setEvaluationStrategy(Group.RANDOM_EVALUATOR);
-				group.setExpressionStrategy(Group.NO_EXPRESSION);
+				group.setExpressionStrategy(Group.SAT_EXPRESSION);
 				group.setFrequency(Group.DAILY);
 				group.setNumberOfScreens(1);
 				group.setMaxSymbolsPerScreen(5);

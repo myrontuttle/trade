@@ -15,11 +15,12 @@ import com.myrontuttle.sci.evolve.api.ExpressedCandidate;
 import com.myrontuttle.sci.evolve.api.ExpressionStrategy;
 
 /**
- * Expresses a genome of int[] into a TradingStrategy
+ * Expresses a genome of int[] into a trading strategy candidate by Screening, Alerting, and Trading 
+ * (using a paper account/portfolio)
  * @author Myron Tuttle
  * @param <T> The candidate to be expressed
  */
-public class BasicExpression<T> implements ExpressionStrategy<int[]> {
+public class SATExpression<T> implements ExpressionStrategy<int[]> {
 
 	// Gene lengths
 	public static final int SCREEN_GENE_LENGTH = 3;
@@ -50,7 +51,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	}
 
 	public void setQuoteService(QuoteService quoteService) {
-		BasicExpression.quoteService = quoteService;
+		SATExpression.quoteService = quoteService;
 	}
 
 	public static ScreenerService getScreenerService() {
@@ -58,7 +59,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	}
 
 	public void setScreenerService(ScreenerService screenerService) {
-		BasicExpression.screenerService = screenerService;
+		SATExpression.screenerService = screenerService;
 	}
 
 	public static WatchlistService getWatchlistService() {
@@ -66,7 +67,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	}
 
 	public void setWatchlistService(WatchlistService watchlistService) {
-		BasicExpression.watchlistService = watchlistService;
+		SATExpression.watchlistService = watchlistService;
 	}
 
 	public static AlertService getAlertService() {
@@ -74,7 +75,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	}
 
 	public void setAlertService(AlertService alertService) {
-		BasicExpression.alertService = alertService;
+		SATExpression.alertService = alertService;
 	}
 
 	public static PortfolioService getPortfolioService() {
@@ -82,7 +83,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	}
 
 	public void setPortfolioService(PortfolioService portfolioService) {
-		BasicExpression.portfolioService = portfolioService;
+		SATExpression.portfolioService = portfolioService;
 	}
 
 	public static TradeStrategyService getTradeStrategyService() {
@@ -90,7 +91,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	}
 
 	public void setTradeStrategyService(TradeStrategyService tradeStrategyService) {
-		BasicExpression.tradeStrategyService = tradeStrategyService;
+		SATExpression.tradeStrategyService = tradeStrategyService;
 	}
 
 	public static AlertReceiverService getAlertReceiverService() {
@@ -98,7 +99,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	}
 
 	public void setAlertReceiverService(AlertReceiverService alertReceiverService) {
-		BasicExpression.alertReceiverService = alertReceiverService;
+		SATExpression.alertReceiverService = alertReceiverService;
 	}
 	
 	private List<Service> bundleServices(AlertReceiver alertReceiver) {
@@ -115,7 +116,7 @@ public class BasicExpression<T> implements ExpressionStrategy<int[]> {
 	}
 
 	public void setGroupDAO(GroupDAO groupDAO) {
-		BasicExpression.groupDAO = groupDAO;
+		SATExpression.groupDAO = groupDAO;
 	}
 
 	public int getGenomeLength(String groupId) {

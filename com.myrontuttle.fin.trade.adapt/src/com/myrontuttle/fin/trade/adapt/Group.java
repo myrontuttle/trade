@@ -21,9 +21,8 @@ public class Group implements Serializable {
 	public static final String WEEKLY = "WEEKLY";
 
 	public static final String RANDOM_EVALUATOR = "RandomEvaluator";
-	public static final String BASIC_EVALUATOR = "BasicEvaluator";
-	public static final String NO_EXPRESSION = "NoExpression";
-	public static final String BASIC_EXPRESSION = "BasicExpression";
+	public static final String REALIZED_GAIN_EVAL = "RealizedGainEvaluator";
+	public static final String SAT_EXPRESSION = "SATExpression";
 
 	@Id
 	@Column(name = "GroupId", nullable = false)

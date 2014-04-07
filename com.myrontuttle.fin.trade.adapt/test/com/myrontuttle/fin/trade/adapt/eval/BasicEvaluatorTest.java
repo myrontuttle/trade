@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
-import com.myrontuttle.fin.trade.adapt.eval.BasicEvaluator;
+import com.myrontuttle.fin.trade.adapt.eval.RealizedGainEvaluator;
 import com.myrontuttle.fin.trade.api.PortfolioService;
 import com.myrontuttle.sci.evolve.api.ExpressedCandidate;
 
@@ -25,7 +25,7 @@ public class BasicEvaluatorTest {
 
 	private PortfolioService portfolioService;
 	
-	private BasicEvaluator evaluator;
+	private RealizedGainEvaluator evaluator;
 	
 	private double startingCash = 10000.00;
 	private ExpressedCandidate<int[]> candidateA = new Candidate(CA, 
@@ -63,7 +63,7 @@ public class BasicEvaluatorTest {
 		when(portfolioService.closeAllPositions(CC, PC)).
 				thenReturn(5000.00);
 
-		evaluator = new BasicEvaluator();
+		evaluator = new RealizedGainEvaluator();
 		evaluator.setPortfolioService(portfolioService);
 	}
 

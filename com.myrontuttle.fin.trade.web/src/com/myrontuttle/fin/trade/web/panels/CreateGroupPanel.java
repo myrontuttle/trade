@@ -48,10 +48,10 @@ public class CreateGroupPanel extends Panel {
 		List<String> frequencies = Arrays.asList(Group.HOURLY, Group.DAILY, Group.WEEKLY);
 		form.add(new DropDownChoice<String>("frequency", frequencies));
 
-		List<String> expressions = Arrays.asList(Group.BASIC_EXPRESSION,Group.NO_EXPRESSION);
+		List<String> expressions = Arrays.asList(Group.SAT_EXPRESSION);
 		form.add(new DropDownChoice<String>("expressionStrategy", expressions));
 
-		List<String> evaluators = Arrays.asList(Group.BASIC_EVALUATOR,Group.RANDOM_EVALUATOR);
+		List<String> evaluators = Arrays.asList(Group.REALIZED_GAIN_EVAL,Group.RANDOM_EVALUATOR);
 		form.add(new DropDownChoice<String>("evaluationStrategy", evaluators));
 
 		List<String> tradeStrategies = Arrays.

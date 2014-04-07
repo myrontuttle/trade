@@ -15,7 +15,7 @@ import org.mockito.stubbing.Answer;
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.Group;
 import com.myrontuttle.fin.trade.adapt.GroupDAO;
-import com.myrontuttle.fin.trade.adapt.express.BasicExpression;
+import com.myrontuttle.fin.trade.adapt.express.SATExpression;
 import com.myrontuttle.fin.trade.api.*;
 
 public class BasicExpressionTest {
@@ -48,7 +48,7 @@ public class BasicExpressionTest {
 	private TradeStrategy tradeStrategy;
 	private GroupDAO groupDAO;
 	
-	private BasicExpression<int[]> expression;
+	private SATExpression<int[]> expression;
 	
 	private Candidate candidateA;
 	private Group group1;
@@ -88,10 +88,10 @@ public class BasicExpressionTest {
 	};
 	private String[] screenSymbols = new String[]{"AAPL", "MSFT", "CSCO", "AA", "T"};
 	
-	private String watchlistName = BasicExpression.WATCH_NAME_PREFIX + BasicExpression.GROUP + GID + 
-			BasicExpression.CANDIDATE + CID;
-	private String portfolioName = BasicExpression.PORT_NAME_PREFIX + BasicExpression.GROUP + GID + 
-			BasicExpression.CANDIDATE + CID;
+	private String watchlistName = SATExpression.WATCH_NAME_PREFIX + SATExpression.GROUP + GID + 
+			SATExpression.CANDIDATE + CID;
+	private String portfolioName = SATExpression.PORT_NAME_PREFIX + SATExpression.GROUP + GID + 
+			SATExpression.CANDIDATE + CID;
 
 	private final int alertId = 1;
 	private final String condition = "{symbol}'s price fell below {Price}";
@@ -226,7 +226,7 @@ public class BasicExpressionTest {
 		//when(alertReceiver.watchFor(alertTradeBounds));
 		
 		// Assign services
-		expression = new BasicExpression<int[]>();
+		expression = new SATExpression<int[]>();
 		expression.setAlertReceiverService(alertReceiverService);
 		expression.setAlertService(alertService);
 		expression.setTradeStrategyService(strategyService);

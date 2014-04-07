@@ -13,10 +13,9 @@ import java.util.prefs.Preferences;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 
-import com.myrontuttle.fin.trade.adapt.eval.BasicEvaluator;
+import com.myrontuttle.fin.trade.adapt.eval.RealizedGainEvaluator;
 import com.myrontuttle.fin.trade.adapt.eval.RandomEvaluator;
-import com.myrontuttle.fin.trade.adapt.express.BasicExpression;
-import com.myrontuttle.fin.trade.adapt.express.NoExpression;
+import com.myrontuttle.fin.trade.adapt.express.SATExpression;
 import com.myrontuttle.sci.evolve.api.*;
 import com.myrontuttle.sci.evolve.engines.GenerationalEvolutionEngine;
 import com.myrontuttle.sci.evolve.factories.IntArrayFactory;
@@ -76,8 +75,8 @@ public class Evolver implements EvolveService {
 										Arrays.toString(data.getBestCandidate()));
 			}
 
-			if (group.getExpressionStrategy().equals(Group.BASIC_EXPRESSION)) {
-				BasicExpression<int[]> expression = new BasicExpression<int[]>();
+			if (group.getExpressionStrategy().equals(Group.SAT_EXPRESSION)) {
+				SATExpression<int[]> expression = new SATExpression<int[]>();
 
 				// Express Trader
 				if (trader != null && bestCandidate != null) {
@@ -168,16 +167,16 @@ public class Evolver implements EvolveService {
 	}
 	
 	protected static ExpressionStrategy<int[]> getExpressionStrategy(Group group) {
-		if (group.getExpressionStrategy().equals(Group.BASIC_EXPRESSION)) {
-			return new BasicExpression<int[]>();
-		} else {
-			return new NoExpression();
+		if (group.getExpressionStrategy().equals(Group.SAT_EXPRESSION)) {
+			return new SATExpression<int[]>();
 		}
+		
+		return null;
 	}
 	
 	protected static ExpressedFitnessEvaluator<int[]> getEvaluator(Group group) {
-		if (group.getEvaluationStrategy().equals(Group.BASIC_EVALUATOR)) {
-			return new BasicEvaluator();
+		if (group.getEvaluationStrategy().equals(Group.REALIZED_GAIN_EVAL)) {
+			return new RealizedGainEvaluator();
 		} else {
 			return new RandomEvaluator();
 		}
@@ -314,8 +313,8 @@ public class Evolver implements EvolveService {
 	public void deleteCandidateExpression(String groupId, int[] candidateGenome) {
 		Group group = groupDAO.findGroup(groupId);
 		
-		if (group.getExpressionStrategy().equals(Group.BASIC_EXPRESSION)) {
-			BasicExpression<int[]> expression = new BasicExpression<int[]>();
+		if (group.getExpressionStrategy().equals(Group.SAT_EXPRESSION)) {
+			SATExpression<int[]> expression = new SATExpression<int[]>();
 			expression.destroy(candidateGenome, groupId);
 		}
 	}
@@ -325,10 +324,10 @@ public class Evolver implements EvolveService {
 
 		Group group = groupDAO.findGroup(groupId);
 		
-		if (group.getExpressionStrategy().equals(Group.BASIC_EXPRESSION)) {
-			BasicExpression<int[]> expression = new BasicExpression<int[]>();
+		if (group.getExpressionStrategy().equals(Group.SAT_EXPRESSION)) {
+			SATExpression<int[]> expression = new SATExpression<int[]>();
 			
-			BasicExpression.getAlertReceiverService().removeAlertReceiver(groupId);
+			SATExpression.getAlertReceiverService().removeAlertReceiver(groupId);
 			
 			List<Candidate> oldCandidates = groupDAO.findCandidatesInGroup(groupId);
 			for (Candidate c : oldCandidates) {

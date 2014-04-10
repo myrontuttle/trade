@@ -1,0 +1,19 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:wicket="http://wicket.sourceforge.net/" 
+	xml:lang="en" 
+	lang="en">  
+<body>
+	<wicket:panel xmlns:wicket="http://wicket.apache.org">
+		<h2>Fixed Screener Criteria</h2>
+    	<form wicket:id="fixedCriteriaForm">
+			<label>Fixed Criteria (name;value;operator)</label><br/>
+    		<textarea wicket:id="text" rows="10" cols="30"></textarea><br/>
+    		<button wicket:id="update" type="submit">Update</button><br/>
+    		<span wicket:id="status">Status message</span>
+    	</form>
+	</wicket:panel>
+</body>
+</html>

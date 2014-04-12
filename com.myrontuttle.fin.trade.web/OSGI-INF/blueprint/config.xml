@@ -30,6 +30,18 @@
 	<bean id="ScreenerAccess" class="com.myrontuttle.fin.trade.web.service.ScreenerAccess">
 		<property name="screenerService" ref="ScreenerService" />
 	</bean>
+	
+	<reference id="WatchlistService" interface="com.myrontuttle.fin.trade.api.WatchlistService" />
+  
+	<bean id="WatchlistAccess" class="com.myrontuttle.fin.trade.web.service.WatchlistAccess">
+		<property name="watchlistService" ref="WatchlistService" />
+	</bean>
+	
+	<reference id="PortfolioService" interface="com.myrontuttle.fin.trade.api.PortfolioService" />
+  
+	<bean id="PortfolioAccess" class="com.myrontuttle.fin.trade.web.service.PortfolioAccess">
+		<property name="portfolioService" ref="PortfolioService" />
+	</bean>
 
 	<service interface="org.ops4j.pax.wicket.api.WebApplicationFactory" >
 		<service-properties>

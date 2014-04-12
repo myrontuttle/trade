@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Trade Web
 Bundle-SymbolicName: com.myrontuttle.fin.trade.web
-Bundle-Version: 2.3.9.qualifier
+Bundle-Version: 2.3.10.qualifier
 Bundle-Vendor: Myron Tuttle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: com.myrontuttle.fin.trade.adapt,

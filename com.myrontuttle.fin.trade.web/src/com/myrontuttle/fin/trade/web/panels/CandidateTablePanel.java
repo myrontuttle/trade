@@ -41,14 +41,17 @@ public class CandidateTablePanel extends Panel {
 			@Override
 			public void populateItem(Item<ICellPopulator<Candidate>> cellItem,
 					String componentId, IModel<Candidate> model) {
-				Candidate candidate = ((Candidate)getParent().getDefaultModelObject());
-				String[] symbols;
 				try {
-					symbols = WatchlistAccess.getWatchlistService().
-										retrieveHoldings(candidate.getCandidateId(), candidate.getWatchlistId());
-					cellItem.add(new Label(componentId, Arrays.toString(symbols)));
+					Candidate candidate = model.getObject();
+					if (candidate != null && candidate.getWatchlistId() != null) {
+						String[] symbols = WatchlistAccess.getWatchlistService().
+								retrieveHoldings(candidate.getCandidateId(), candidate.getWatchlistId());
+						cellItem.add(new Label(componentId, Arrays.toString(symbols)));
+					} else {
+						cellItem.add(new Label(componentId, ""));
+					}
 				} catch (Exception e) {
-					cellItem.add(new Label(componentId, "No symbols available"));
+					cellItem.add(new Label(componentId, e.getMessage()));
 				}
 			}
 		});
@@ -57,14 +60,17 @@ public class CandidateTablePanel extends Panel {
 			@Override
 			public void populateItem(Item<ICellPopulator<Candidate>> cellItem,
 					String componentId, IModel<Candidate> model) {
-				Candidate candidate = ((Candidate)getParent().getDefaultModelObject());
-				double value;
 				try {
-					value = PortfolioAccess.getPortfolioService().
+					Candidate candidate = model.getObject();
+					if (candidate != null && candidate.getPortfolioId() != null) {
+						double value = PortfolioAccess.getPortfolioService().
 								getAvailableBalance(candidate.getCandidateId(), candidate.getPortfolioId());
-					cellItem.add(new Label(componentId, String.valueOf(value)));
+						cellItem.add(new Label(componentId, String.valueOf(value)));
+					} else {
+						cellItem.add(new Label(componentId, ""));
+					}
 				} catch (Exception e) {
-					cellItem.add(new Label(componentId, "No Portfolio Value"));
+					cellItem.add(new Label(componentId, e.getMessage()));
 				}
 			}
 		});

@@ -65,6 +65,14 @@ public class RealizedGainEvaluator implements ExpressedFitnessEvaluator<int[]> {
 			e.printStackTrace();
 			return 0;
 		}
-		return (balance >= startingCash) ? balance - startingCash : 0;
+
+		if (balance == startingCash) {
+			// Give a small boost for at least having a portfolio when starting out
+			return 0.01;
+		} else if (balance < startingCash) {
+			return 0;
+		} else {
+			return balance - startingCash;
+		}
 	}
 }

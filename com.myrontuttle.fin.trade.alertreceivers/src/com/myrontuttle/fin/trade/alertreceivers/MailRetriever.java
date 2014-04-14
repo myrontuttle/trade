@@ -27,6 +27,7 @@ public class MailRetriever implements Runnable {
 	
 	private final AlertReceiver alertReceiver;
 	private final String host;
+	private final String protocol;
 	private final int port;
 	private final String user;
 	private final String password;
@@ -34,17 +35,18 @@ public class MailRetriever implements Runnable {
 	private final Properties props;
 
 	// Constructor of the class.
-	public MailRetriever(AlertReceiver alertReceiver, String host, 
+	public MailRetriever(AlertReceiver alertReceiver, String host, String protocol,
 					int port, String user, String password) {
 		this.alertReceiver = alertReceiver;
 		this.host = host;
+		this.protocol = protocol;
 		this.port = port;
 		this.user = user;
 		this.password = password;
 
 		/* Set the mail properties */
 		this.props = System.getProperties();
-		props.setProperty("mail.store.protocol", "imaps");
+		props.setProperty("mail.store.protocol", protocol);
 	}
 	
 	public String getHost() {
@@ -53,6 +55,10 @@ public class MailRetriever implements Runnable {
 
 	public int getPort() {
 		return port;
+	}
+
+	public String getProtocol() {
+		return protocol;
 	}
 
 	public String getUser() {
@@ -65,14 +71,14 @@ public class MailRetriever implements Runnable {
 
 	public void run() {
 
-		if (host == null || user == null || password == null) {
-			System.out.println("Please enter host, email, and password to use");
+		if (host == null || protocol == null || user == null || password == null) {
+			System.out.println("Missing host, protocol, email, or password");
 			return;
 		}
 		try {
 			/* Create the session and get the store for read the mail. */
 			Session session = Session.getDefaultInstance(props, null);
-			Store store = session.getStore("imaps");
+			Store store = session.getStore(protocol);
 			store.connect(host, port, user, password);
 
 			/* Mention the folder name which you want to read. */

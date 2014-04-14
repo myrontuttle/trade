@@ -21,12 +21,18 @@ public class EmailAlertReceiver implements AlertReceiver {
 	public final static String NAME = "EmailAlert";
 	public final static String HOST = "Host";
 	public final static String PORT = "Port";
+	public final static String PROTOCOL = "Protocol";
 	public final static String USER = "User";
 	public final static String PASS = "Password";
 	public final static String PERIOD = "Period";
 	
 	private final static int NUM_THREADS = 1;
 	private final static int DEFAULT_PERIOD = 60;
+
+	public final static String IMAPS = "imaps";
+	public final static String IMAP = "imap";
+	public final static String POP = "pop3";
+	
 	private final static int IMAPS_PORT = 993;
 	private final static int IMAP_PORT = 143;
 	private final static int POP_PORT = 110;
@@ -61,6 +67,7 @@ public class EmailAlertReceiver implements AlertReceiver {
 									HashMap<String, String> connectionDetails) {
 		this.tradeStrategy = tradeStrategy;
 		String host = connectionDetails.get(HOST);
+		String protocol = connectionDetails.get(PROTOCOL);
 		String user = connectionDetails.get(USER);
 		String password = connectionDetails.get(PASS);
 		
@@ -78,14 +85,17 @@ public class EmailAlertReceiver implements AlertReceiver {
 			} catch (NumberFormatException nfe) {
 				if (host.equals(GMAIL_HOST)) {
 					port = IMAPS_PORT;
+					protocol = IMAPS;
 				} else if (host.contains("imap")) {
 					port = IMAP_PORT;
+					protocol = IMAP;
 				} else {
 					port = POP_PORT;
+					protocol = POP;
 				}
 			}
 			if (!receiving) {
-		    	this.mailRetriever = new MailRetriever(this, host, port, user, password);
+		    	this.mailRetriever = new MailRetriever(this, host, protocol, port, user, password);
 		    	this.sf = ses.scheduleAtFixedRate(mailRetriever, 0, period, TimeUnit.SECONDS);
 				
 			} else if ((!host.equals(mailRetriever.getHost()) ||
@@ -93,7 +103,7 @@ public class EmailAlertReceiver implements AlertReceiver {
 				!user.equals(mailRetriever.getUser()) ||
 				!password.equals(mailRetriever.getPassword()) )) {
 				this.sf.cancel(true);
-				this.mailRetriever = new MailRetriever(this, host, port, user, password);
+				this.mailRetriever = new MailRetriever(this, host, protocol, port, user, password);
 			    this.sf = ses.scheduleAtFixedRate(mailRetriever, 0, period, TimeUnit.SECONDS);
 			}
 			System.out.println("Started receiving alerts for " + user + " on " + host + ":" + port);

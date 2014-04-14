@@ -43,6 +43,7 @@ public class MailRetrieverTest {
 	    final String user = "test@localhost";
 	    final String password = "testpass";
 	    final String host = "localhost";
+	    final String protocol = EmailAlertReceiver.IMAPS;
 	    GreenMailUser gmUser = greenMail.setUser(user, user, password);
 	    final int port = greenMail.getImaps().getPort();
 
@@ -58,7 +59,7 @@ public class MailRetrieverTest {
 	    when(mockedReceiver.matchAlert(subject)).thenReturn(1);
 	    
 	    // Run
-	    MailRetriever mailRetriever = new MailRetriever(mockedReceiver, host, port, user, password);
+	    MailRetriever mailRetriever = new MailRetriever(mockedReceiver, host, protocol, port, user, password);
 	    mailRetriever.run();
 	    
 	    // Assert

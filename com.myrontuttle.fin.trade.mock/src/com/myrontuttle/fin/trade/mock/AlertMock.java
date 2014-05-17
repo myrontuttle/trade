@@ -26,6 +26,10 @@ public class AlertMock implements AlertService {
 			priceBelowAlert,
 			priceAboveAlert
 	};
+	private String[] setupAlerts = new String[]{
+			"1-123",
+			"2-456"
+	};
 
 	private SelectedAlert[] selectedAlerts = new SelectedAlert[]{
 			new SelectedAlert(belowId, belowCondition, "AAPL", new double[]{400})
@@ -81,9 +85,9 @@ public class AlertMock implements AlertService {
 	}
 
 	@Override
-	public SelectedAlert[] setupAlerts(String userId, SelectedAlert... alerts)
+	public String[] setupAlerts(String userId, SelectedAlert... alerts)
 			throws Exception {
-		return selectedAlerts;
+		return setupAlerts;
 	}
 
 	@Override
@@ -92,9 +96,9 @@ public class AlertMock implements AlertService {
 	}
 
 	@Override
-	public boolean removeAlert(String userId, SelectedAlert alert)
+	public boolean removeAlert(String userId, String alertId)
 			throws Exception {
-		return false;
+		return true;
 	}
 
 	@Override

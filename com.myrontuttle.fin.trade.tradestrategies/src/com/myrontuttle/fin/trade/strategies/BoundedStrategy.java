@@ -1,29 +1,17 @@
 package com.myrontuttle.fin.trade.strategies;
 
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
 
-import com.myrontuttle.fin.trade.api.ActionType;
-import com.myrontuttle.fin.trade.api.AlertAction;
-import com.myrontuttle.fin.trade.api.AlertOrder;
-import com.myrontuttle.fin.trade.api.AlertReceiver;
+import org.joda.time.DateTime;
+
 import com.myrontuttle.fin.trade.api.AlertService;
-import com.myrontuttle.fin.trade.api.AlertTrade;
 import com.myrontuttle.fin.trade.api.AvailableAlert;
 import com.myrontuttle.fin.trade.api.AvailableStrategyParameter;
-import com.myrontuttle.fin.trade.api.Order;
 import com.myrontuttle.fin.trade.api.PortfolioService;
 import com.myrontuttle.fin.trade.api.QuoteService;
 import com.myrontuttle.fin.trade.api.SelectedAlert;
-import com.myrontuttle.fin.trade.api.Service;
-import com.myrontuttle.fin.trade.api.Trade;
-import com.myrontuttle.fin.trade.api.TradeStrategy;
+import com.myrontuttle.fin.trade.api.TradeStrategyService;
 
 /**
  * Provides a trade manager with a bounded trade policy:
@@ -34,11 +22,14 @@ import com.myrontuttle.fin.trade.api.TradeStrategy;
  * 
  * @author Myron Tuttle
  */
-public class BoundedStrategy implements TradeStrategy {
+public class BoundedStrategy {
 	
 	public final static String NAME = "Bounded";
 	public final static String DESCRIPTION = "Creates bounds around a trade to exit after a certain time or " +
 			"percent gain/loss.";
+	
+	public final static String OPEN = "OpenTrade";
+	public final static String CLOSE = "CloseTrade";
 
 	public final static String OPEN_ORDER = "openOrderType";
 	public final static String TRADE_ALLOC = "tradeAllocation";
@@ -48,8 +39,6 @@ public class BoundedStrategy implements TradeStrategy {
 	public final static String UPPER = "Upper";
 	public final static String LOWER = "Lower";
 
-	public final static int NUM_THREADS = 1;
-	public final static TimeUnit TIME_LIMIT_UNIT = TimeUnit.SECONDS;
 	public final static int OPEN_ORDER_LOWER = 0;
 	public final static int OPEN_ORDER_UPPER = 0;
 	public final static int TRADE_ALLOC_LOWER = 0;
@@ -60,63 +49,40 @@ public class BoundedStrategy implements TradeStrategy {
 	public final static int TIME_LIMIT_UPPER = 60*60*24;
 	public final static int PERCENT_ABOVE_LOWER = 0;
 	public final static int PERCENT_ABOVE_UPPER = 100;
-	
-	protected PortfolioService portfolioService;
-	protected QuoteService quoteService;
-	protected AlertService alertService;
-	protected AlertReceiver alertReceiver;
 
-	private AvailableStrategyParameter openOrderType = new AvailableStrategyParameter(OPEN_ORDER, 
+	private static AvailableStrategyParameter openOrderType = new AvailableStrategyParameter(OPEN_ORDER, 
 			OPEN_ORDER_LOWER,
 			OPEN_ORDER_UPPER);	
-	private AvailableStrategyParameter tradeAllocation = new AvailableStrategyParameter(TRADE_ALLOC, 
+	private static AvailableStrategyParameter tradeAllocation = new AvailableStrategyParameter(TRADE_ALLOC, 
 			TRADE_ALLOC_LOWER,
 			TRADE_ALLOC_UPPER);
-	private AvailableStrategyParameter percentBelow = new AvailableStrategyParameter(PERCENT_BELOW,
+	private static AvailableStrategyParameter percentBelow = new AvailableStrategyParameter(PERCENT_BELOW,
 			PERCENT_BELOW_LOWER,
 			PERCENT_BELOW_UPPER);
-	private AvailableStrategyParameter timeLimit = new AvailableStrategyParameter(TIME_LIMIT,
+	private static AvailableStrategyParameter timeLimit = new AvailableStrategyParameter(TIME_LIMIT,
 			TIME_LIMIT_LOWER,
 			TIME_LIMIT_UPPER);
-	private AvailableStrategyParameter percentAbove = new AvailableStrategyParameter(PERCENT_ABOVE, 
+	private static AvailableStrategyParameter percentAbove = new AvailableStrategyParameter(PERCENT_ABOVE, 
 			PERCENT_ABOVE_LOWER,
 			PERCENT_ABOVE_UPPER);
 	
-	private AvailableStrategyParameter[] availableParameters = new AvailableStrategyParameter[]{
+	public static AvailableStrategyParameter[] availableParameters = new AvailableStrategyParameter[]{
 			openOrderType,
 			tradeAllocation,
 			percentBelow,
 			timeLimit,
 			percentAbove
 	};
-
-	private ScheduledExecutorService ses;
-	protected HashMap<String, BoundedTrade> openTrades;
 	
-	public BoundedStrategy() {
-        this.ses = Executors.newScheduledThreadPool(NUM_THREADS);
-        this.openTrades = new HashMap<String, BoundedTrade>();
-	}
+	public static String[] availableTradeActions = new String[]{
+		OPEN,
+		CLOSE
+	};
 
-	@Override
-	public String getName() {
-		return NAME;
-	}
-
-	@Override
-	public String getDescription() {
-		return DESCRIPTION;
-	}
-
-	@Override
-	public AvailableStrategyParameter[] availableParameters() {
+	public static AvailableStrategyParameter[] availableParameters() {
 		return availableParameters;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.myrontuttle.fin.trade.api.TradeStrategy#setLimits(java.util.HashMap)
-	 */
-	@Override
 	public void setParameterLimits(HashMap<String, Integer> limits) {
 		if (limits == null || limits.values().isEmpty()) {
 			System.out.println("No limits set for Bounded With Adjust Strategy. Using defaults");
@@ -154,36 +120,25 @@ public class BoundedStrategy implements TradeStrategy {
 		}
 	}
 
-	@Override
-	public void setOrderTypesAvailable(int OrderTypesAvailable) {
-		openOrderType.setUpper(OrderTypesAvailable - 1);
-	}
-
-	/* (non-Javadoc)
-	 * @see com.myrontuttle.fin.trade.api.TradeStrategy#takeAction(com.myrontuttle.fin.trade.api.AlertAction)
-	 */
-	@Override
-	public String takeAction(AlertAction alertAction) throws Exception {
-		String actionType = alertAction.getActionType();
-		if (actionType.equals(ActionType.TRADE.toString())) {
-			AlertTrade at = (AlertTrade)alertAction;
-			return openTrade(at.getActionType(), at.getTrade(), at.getPortfolioId());
-		} else if (actionType.equals(ActionType.ORDER.toString())) {
-			AlertOrder ao = (AlertOrder)alertAction;
-			return closeTrade(ao.getActionType(), ao.getOrder(), ao.getPortfolioId());
+	public static void takeAction(Event event, Trade t, 
+			PortfolioService portfolioService, QuoteService quoteService,
+			AlertService alertService, TradeStrategyService tradeStrategyService) throws Exception {
+		
+		String actionType = event.getActionType();
+		if (actionType.equals(OPEN)) {
+			openTrade(t, portfolioService, quoteService, alertService, tradeStrategyService);
+		} else if (actionType.equals(CLOSE)) {
+			closeTrade(t, portfolioService, alertService, tradeStrategyService);
 		}
-		return null;
 	}
-
-	/* (non-Javadoc)
-	 * @see com.myrontuttle.fin.trade.api.TradeStrategy#describeTrade(java.lang.String, com.myrontuttle.fin.trade.api.Trade)
-	 */
-	@Override
-	public String[] describeTrade(String userId, Trade trade) throws Exception {
-		Hashtable<String, Integer> parameters = trade.getParameters();
+	
+	public static String[] describeTrade(Trade trade, PortfolioService portfolioService) throws Exception {
+		Map<String, Integer> parameters = trade.getParameters();
 		if (parameters == null || parameters.size() == 0) {
 			return new String[0];
 		}
+
+		String userId = trade.getUserId();
 		String[] desc = new String[4];
 		desc[0] = "If an alert fires for " + trade.getSymbol() + " then " + portfolioService.
 				openOrderTypesAvailable(userId)[parameters.get(OPEN_ORDER)] + " it with " +
@@ -198,54 +153,49 @@ public class BoundedStrategy implements TradeStrategy {
 				" it.";
 		
 		desc[3] = "If the position in " + trade.getSymbol() + " lasts longer than " + 
-				parameters.get(TIME_LIMIT) + " " + TIME_LIMIT_UNIT.toString() + " then " + 
+				parameters.get(TIME_LIMIT) + " seconds then " + 
 				portfolioService.closeOrderTypesAvailable(userId)[parameters.get(OPEN_ORDER)] + 
 				" it.";
 				
 		return desc;
 	}
 
-	protected String openTrade(String userId, Trade trade, String portfolioId) throws Exception {
-		if (portfolioService.openOrderTypesAvailable(userId).length != 
-				portfolioService.closeOrderTypesAvailable(userId).length) {
+	protected static void openTrade(Trade trade, 
+			PortfolioService portfolioService,
+			QuoteService quoteService,
+			AlertService alertService,
+			TradeStrategyService tradeStrategyService) throws Exception {
+		
+		if (portfolioService.openOrderTypesAvailable(trade.getUserId()).length != 
+				portfolioService.closeOrderTypesAvailable(trade.getUserId()).length) {
 			throw new Exception("Open and close order types must match.  Trade not made.");
 		}
-		Hashtable<String, Integer> tradeParams = trade.getParameters();
+		Map<String, Integer> tradeParams = trade.getParameters();
 		
 		String openOrderType = portfolioService.
-									openOrderTypesAvailable(userId)[tradeParams.get(OPEN_ORDER)];
-		String closeOrderType = portfolioService.
-									closeOrderTypesAvailable(userId)[tradeParams.get(OPEN_ORDER)];
+									openOrderTypesAvailable(trade.getUserId())[tradeParams.get(OPEN_ORDER)];
 		
 		try {
-			double portfolioBalance = portfolioService.getAvailableBalance(userId, portfolioId);
+			double portfolioBalance = portfolioService.getAvailableBalance(trade.getUserId(), 
+																		trade.getPortfolioId());
 			double maxTradeAmount = portfolioBalance * (tradeParams.get(TRADE_ALLOC) / 100.0);
-			double currentPrice = quoteService.getLast(userId, trade.getSymbol());
+			double currentPrice = quoteService.getLast(trade.getUserId(), trade.getSymbol());
 
 			if (currentPrice <= maxTradeAmount) {
-				String tradeId = UUID.randomUUID().toString();
 				
 				// Open position
 				int quantity = (int)Math.floor(maxTradeAmount / currentPrice);
-				Order openOrder = new Order(tradeId, openOrderType, trade.getSymbol(), quantity);
-				portfolioService.openPosition(userId, portfolioId, openOrder);
+				portfolioService.openPosition(trade.getUserId(), trade.getPortfolioId(), trade.getSymbol(), 
+												quantity, openOrderType);
 
-				Order closeOrder = new Order(tradeId, closeOrderType, trade.getSymbol(), quantity);
-				
-				// stop below
-				AlertOrder stopBelow = createStopTrade(userId, trade, currentPrice, closeOrder, tradeId, true);
+				// stop loss
+				createStopTrade(trade, currentPrice, true, alertService, tradeStrategyService);
 				
 				// time in trade
-				ScheduledFuture<?> timeInTrade = createTimeLimit(userId, closeOrder, portfolioId, 
-						tradeParams.get(TIME_LIMIT));
+				createTimeLimit(trade, tradeParams.get(TIME_LIMIT), tradeStrategyService);
 				
-				// stop above
-				AlertOrder stopAbove = createStopTrade(userId, trade, currentPrice, closeOrder, tradeId, false);
-				
-				openTrades.put(tradeId, new BoundedTrade(trade, portfolioId, openOrder, stopBelow, 
-												timeInTrade, stopAbove));
-				
-				return tradeId;
+				// capture profits
+				createStopTrade(trade, currentPrice, false, alertService, tradeStrategyService);
 				
 			} else {
 				throw new Exception("Not enough allocated to trade " + trade.getSymbol() +
@@ -258,13 +208,19 @@ public class BoundedStrategy implements TradeStrategy {
 		}
 	}
 
-	protected String closeTrade(String userId, Order order, String portfolioId) throws Exception {
-		if (openTrades.containsKey(order.getTradeId())) {
+	protected static void closeTrade(Trade trade, 
+			PortfolioService portfolioService,
+			AlertService alertService,
+			TradeStrategyService tradeStrategyService) throws Exception {
+		if (tradeStrategyService.tradeExists(trade.getTradeId())) {
 			try {
-				portfolioService.closePosition(userId, portfolioId, order);
-				openTrades.get(order.getTradeId()).closeTrade(userId, alertService, alertReceiver);
-				openTrades.remove(order.getTradeId());
-				return order.getTradeId();
+				portfolioService.closePosition(trade.getUserId(), 
+						trade.getPortfolioId(), trade.getSymbol(), 0, null);
+				
+				deleteTradeAlerts(trade, tradeStrategyService, alertService);
+				
+				tradeStrategyService.removeTrade(trade.getTradeId());
+				
 			} catch (Exception e) {
 				throw new Exception("Unable to close position. " + e.getMessage());
 			}
@@ -273,68 +229,45 @@ public class BoundedStrategy implements TradeStrategy {
 		}
 	}
 	
-	protected AlertOrder createStopTrade(String userId, Trade trade, double currentPrice, 
-							Order closeOrder, String portfolioId, boolean priceRiseGood) throws Exception {
+	protected static void deleteTradeAlerts(Trade trade, TradeStrategyService tradeStrategyService, 
+											AlertService alertService) throws Exception {
 
+		try {
+			for(Event e : trade.getEvents()) {
+				if (!e.getTrigger().equals(StrategyService.MOMENT_PASSED)) {
+					alertService.removeAlert(trade.getUserId(), e.getTrigger());
+				}
+			}
+		} catch (Exception e) {
+			throw new Exception("Unable to remove alerts for user: " + trade.getUserId());
+		}
+	}
+	
+	protected static void createStopTrade(Trade trade, double currentPrice, boolean priceRiseGood,
+					AlertService alertService, TradeStrategyService tradeStrategyService) throws Exception {
+
+		String userId = trade.getUserId();
+		
 		AvailableAlert alertWhen = (priceRiseGood) ? alertService.getPriceBelowAlert(userId) :
 										alertService.getPriceAboveAlert(userId);
 		String alertParam = (priceRiseGood) ? PERCENT_BELOW : PERCENT_ABOVE;
 		
-		double loss = currentPrice - (trade.getParameters().get(alertParam) / 100) * currentPrice;
+		double priceDiff = currentPrice - (trade.getParameters().get(alertParam) / 100.0) * currentPrice;
 		SelectedAlert stopLossAlert = new SelectedAlert(alertWhen.getId(),
 														alertWhen.getCondition(),
 														trade.getSymbol(), 
-														loss);
-		alertService.setupAlerts(userId, stopLossAlert);
-		AlertOrder stopLoss = new AlertOrder(stopLossAlert, userId, portfolioId, closeOrder);
-		alertReceiver.watchFor(stopLoss);
-		
-		return stopLoss;
+														priceDiff);
+		String[] alertIds = alertService.setupAlerts(userId, stopLossAlert);
+		for(String alertId : alertIds) {
+			tradeStrategyService.setTradeEvent(trade.getTradeId(), alertWhen.getCondition(), CLOSE, alertId);
+		}
 	}
 	
-	protected ScheduledFuture<?> createTimeLimit(final String userId, final Order closeOrder, 
-													final String portfolioId, 
-													int time) {
-		return ses.schedule(new Runnable () {
-			@Override
-			public void run() {
-				try {
-					closeTrade(userId, closeOrder, portfolioId);
-				} catch (Exception e) {
-					System.out.println("Unable to close trade." + e.getMessage());
-				}
-			}
-		}, time, TIME_LIMIT_UNIT);
-	}
-
-	@Override
-	public void setup(List<Service> services) throws Exception {
-		for (Service s : services) {
-			if (s instanceof PortfolioService) {
-				this.portfolioService = (PortfolioService) s;
-			}
-			if (s instanceof QuoteService) {
-				this.quoteService = (QuoteService) s;
-			}
-			if (s instanceof AlertService) {
-				this.alertService = (AlertService) s;
-			}
-			if (s instanceof AlertReceiver) {
-				this.alertReceiver = (AlertReceiver) s;
-			}
-		}
+	protected static void createTimeLimit(Trade trade, int time, 
+			TradeStrategyService tradeStrategyService) {
 		
-		if (this.portfolioService == null) {
-			throw new Exception("No portfolio service defined");
-		}
-		if (this.quoteService == null) {
-			throw new Exception("No quote service defined");
-		}
-		if (this.alertService == null) {
-			throw new Exception("No alert service defined");
-		}
-		if (this.alertReceiver == null) {
-			throw new Exception("No alert receiver service defined");
-		}
+		DateTime dt = new DateTime().plusSeconds(time);
+		tradeStrategyService.setTradeEvent(trade.getTradeId(), dt.toString(),
+											CLOSE, StrategyService.MOMENT_PASSED);
 	}
 }

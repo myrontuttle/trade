@@ -11,7 +11,8 @@
 	<reference id="TradeStrategyService" interface="com.myrontuttle.fin.trade.api.TradeStrategyService" />
 	<reference id="AlertReceiverService" interface="com.myrontuttle.fin.trade.api.AlertReceiverService" />
 	
-	<bean id="GroupDAOImpl" class="com.myrontuttle.fin.trade.adapt.GroupDAOImpl" scope="singleton">
+	<bean id="GroupDAOImpl" class="com.myrontuttle.fin.trade.adapt.GroupDAOImpl" scope="singleton"
+		destroy-method="destroy">
 		<jpa:context unitname="AdaptPU" property="entityManager" />
       	<tx:transaction method="*" value="Required"/>
 	</bean>

@@ -5,8 +5,6 @@ package com.myrontuttle.fin.trade.adapt.express;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 
 import com.myrontuttle.fin.trade.adapt.*;
@@ -100,15 +98,6 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 
 	public void setAlertReceiverService(AlertReceiverService alertReceiverService) {
 		SATExpression.alertReceiverService = alertReceiverService;
-	}
-	
-	private List<Service> bundleServices(AlertReceiver alertReceiver) {
-		List<Service> tradeStrategyServices = new ArrayList<Service>(4);
-		tradeStrategyServices.add(quoteService);
-		tradeStrategyServices.add(alertReceiver);
-		tradeStrategyServices.add(portfolioService);
-		tradeStrategyServices.add(alertService);
-		return tradeStrategyServices;
 	}
 
 	public static GroupDAO getGroupDAO() {
@@ -308,17 +297,56 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		return selected;
 	}
 	
-	SelectedAlert[] setupAlerts(Group group, SelectedAlert[] openAlerts) throws Exception {
+	String[] setupAlerts(Group group, SelectedAlert[] openAlerts) throws Exception {
 
 		alertService.addAlertDestination(group.getGroupId(), group.getAlertUser(), "EMAIL");
 
 		return (alertService.setupAlerts(group.getGroupId(), openAlerts));
 	}
+	
+	/**
+	 * Creates trades and the events that will open them
+	 * @param candidate
+	 * @param group
+	 * @param numberOfSymbols
+	 * @param alerts SelectedAlerts
+	 * @param alertIds
+	 * @return An array of trade Ids
+	 * @throws Exception
+	 */
+	String[] createTrades(Candidate candidate, Group group, int numberOfSymbols,
+						SelectedAlert[] alerts, String[] alertIds) throws Exception {
+		
+		ArrayList<String> trades = new ArrayList<String>(alertIds.length);
+
+		String candidateId = candidate.getCandidateId();
+		String portfolioId = candidate.getPortfolioId();
+		String tradeStrategy = group.getTradeStrategy();
+		String actionType = tradeStrategyService.tradeActionToStart(tradeStrategy);
+		
+		String tradeId;
+		int position;
+		for (int i=0; i<numberOfSymbols; i++) {
+			for (int j=0; j<group.getAlertsPerSymbol(); j++) {
+				position = (i * group.getAlertsPerSymbol()) + j;
+				
+				if (alerts.length > position && alertIds.length > position) {
+					tradeId = tradeStrategyService.addTrade(tradeStrategy, candidateId, 
+													portfolioId, alerts[position].getSymbol());
+					trades.add(tradeId);
+					tradeStrategyService.setTradeEvent(tradeId, alerts[position].getCondition(), 
+																actionType, alertIds[position]);
+				}
+			}
+		}
+		
+		return trades.toArray(new String[trades.size()]);
+	}
 
 	/**
 	 * Creates a set of Trades based on a candidate's trade genes
 	 * 
-	 * Order Gene Data Map
+	 * Trade Gene Data Map
 	 * 1. Order Type
 	 * 2. Allocation
 	 * 3. Acceptable Loss
@@ -327,94 +355,65 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 	 * @param candidate A candidate
 	 * @param group The candidate's group
 	 * @param symbols The symbols found during screening
-	 * @return A set of alert criteria selected by this candidate
+	 * @return A set of strategy parameters selected for this candidate
 	 */
-	public Trade[] expressTradeGenes(Candidate candidate, Group group, String[] symbols) throws Exception {
+	public ArrayList<SelectedStrategyParameter> expressTradeGenes(Candidate candidate, Group group, 
+												String[] tradeIds) throws Exception {
 
-		String candidateId = candidate.getCandidateId();
+		String tradeStrategy = group.getTradeStrategy();
 		int[] genome = candidate.getGenome();
 		
-		Trade[] trades = new Trade[symbols.length];
-
-		AlertReceiver alertReceiver = alertReceiverService.getAlertReceiver(group.getGroupId(), 
-																	group.getAlertReceiver());
-		List<Service> services = bundleServices(alertReceiver);
-		TradeStrategy tradeStrategy = tradeStrategyService.getTradeStrategy(group.getTradeStrategy(), services);
-		
-		int openOrderTypes;
-		try {
-			openOrderTypes = portfolioService.openOrderTypesAvailable(candidateId).length;
-		} catch (Exception e) {
-			System.out.println("Unable to get openOrderTypesAvailable from Portfolio Service. Using 1");
-			openOrderTypes = 1;
-		}
-
-		tradeStrategy.setOrderTypesAvailable(openOrderTypes);
-		
-		AvailableStrategyParameter[] availableParameters = tradeStrategy.availableParameters();
+		AvailableStrategyParameter[] availableParameters = tradeStrategyService.availableTradeParameters(
+																tradeStrategy);
 		
 		int position = getAlertStartPosition(group) + 
 				group.getMaxSymbolsPerScreen() * ALERT_GENE_LENGTH * group.getAlertsPerSymbol();
 		
-		Hashtable<String, Integer> tradeParameters;
-		
-		for (int i=0; i<symbols.length; i++) {
-			tradeParameters = new Hashtable<String, Integer>(availableParameters.length);
+		ArrayList<SelectedStrategyParameter> selectedParams = 
+				new ArrayList<SelectedStrategyParameter>(tradeIds.length*availableParameters.length);
+		for (int i=0; i<tradeIds.length; i++) {
 			
 			for (int j=0; j<availableParameters.length; j++) {
-				tradeParameters.put(availableParameters[j].getName(),
-										transpose(genome[position + j],
-												group.getGeneUpperValue(),
-												availableParameters[j].getLower(), 
-												availableParameters[j].getUpper()));
+				selectedParams.add(new SelectedStrategyParameter(
+						tradeIds[i], 
+						availableParameters[j].getName(),
+						transpose(genome[position + j],
+								group.getGeneUpperValue(),
+								availableParameters[j].getLower(), 
+								availableParameters[j].getUpper())));
 			}
 			
-			trades[i] = new Trade(symbols[i], tradeParameters);
 			position += TRADE_GENE_LENGTH;
 		}
-		return trades;
+		return selectedParams;
 	}
 	
-	void setupAlertReceiver(SelectedAlert[] openAlerts, Candidate candidate, 
-								String portfolioId, Trade[] tradesToMake, 
-								Group group) throws Exception {
-
-		AlertReceiver alertReceiver = alertReceiverService.getAlertReceiver(group.getGroupId(), 
-																		group.getAlertReceiver());
-		
-		AlertTrade[] alertTrades = new AlertTrade[openAlerts.length];
-		for (int i=0; i<tradesToMake.length; i++) {
-			for (int j=0; j<group.getAlertsPerSymbol(); j++) {
-				alertTrades[i+j] = new AlertTrade(openAlerts[i+j], candidate.getCandidateId(), 
-														portfolioId, tradesToMake[i]);
-			}
+	void setupTradeParams(ArrayList<SelectedStrategyParameter> params) {
+		for (SelectedStrategyParameter p : params) {
+			tradeStrategyService.setTradeParameter(p.getTradeId(), 
+					p.getName(), p.getValue());
 		}
-		alertReceiver.watchFor(alertTrades);
 	}
 
 	@Override
 	public void beforeExpression(String populationId) {
 
 		Group group = groupDAO.findGroup(populationId);
-		HashMap<String, String> connectionDetails = new HashMap<String, String>();
+		String receiverId = group.getAlertReceiverId();
 		
-		try {
-			AlertReceiver alertReceiver = alertReceiverService.getAlertReceiver(group.getGroupId(), 
-																		group.getAlertReceiver());
-
-			if (alertReceiver.getName().equals("EmailAlert")) {
-				connectionDetails.put("Host", group.getAlertHost());
-				connectionDetails.put("User", group.getAlertUser());
-				connectionDetails.put("Password", group.getAlertPassword());
-			}
+		// Check if there's already an alert receiver
+		if (receiverId == null || receiverId.isEmpty()) {
+			// No receiver so set one up
 			
-			List<Service> services = bundleServices(alertReceiver);
-			TradeStrategy tradeStrategy = tradeStrategyService.getTradeStrategy(group.getTradeStrategy(), services);
-			alertReceiver.startReceiving(tradeStrategy, connectionDetails);
-		} catch (Exception e) {
-			System.out.println("Error occured before expression of group: " + group.getGroupId());
-			e.printStackTrace();
-		}		
+			receiverId = alertReceiverService.addReceiver(populationId, group.getAlertReceiverType());
+			group.setAlertReceiverId(receiverId);
+
+        	alertReceiverService.setReceiverParameter(receiverId, "Host", group.getAlertHost());
+        	alertReceiverService.setReceiverParameter(receiverId, "User", group.getAlertUser());
+        	alertReceiverService.setReceiverParameter(receiverId, "Password", group.getAlertHost());
+		}
+		
+		alertReceiverService.startReceiving(receiverId);
 	}
 
 	@Override
@@ -468,13 +467,13 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 
 			// Create (symbols*alertsPerSymbol) alerts for stocks
 			SelectedAlert[] openAlerts = expressAlertGenes(candidate, group, symbols);
-			openAlerts = setupAlerts(group, openAlerts);
+			String alertIDs[] = setupAlerts(group, openAlerts);
 			
-			// Create (symbol) trades to be made when alerts are triggered
-			Trade[] tradesToMake = expressTradeGenes(candidate, group, symbols);
+			// Create (symbol*alertsPerSymbol) trades to be made when alerts are triggered
+			String[] tradeIds = createTrades(candidate, group, symbols.length, openAlerts, alertIDs);
+			ArrayList<SelectedStrategyParameter> params = expressTradeGenes(candidate, group, tradeIds);
+			setupTradeParams(params);
 			
-			// Create listener for alerts to move stocks to portfolio
-			setupAlertReceiver(openAlerts, candidate, portfolioId, tradesToMake, group);
 		} catch (Exception e) {
 			System.out.println("Unable to express candidate " + 
 					candidate.getCandidateId());
@@ -538,11 +537,9 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			
 			// Remove Alerts
 			alertService.removeAllAlerts(c.getGroupId());
-
-			AlertReceiver alertReceiver = alertReceiverService.getAlertReceiver(c.getGroupId(), null);
-			if (alertReceiver != null) {
-				alertReceiver.stopWatchingAll(c.getCandidateId());
-			}
+			
+			// Remove alert trade mapping
+			tradeStrategyService.removeAllTrades(c.getCandidateId());
 			
 			groupDAO.removeCandidate(c.getCandidateId());
 			
@@ -620,17 +617,11 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 					trader.getTraderId());
 		}
 
-		AlertReceiver alertReceiver = alertReceiverService.getAlertReceiver(group.getGroupId(), 
-																	group.getAlertReceiver());
-		List<Service> services = bundleServices(alertReceiver);
-		TradeStrategy tradeStrategy = tradeStrategyService.getTradeStrategy(group.getTradeStrategy(), services);
-		Trade[] trades = expressTradeGenes(candidate, group, symbols);
-		for (Trade trade : trades) {
-			String[] tradeDesc = tradeStrategy.describeTrade(candidate.getCandidateId(), trade);
-			for (String desc : tradeDesc) {
-				groupDAO.addTradeInstruction(new TradeInstruction(trader.getTraderId(), desc), 
-						trader.getTraderId());
-			}
+		ArrayList<SelectedStrategyParameter> params = expressTradeGenes(candidate, group, symbols);
+		for (SelectedStrategyParameter p : params) {
+			String tradeDesc = p.getTradeId() + ": " + p.getName() + " = " + p.getValue();
+			groupDAO.addTradeInstruction(new TradeInstruction(trader.getTraderId(), tradeDesc), 
+					trader.getTraderId());
 		}
 		return trader;
 	}

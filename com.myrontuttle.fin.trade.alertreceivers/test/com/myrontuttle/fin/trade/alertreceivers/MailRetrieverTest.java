@@ -20,12 +20,13 @@ import com.icegreen.greenmail.util.DummySSLSocketFactory;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.GreenMailUtil;
 import com.icegreen.greenmail.util.ServerSetupTest;
+import com.myrontuttle.fin.trade.api.TradeStrategyService;
 
 public class MailRetrieverTest {
 	
 	String userId;
 	GreenMail greenMail;
-	EmailAlertReceiver mockedReceiver;
+	TradeStrategyService mockedTss;
 	
 	@Before
 	public void setUp() {
@@ -33,7 +34,7 @@ public class MailRetrieverTest {
 	    greenMail = new GreenMail(ServerSetupTest.ALL);
 	    greenMail.start();
 	    
-		mockedReceiver = mock(EmailAlertReceiver.class);
+	    mockedTss = mock(TradeStrategyService.class);
 	}
 
 	@Test
@@ -56,10 +57,10 @@ public class MailRetrieverTest {
 	    assertTrue(greenMail.waitForIncomingEmail(5000, 1));
 	    
 	    // Arrange mock
-	    when(mockedReceiver.matchAlert(subject)).thenReturn(1);
+	    doNothing().when(mockedTss).eventOccurred(subject);
 	    
 	    // Run
-	    MailRetriever mailRetriever = new MailRetriever(mockedReceiver, host, protocol, port, user, password);
+	    MailRetriever mailRetriever = new MailRetriever(mockedTss, host, protocol, port, user, password);
 	    mailRetriever.run();
 	    
 	    // Assert

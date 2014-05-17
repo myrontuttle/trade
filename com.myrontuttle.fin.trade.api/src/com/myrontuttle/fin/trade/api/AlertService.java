@@ -8,7 +8,7 @@ package com.myrontuttle.fin.trade.api;
  * certain triggers.
  * @author Myron Tuttle
  */
-public interface AlertService extends Service {
+public interface AlertService {
 	
 	/**
 	 * Gets the alerts that are available from this service
@@ -97,9 +97,9 @@ public interface AlertService extends Service {
 	 * Sets up selected alerts to be triggered (potentially)
 	 * @param userId User to receive alerts
 	 * @param SelectedAlert Alerts to setup
-	 * @return Indicates if the alert was set up successfully
+	 * @return Array of id's for the setup alerts
 	 */
-	public SelectedAlert[] setupAlerts(String userId, SelectedAlert... alerts) throws Exception;
+	public String[] setupAlerts(String userId, SelectedAlert... alerts) throws Exception;
 	
 	/**
 	 * Returns the alerts that have been setup
@@ -112,11 +112,11 @@ public interface AlertService extends Service {
 	/**
 	 * Removes a specific alert
 	 * @param userId User to remove alerts from
-	 * @param alert to be removed
+	 * @param alertId Alert to be removed
 	 * @return true if the alert was removed
 	 * @throws Exception
 	 */
-	public boolean removeAlert(String userId, SelectedAlert alert) throws Exception;
+	public boolean removeAlert(String userId, String alertId) throws Exception;
 	
 	/**
 	 * Remove all alerts

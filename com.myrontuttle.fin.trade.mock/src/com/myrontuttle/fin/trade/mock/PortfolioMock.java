@@ -1,6 +1,5 @@
 package com.myrontuttle.fin.trade.mock;
 
-import com.myrontuttle.fin.trade.api.Order;
 import com.myrontuttle.fin.trade.api.PortfolioService;
 
 public class PortfolioMock implements PortfolioService {
@@ -58,7 +57,8 @@ public class PortfolioMock implements PortfolioService {
 
 
 	@Override
-	public String openPosition(String userId, String portfolioId, Order order)
+	public String openPosition(String userId, String portfolioId, String symbol, double quantity,
+			String orderType)
 			throws Exception {
 		return LID;
 	}
@@ -69,7 +69,8 @@ public class PortfolioMock implements PortfolioService {
 	}
 
 	@Override
-	public boolean closePosition(String userId, String portfolioId, Order order)
+	public boolean closePosition(String userId, String portfolioId, String symbol, double quantity,
+			String orderType)
 			throws Exception {
 		return false;
 	}

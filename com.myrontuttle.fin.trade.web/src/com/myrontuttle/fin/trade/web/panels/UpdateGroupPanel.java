@@ -16,6 +16,7 @@ import org.apache.wicket.validation.validator.EmailAddressValidator;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.Group;
+import com.myrontuttle.fin.trade.api.AlertReceiverService;
 import com.myrontuttle.fin.trade.web.data.DBAccess;
 import com.myrontuttle.fin.trade.web.service.AlertReceiverAccess;
 import com.myrontuttle.fin.trade.web.service.EvolveAccess;
@@ -31,9 +32,9 @@ public class UpdateGroupPanel extends Panel {
 		
 		final Form<Group> form = new Form<Group>("updateGroupForm", model);
 
-		List<String> alertReceivers = Arrays.
+		List<String> alertReceiverTypes = Arrays.
 					asList(AlertReceiverAccess.getAlertReceiverService().availableReceiverTypes());
-		form.add(new DropDownChoice<String>("alertReceiver", alertReceivers));
+		form.add(new DropDownChoice<String>("alertReceiverType", alertReceiverTypes));
 		form.add(new TextField<String>("alertUser")
 					.add(EmailAddressValidator.getInstance()));
 		form.add(new TextField<String>("alertHost")
@@ -80,6 +81,14 @@ public class UpdateGroupPanel extends Panel {
         });
 		form.add(new Button("update") {
             public void onSubmit() {
+
+            	AlertReceiverService ars = AlertReceiverAccess.getAlertReceiverService();
+            	String receiverId = group.getAlertReceiverId();
+            	ars.setReceiverParameter(receiverId, "Host", group.getAlertHost());
+            	ars.setReceiverParameter(receiverId, "User", group.getAlertUser());
+            	ars.setReceiverParameter(receiverId, "Password", group.getAlertHost());
+            	ars.stopReceiving(receiverId);
+            	
             	group = DBAccess.getDAO().updateGroup((Group)getParent().getDefaultModelObject());
             }
         });

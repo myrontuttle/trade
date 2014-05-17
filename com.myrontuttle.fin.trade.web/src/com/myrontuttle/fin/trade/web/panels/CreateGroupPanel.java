@@ -16,6 +16,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 
 import com.myrontuttle.fin.trade.adapt.Group;
+import com.myrontuttle.fin.trade.api.AlertReceiverService;
 import com.myrontuttle.fin.trade.web.data.DBAccess;
 import com.myrontuttle.fin.trade.web.service.AlertReceiverAccess;
 import com.myrontuttle.fin.trade.web.service.EvolveAccess;
@@ -30,9 +31,9 @@ public class CreateGroupPanel extends Panel {
 		final IModel<Group> compound = new CompoundPropertyModel<Group>(new Group());
 		final Form<Group> form = new Form<Group>("newGroupForm", compound);
 
-		List<String> alertReceivers = Arrays.
+		List<String> alertReceiverTypes = Arrays.
 					asList(AlertReceiverAccess.getAlertReceiverService().availableReceiverTypes());
-		form.add(new DropDownChoice<String>("alertReceiver", alertReceivers));
+		form.add(new DropDownChoice<String>("alertReceiverType", alertReceiverTypes));
 		
 		form.add(new TextField<String>("alertUser")
 					.add(EmailAddressValidator.getInstance()));
@@ -99,6 +100,14 @@ public class CreateGroupPanel extends Panel {
             	Group group = (Group)compound.getObject();
             	group.setStartTime(new Date());
             	DBAccess.getDAO().saveGroup(group);
+            	
+            	AlertReceiverService ars = AlertReceiverAccess.getAlertReceiverService();
+            	String receiverId = ars.addReceiver(group.getGroupId(), group.getAlertReceiverType());
+            	ars.setReceiverParameter(receiverId, "Host", group.getAlertHost());
+            	ars.setReceiverParameter(receiverId, "User", group.getAlertUser());
+            	ars.setReceiverParameter(receiverId, "Password", group.getAlertHost());
+            	group.setAlertReceiverId(receiverId);
+            	
             	EvolveAccess.getEvolveService().createInitialCandidates(group.getGroupId());
             }
         });

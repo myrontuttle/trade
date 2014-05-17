@@ -1,19 +1,13 @@
 package com.myrontuttle.fin.trade.strategies;
 
-import java.util.Hashtable;
-import java.util.UUID;
-import java.util.concurrent.ScheduledFuture;
+import java.util.Map;
 
-import com.myrontuttle.fin.trade.api.ActionType;
-import com.myrontuttle.fin.trade.api.AlertAction;
-import com.myrontuttle.fin.trade.api.AlertOrder;
-import com.myrontuttle.fin.trade.api.AlertTrade;
-import com.myrontuttle.fin.trade.api.AlertTradeAdjustment;
+import com.myrontuttle.fin.trade.api.AlertService;
 import com.myrontuttle.fin.trade.api.AvailableAlert;
-import com.myrontuttle.fin.trade.api.Order;
+import com.myrontuttle.fin.trade.api.PortfolioService;
+import com.myrontuttle.fin.trade.api.QuoteService;
 import com.myrontuttle.fin.trade.api.SelectedAlert;
-import com.myrontuttle.fin.trade.api.Trade;
-import com.myrontuttle.fin.trade.api.TradeStrategy;
+import com.myrontuttle.fin.trade.api.TradeStrategyService;
 
 /**
  * Provides a trade manager with a basic trade policy:
@@ -25,56 +19,41 @@ import com.myrontuttle.fin.trade.api.TradeStrategy;
  * 
  * @author Myron Tuttle
  */
-public class BoundedWAdjustStrategy extends BoundedStrategy implements TradeStrategy {
+public class BoundedWAdjustStrategy extends BoundedStrategy {
 	
 	public final static String NAME = "Bounded With Adjustment";
 	public final static String DESCRIPTION = "Creates bounds around a trade to exit after a certain time or " +
 			"percent loss. Adjusts the bounds if a gain is reached.";
+	
+	public final static String ADJUST = "Adjust";
 
-	public BoundedWAdjustStrategy() {
-		super();
-	}
+	public static String[] availableTradeActions = new String[]{
+		OPEN,
+		ADJUST,
+		CLOSE
+	};
 
-	@Override
-	public String getName() {
-		return NAME;
-	}
+	public static void takeAction(Event event, Trade t, 
+			PortfolioService portfolioService, QuoteService quoteService,
+			AlertService alertService, TradeStrategyService tradeStrategyService) throws Exception {
 
-	@Override
-	public String getDescription() {
-		return DESCRIPTION;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.myrontuttle.fin.trade.api.TradeStrategy#takeAction(com.myrontuttle.fin.trade.api.AlertAction)
-	 */
-	@Override
-	public String takeAction(AlertAction alertAction) throws Exception {
-		String actionType = alertAction.getActionType();
-		if (actionType.equals(ActionType.TRADE.toString())) {
-			AlertTrade at = (AlertTrade)alertAction;
-			return openTrade(at.getUserId(), at.getTrade(), at.getPortfolioId());
-		} else if (actionType.equals(ActionType.TRADE_ADJUSTMENT.toString())) {
-			AlertTradeAdjustment ata = (AlertTradeAdjustment)alertAction;
-			return adjustTrade(ata.getUserId(), ata.getTradeId());
-		} else if (actionType.equals(ActionType.ORDER.toString())) {
-			AlertOrder ao = (AlertOrder)alertAction;
-			return closeTrade(ao.getUserId(), ao.getOrder(), ao.getPortfolioId());
+		String actionType = event.getActionType();
+		if (actionType.equals(OPEN)) {
+			openTrade(t, portfolioService, quoteService, alertService, tradeStrategyService);
+		} else if (actionType.equals(ADJUST)) {
+			adjustTrade(t, portfolioService, quoteService, alertService, tradeStrategyService);
+		} else if (actionType.equals(CLOSE)) {
+			closeTrade(t, portfolioService, alertService, tradeStrategyService);
 		}
-		return null;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see com.myrontuttle.fin.trade.api.TradeStrategy#describeTrade(java.lang.String, com.myrontuttle.fin.trade.api.Trade)
-	 */
-	@Override
-	public String[] describeTrade(String userId, Trade trade) throws Exception {
-		Hashtable<String, Integer> parameters = trade.getParameters();
+	public static String[] describeTrade(Trade trade, PortfolioService portfolioService) throws Exception {
+		Map<String, Integer> parameters = trade.getParameters();
 		if (parameters == null || parameters.size() == 0) {
 			return new String[0];
 		}
 
+		String userId = trade.getUserId();
 		String openOrderType = portfolioService.
 									openOrderTypesAvailable(userId)[parameters.get(OPEN_ORDER)];
 		String closeOrderType = portfolioService.
@@ -102,24 +81,28 @@ public class BoundedWAdjustStrategy extends BoundedStrategy implements TradeStra
 		}
 		
 		desc[3] = "If the position in " + trade.getSymbol() + " lasts longer than " + 
-				parameters.get(TIME_LIMIT) + " " + TIME_LIMIT_UNIT.toString() + " then " + 
+				parameters.get(TIME_LIMIT) + " seconds then " + 
 				closeOrderType + " it.";
 				
 		return desc;
 	}
 
-	@Override
-	protected String openTrade(String userId, Trade trade, String portfolioId) throws Exception {
+	protected static void openTrade(Trade trade, 
+			PortfolioService portfolioService,
+			QuoteService quoteService,
+			AlertService alertService,
+			TradeStrategyService tradeStrategyService) throws Exception {
+		
+		String userId = trade.getUserId();
+		String portfolioId = trade.getPortfolioId();
 		if (portfolioService.openOrderTypesAvailable(userId).length != 
 				portfolioService.closeOrderTypesAvailable(userId).length) {
 			throw new Exception("Open and close order types must match.  Trade not made.");
 		}
-		Hashtable<String, Integer> tradeParams = trade.getParameters();
+		Map<String, Integer> tradeParams = trade.getParameters();
 		
 		String openOrderType = portfolioService.
 									openOrderTypesAvailable(userId)[tradeParams.get(OPEN_ORDER)];
-		String closeOrderType = portfolioService.
-									closeOrderTypesAvailable(userId)[tradeParams.get(OPEN_ORDER)];
 		
 		boolean priceRiseGood = portfolioService.priceRiseGood(openOrderType);
 		
@@ -129,30 +112,20 @@ public class BoundedWAdjustStrategy extends BoundedStrategy implements TradeStra
 			double currentPrice = quoteService.getLast(userId, trade.getSymbol());
 
 			if (currentPrice <= maxTradeAmount) {
-				String tradeId = UUID.randomUUID().toString();
-				
+
 				// Open position
 				int quantity = (int)Math.floor(maxTradeAmount / currentPrice);
-				Order openOrder = new Order(tradeId, openOrderType, trade.getSymbol(), quantity);
-				portfolioService.openPosition(userId, portfolioId, openOrder);
-
-				Order closeOrder = new Order(tradeId, closeOrderType, trade.getSymbol(), quantity);
+				portfolioService.openPosition(trade.getUserId(), trade.getPortfolioId(), trade.getSymbol(), 
+						quantity, openOrderType);
 				
 				// stop loss
-				AlertOrder stopLoss = createStopTrade(userId, trade, currentPrice, closeOrder, tradeId, priceRiseGood);
+				createStopTrade(trade, currentPrice, priceRiseGood, alertService, tradeStrategyService);
 				
 				// time in trade
-				ScheduledFuture<?> timeInTrade = createTimeLimit(userId, closeOrder, portfolioId, 
-						tradeParams.get(TIME_LIMIT));
+				createTimeLimit(trade, tradeParams.get(TIME_LIMIT), tradeStrategyService);
 				
 				// adjustment at
-				AlertTradeAdjustment adjustment = createAdjustment(userId, trade, currentPrice, 
-															tradeId, portfolioId, priceRiseGood);
-				
-				openTrades.put(tradeId, new BoundedTrade(trade, portfolioId, openOrder, stopLoss, 
-												timeInTrade, adjustment));
-				
-				return tradeId;
+				createAdjustment(trade, currentPrice, priceRiseGood, alertService, tradeStrategyService);
 				
 			} else {
 				throw new Exception("Not enough allocated to trade " + trade.getSymbol() +
@@ -165,52 +138,49 @@ public class BoundedWAdjustStrategy extends BoundedStrategy implements TradeStra
 		}
 	}
 
-	private String adjustTrade(String userId, String tradeId) throws Exception {
-		if (openTrades.containsKey(tradeId)) {
-
-			BoundedTrade boundedTrade = openTrades.get(tradeId);
-			Trade trade = boundedTrade.getTrade();
-			String symbol = trade.getSymbol();
-			int quantity = boundedTrade.getOpenOrder().getQuantity();
-			
-			Hashtable<String, Integer> tradeParams = trade.getParameters();
-			String closeOrderType = portfolioService.
-					closeOrderTypesAvailable(userId)[tradeParams.get(OPEN_ORDER)];
-			boolean priceRiseGood = portfolioService.priceRiseGood(closeOrderType);
-			
-			Order closeOrder = new Order(tradeId, closeOrderType, symbol, quantity);
-
-			try {
-				double currentPrice = quoteService.getLast(userId, symbol);
-				
-				// stop loss
-				AlertOrder stopLoss = createStopTrade(userId, trade, currentPrice, 
-														closeOrder, tradeId, priceRiseGood);
-				boundedTrade.setOutOfTheMoney(userId, stopLoss, alertService, alertReceiver);
-				
-				// time in trade
-				ScheduledFuture<?> timeLimit = createTimeLimit(userId, closeOrder, boundedTrade.getPortfolioId(), 
-																trade.getParameters().get(TIME_LIMIT));
-				boundedTrade.setTimeLimit(timeLimit);
-				
-				// adjustment at
-				AlertTradeAdjustment adjustment = createAdjustment(userId, trade, currentPrice, 
-															tradeId, boundedTrade.getPortfolioId(), priceRiseGood);
-				boundedTrade.setInTheMoney(userId, adjustment, alertService, alertReceiver);
-				
-				return tradeId;
-			} catch (Exception e) {
-				throw new Exception("Unable to adjust trade. " + e.getMessage());
-			}
-		} else {
+	private static void adjustTrade(Trade trade, 
+			PortfolioService portfolioService,
+			QuoteService quoteService,
+			AlertService alertService,
+			TradeStrategyService tradeStrategyService) throws Exception {
+		
+		if (!tradeStrategyService.tradeExists(trade.getTradeId())) {
 			throw new Exception("Trade isn't open. Can't make adjustment");
+		}
+		String userId = trade.getUserId();
+		String symbol = trade.getSymbol();
+		
+		Map<String, Integer> tradeParams = trade.getParameters();
+		String closeOrderType = portfolioService.
+				closeOrderTypesAvailable(userId)[tradeParams.get(OPEN_ORDER)];
+		boolean priceRiseGood = portfolioService.priceRiseGood(closeOrderType);
+		
+		try {
+			// Remove existing events since we're adding new ones
+			deleteTradeAlerts(trade, tradeStrategyService, alertService);
+			tradeStrategyService.removeAllTradeEvents(trade.getTradeId());
+			
+			double currentPrice = quoteService.getLast(userId, symbol);
+			
+			// stop loss
+			createStopTrade(trade, currentPrice, priceRiseGood, alertService, tradeStrategyService);
+			
+			// time in trade
+			createTimeLimit(trade, tradeParams.get(TIME_LIMIT), tradeStrategyService);
+			
+			// adjustment at
+			createAdjustment(trade, currentPrice, priceRiseGood, alertService, tradeStrategyService);
+			
+		} catch (Exception e) {
+			throw new Exception("Unable to adjust trade. " + e.getMessage());
 		}
 	}
 
-	private AlertTradeAdjustment createAdjustment(String userId, Trade trade, double currentPrice, 
-											String tradeId, String portfolioId, boolean priceRiseGood) 
+	private static void createAdjustment(Trade trade, double currentPrice, boolean priceRiseGood,
+								AlertService alertService, TradeStrategyService tradeStrategyService) 
 													throws Exception {
 
+		String userId = trade.getUserId();
 		AvailableAlert alertWhen = (priceRiseGood) ? alertService.getPriceAboveAlert(userId) :
 										alertService.getPriceBelowAlert(userId);
 		String alertType = (priceRiseGood) ? PERCENT_BELOW : PERCENT_ABOVE;
@@ -221,10 +191,9 @@ public class BoundedWAdjustStrategy extends BoundedStrategy implements TradeStra
 											alertWhen.getCondition(),
 											trade.getSymbol(),
 											adjustmentPrice);
-		alertService.setupAlerts(userId, adjustmentAlert);
-		AlertTradeAdjustment adjustment = new AlertTradeAdjustment(adjustmentAlert, userId, portfolioId, tradeId);
-		alertReceiver.watchFor(adjustment);
-		
-		return adjustment;
+		String[] alertIds = alertService.setupAlerts(userId, adjustmentAlert);
+		for(String alertId : alertIds) {
+			tradeStrategyService.setTradeEvent(trade.getTradeId(), alertWhen.getCondition(), CLOSE, alertId);
+		}
 	}
 }

@@ -2,8 +2,13 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Trade Strategies
 Bundle-SymbolicName: com.myrontuttle.fin.trade.strategies
-Bundle-Version: 3.0.2
+Bundle-Version: 3.1.0.qualifier
 Bundle-Vendor: Myron Tuttle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: com.myrontuttle.fin.trade.api
+Meta-Persistence: META-INF/persistence.xml
+JPA-PersistenceUnits: StrategyPU
+Import-Package: com.myrontuttle.fin.trade.api,
+ javax.persistence,
+ org.joda.time;version="1.6.2",
+ org.joda.time.base;version="1.6.2"
 Export-Package: com.myrontuttle.fin.trade.strategies

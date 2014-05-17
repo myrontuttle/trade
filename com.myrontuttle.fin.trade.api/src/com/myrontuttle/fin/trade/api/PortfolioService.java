@@ -4,7 +4,7 @@ package com.myrontuttle.fin.trade.api;
  * Service for creating portfolios of issue holdings 
  * @author Myron Tuttle
  */
-public interface PortfolioService extends Service {
+public interface PortfolioService {
 
 	/**
 	 * Create a new portfolio
@@ -71,9 +71,13 @@ public interface PortfolioService extends Service {
 	 * @param userId
 	 * @param portfolioId Id of the portfolio where we're buying shares for
 	 * @param order The order to open the position with
+	 * @param symbol Symbol we're opening a position with
+	 * @param quantity Amount of symbol to open position with
+	 * @param orderType From openOrderTypesAvailable
 	 * @return Transaction/Lot id
 	 */
-	public String openPosition(String userId, String portfolioId, Order order) throws Exception;
+	public String openPosition(String userId, String portfolioId, String symbol, double quantity,
+			String orderType) throws Exception;
 
 	/**
 	 * The order types available to close a position
@@ -87,9 +91,13 @@ public interface PortfolioService extends Service {
 	 * @param userId
 	 * @param portfolioId ID of the portfolio where we're selling shares from
 	 * @param order The order to close the position with
+	 * @param symbol Symbol for which we're closing the position
+	 * @param quantity Amount of symbol to close position
+	 * @param orderType From closeOrderTypesAvailable
 	 * @return Indicates whether the sale was successful
 	 */
-	public boolean closePosition(String userId, String portfolioId, Order order) throws Exception;
+	public boolean closePosition(String userId, String portfolioId, String symbol, double quantity,
+			String orderType) throws Exception;
 	
 	/**
 	 * Close all open positions so the portfolio just has cash

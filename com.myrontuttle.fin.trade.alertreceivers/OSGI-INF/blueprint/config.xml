@@ -1,8 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" 
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd"
+            xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.0.0"
+            xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0">
     
-	<bean id="ReceiverService" class="com.myrontuttle.fin.trade.alertreceivers.ReceiverService" />
+	<reference id="TradeStrategyService" interface="com.myrontuttle.fin.trade.api.TradeStrategyService" />
+	
+	<bean id="ReceiverDAO" class="com.myrontuttle.fin.trade.alertreceivers.ReceiverDAO" scope="singleton">
+		<jpa:context unitname="ReceiverPU" property="entityManager" />
+      	<tx:transaction method="*" value="Required"/>
+	</bean>
+	
+	<bean id="ReceiverService" class="com.myrontuttle.fin.trade.alertreceivers.ReceiverService">
+		<property name="receiverDAO" ref="ReceiverDAO" />
+		<property name="tradeStrategyService" ref="TradeStrategyService" />
+	</bean>
 
 	<service ref="ReceiverService" interface="com.myrontuttle.fin.trade.api.AlertReceiverService" />
 	

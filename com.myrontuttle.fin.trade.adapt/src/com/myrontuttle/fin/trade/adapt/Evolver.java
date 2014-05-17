@@ -328,7 +328,7 @@ public class Evolver implements EvolveService {
 		if (group.getExpressionStrategy().equals(Group.SAT_EXPRESSION)) {
 			SATExpression<int[]> expression = new SATExpression<int[]>();
 			
-			SATExpression.getAlertReceiverService().removeAlertReceiver(groupId);
+			SATExpression.getAlertReceiverService().removeReceiver(group.getAlertReceiverId());
 			
 			List<Candidate> oldCandidates = groupDAO.findCandidatesInGroup(groupId);
 			for (Candidate c : oldCandidates) {

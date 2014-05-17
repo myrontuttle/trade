@@ -4,7 +4,7 @@ package com.myrontuttle.fin.trade.api;
  * Service for creating lists of issues to watch
  * @author Myron Tuttle
  */
-public interface WatchlistService extends Service {
+public interface WatchlistService {
 
 	/**
 	 * Create a new watchlist

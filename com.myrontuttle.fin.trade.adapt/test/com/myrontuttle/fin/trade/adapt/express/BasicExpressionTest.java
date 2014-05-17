@@ -45,7 +45,6 @@ public class BasicExpressionTest {
 	private QuoteService quoteService;
 	private TradeStrategyService strategyService;
 	private AlertReceiverService alertReceiverService;
-	private TradeStrategy tradeStrategy;
 	private GroupDAO groupDAO;
 	
 	private SATExpression<int[]> expression;
@@ -113,8 +112,18 @@ public class BasicExpressionTest {
 			new SelectedAlert(alertId, condition, screenSymbols[3], new double[]{50}),
 			new SelectedAlert(alertId, condition, screenSymbols[4], new double[]{25}),
 	};
+	private String[] setupAlerts = new String[]{
+			"1-123",
+			"2-456",
+			"3-789",
+			"4-012",
+			"5-345"
+	};
 	
 	private String[] openOrderTypes = new String[]{ BUY, SHORT };
+	
+	private String trade1 = "trade1-ID";
+	private String trade2 = "trade2-ID";
 	
 	private AvailableStrategyParameter[] availableParameters = new AvailableStrategyParameter[]{
 			new AvailableStrategyParameter("openOrderType", 0, 0),
@@ -124,17 +133,9 @@ public class BasicExpressionTest {
 			new AvailableStrategyParameter("percentAbove", 0, 100)
 	};
 
-	Hashtable<String, Integer> params1 = new Hashtable<String, Integer>(5);
+	private ArrayList<SelectedStrategyParameter> params1 = new ArrayList<SelectedStrategyParameter>(5);
 
-	Hashtable<String, Integer> params2 = new Hashtable<String, Integer>(5);
-
-	private Trade[] trades = new Trade[]{
-			new Trade(screenSymbols[0], params1),
-			new Trade(screenSymbols[1], params2)
-	};
-	private AlertTrade[] alertTrade = new AlertTrade[] {
-			new AlertTrade(selectedAlerts[0], CID, PID, trades[0])
-	};
+	private ArrayList<SelectedStrategyParameter> params2 = new ArrayList<SelectedStrategyParameter>(5);
 	
 	@Before
 	public void setUp() throws Exception {
@@ -162,17 +163,17 @@ public class BasicExpressionTest {
 		group1.setExpressionStrategy("BasicExpression");
 		group1.setTradeStrategy(BOUNDED_STRAT);
 
-		params1.put("openOrderType", 0);
-		params1.put("tradeAllocation", 37);
-		params1.put("percentBelow", 24);
-		params1.put("timeLimit", 60);
-		params1.put("percentAbove", 88);
+		params1.add(new SelectedStrategyParameter(trade1, "openOrderType", 0));
+		params1.add(new SelectedStrategyParameter(trade1, "tradeAllocation", 37));
+		params1.add(new SelectedStrategyParameter(trade1, "percentBelow", 24));
+		params1.add(new SelectedStrategyParameter(trade1, "timeLimit", 60));
+		params1.add(new SelectedStrategyParameter(trade1, "percentAbove", 88));
 		
-		params2.put("openOrderType", 1);
-		params2.put("tradeAllocation", 25);
-		params2.put("percentBelow", 66);
-		params2.put("timeLimit", 86400);
-		params2.put("percentAbove", 75);
+		params2.add(new SelectedStrategyParameter(trade2, "openOrderType", 1));
+		params2.add(new SelectedStrategyParameter(trade2, "tradeAllocation", 25));
+		params2.add(new SelectedStrategyParameter(trade2, "percentBelow", 66));
+		params2.add(new SelectedStrategyParameter(trade2, "timeLimit", 86400));
+		params2.add(new SelectedStrategyParameter(trade2, "percentAbove", 75));
 		
 	    // Create mocks
 		screenerService = mock(ScreenerService.class);
@@ -181,7 +182,6 @@ public class BasicExpressionTest {
 		portfolioService = mock(PortfolioService.class);
 		quoteService = mock(QuoteService.class);
 		strategyService = mock(TradeStrategyService.class);
-		tradeStrategy = mock(TradeStrategy.class);
 		alertReceiverService = mock(AlertReceiverService.class);
 		groupDAO = mock(GroupDAO.class);
 		
@@ -209,10 +209,7 @@ public class BasicExpressionTest {
 		when(alertService.parseCondition(priceBelowAlert, screenSymbols[0], new double[]{400.0})).
 			thenReturn(actualCondition);
 		when(alertService.addAlertDestination(GID, EMAIL, "EMAIL")).thenReturn(true);
-		when(alertService.setupAlerts(GID, selectedAlerts)).thenReturn(selectedAlerts);
-		
-		when(strategyService.getTradeStrategy(anyString(), anyListOf(Service.class))).thenReturn(tradeStrategy);
-		when(tradeStrategy.availableParameters()).thenReturn(availableParameters);
+		when(alertService.setupAlerts(GID, selectedAlerts)).thenReturn(setupAlerts);
 		
 		when(groupDAO.findGroup(GID)).thenReturn(group1);
 		doAnswer(new Answer<Candidate>() {
@@ -283,15 +280,11 @@ public class BasicExpressionTest {
 	
 	@Test
 	public void testExpressTradeGenes() throws Exception {
-		Trade[] trades = expression.expressTradeGenes(candidateA, group1, screenSymbols);
-		for (int i=0; i<trades.length; i++) {
-			assertTrue(trades[i].equals(trades[i]));
+		ArrayList<SelectedStrategyParameter> params = expression.expressTradeGenes(
+														candidateA, group1, screenSymbols);
+		for (int i=0; i<params.size(); i++) {
+			assertTrue(params.get(i).equals(params1.get(i)));
 		}
-	}
-	
-	@Test
-	public void testSetupAlertReceiver() throws Exception {
-		expression.setupAlertReceiver(selectedAlerts, candidateA, PID, trades, group1);
 	}
 	
 	@Test

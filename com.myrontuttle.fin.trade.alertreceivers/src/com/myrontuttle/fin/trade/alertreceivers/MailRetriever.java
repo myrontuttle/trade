@@ -17,7 +17,7 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.search.FlagTerm;
 
-import com.myrontuttle.fin.trade.api.AlertReceiver;
+import com.myrontuttle.fin.trade.api.TradeStrategyService;
 
 /**
  * Code for reading unread mails from an email account (including Google Mail).
@@ -25,7 +25,7 @@ import com.myrontuttle.fin.trade.api.AlertReceiver;
  */
 public class MailRetriever implements Runnable {
 	
-	private final AlertReceiver alertReceiver;
+	private final TradeStrategyService tradeStrategyService;
 	private final String host;
 	private final String protocol;
 	private final int port;
@@ -35,9 +35,9 @@ public class MailRetriever implements Runnable {
 	private final Properties props;
 
 	// Constructor of the class.
-	public MailRetriever(AlertReceiver alertReceiver, String host, String protocol,
+	public MailRetriever(TradeStrategyService tradeStrategyService, String host, String protocol,
 					int port, String user, String password) {
-		this.alertReceiver = alertReceiver;
+		this.tradeStrategyService = tradeStrategyService;
 		this.host = host;
 		this.protocol = protocol;
 		this.port = port;
@@ -48,33 +48,9 @@ public class MailRetriever implements Runnable {
 		this.props = System.getProperties();
 		props.setProperty("mail.store.protocol", protocol);
 	}
-	
-	public String getHost() {
-		return host;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public String getProtocol() {
-		return protocol;
-	}
-
-	public String getUser() {
-		return user;
-	}
-
-	public String getPassword() {
-		return password;
-	}
 
 	public void run() {
 
-		if (host == null || protocol == null || user == null || password == null) {
-			System.out.println("Missing host, protocol, email, or password");
-			return;
-		}
 		try {
 			/* Create the session and get the store for read the mail. */
 			Session session = Session.getDefaultInstance(props, null);
@@ -112,13 +88,8 @@ public class MailRetriever implements Runnable {
 				}
 
 				System.out.println("Retrieved email: " + subject);
-				if (alertReceiver.matchAlert(subject) > 0) {
-					System.out.println("Email matched!");
-					inbox.setFlags(new Message[] {message}, new Flags(Flags.Flag.SEEN), true);
-				} else {
-					System.out.println("Message doesn't match any alerts yet.");
-					inbox.setFlags(new Message[] {message}, new Flags(Flags.Flag.SEEN), false);
-				}
+				tradeStrategyService.eventOccurred(subject);
+				inbox.setFlags(new Message[] {message}, new Flags(Flags.Flag.SEEN), true);
 			}
 
 			inbox.close(true);

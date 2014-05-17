@@ -1,7 +1,8 @@
-package com.myrontuttle.fin.trade.api;
+package com.myrontuttle.fin.trade.strategies;
 
 import java.util.HashMap;
-import java.util.List;
+
+import com.myrontuttle.fin.trade.api.AvailableStrategyParameter;
 
 /**
  * Determines the behavior for entering, adjusting, and exiting a trade
@@ -18,13 +19,6 @@ public interface TradeStrategy {
 	 * @return A description of this strategy
 	 */
 	public String getDescription();
-	
-	/**
-	 * Setup services
-	 * @param services
-	 * @throws Exception
-	 */
-	public void setup(List<Service> services) throws Exception;
 	
 	/**
 	 * @return The list of parameters needed for this strategy
@@ -49,7 +43,7 @@ public interface TradeStrategy {
 	 * @return tradeId if trade was successful, otherwise null
 	 * @throws Exception
 	 */
-	public String takeAction(AlertAction alertAction) throws Exception;
+	public String takeAction(String actionType, Trade trade) throws Exception;
 
 	/**
 	 * Describes the actions to be taken based on a user and trade

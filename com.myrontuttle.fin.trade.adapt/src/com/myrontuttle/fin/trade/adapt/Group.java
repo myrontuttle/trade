@@ -37,8 +37,11 @@ public class Group implements Serializable {
 			optional = true, cascade = CascadeType.ALL)
 	private Trader bestTrader;
 	
-	@Column(name = "AlertReceiver")
-	private String alertReceiver;
+	@Column(name = "AlertReceiverType")
+	private String alertReceiverType;
+
+	@Column(name = "AlertReceiverId")
+	private String alertReceiverId;
 	
 	@Column(name = "AlertUser")
 	private String alertUser;
@@ -167,12 +170,20 @@ public class Group implements Serializable {
 		this.candidates = candidates;
 	}
 
-	public String getAlertReceiver() {
-		return alertReceiver;
+	public String getAlertReceiverType() {
+		return alertReceiverType;
 	}
 
-	public void setAlertReceiver(String alertReceiver) {
-		this.alertReceiver = alertReceiver;
+	public void setAlertReceiverType(String alertReceiverType) {
+		this.alertReceiverType = alertReceiverType;
+	}
+
+	public String getAlertReceiverId() {
+		return alertReceiverId;
+	}
+
+	public void setAlertReceiverId(String alertReceiverId) {
+		this.alertReceiverId = alertReceiverId;
 	}
 
 	public String getAlertUser() {

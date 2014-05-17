@@ -10,7 +10,7 @@ import java.util.HashSet;
  * Service for screening financial instruments with a variety of criteria
  * @author Myron Tuttle
  */
-public interface ScreenerService extends Service {
+public interface ScreenerService {
 	
     /**
      * Shows the criteria available to screen against.

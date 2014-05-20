@@ -42,7 +42,7 @@ public class GroupAccess {
 				System.out.println("New group created");
 				group.setAlertUser("wsodinvestor@gmail.com");
 				group.setAlertHost("imap.google.com");
-				group.setAlertReceiver("EmailAlert");
+				group.setAlertReceiverType("EmailAlert");
 				group.setAlertPassword("");
 				group.setActive(true);
 				group.setAlertsPerSymbol(2);

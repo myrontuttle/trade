@@ -31,15 +31,17 @@ public class UpdateGroupPanel extends Panel {
 		super(id);
 		
 		final Form<Group> form = new Form<Group>("updateGroupForm", model);
-
+/*
 		List<String> alertReceiverTypes = Arrays.
 					asList(AlertReceiverAccess.getAlertReceiverService().availableReceiverTypes());
 		form.add(new DropDownChoice<String>("alertReceiverType", alertReceiverTypes));
-		form.add(new TextField<String>("alertUser")
-					.add(EmailAddressValidator.getInstance()));
+
 		form.add(new TextField<String>("alertHost")
 						.setRequired(true)
 						.add(new AttributeModifier("value", "imap.gmail.com")));
+*/
+		form.add(new TextField<String>("alertUser")
+					.add(EmailAddressValidator.getInstance()));
 		form.add(new TextField<String>("alertPassword")
 						.setRequired(true));
 		
@@ -84,10 +86,10 @@ public class UpdateGroupPanel extends Panel {
 
             	AlertReceiverService ars = AlertReceiverAccess.getAlertReceiverService();
             	String receiverId = group.getAlertReceiverId();
-            	ars.setReceiverParameter(receiverId, "Host", group.getAlertHost());
+            	//ars.setReceiverParameter(receiverId, "Host", group.getAlertHost());
             	ars.setReceiverParameter(receiverId, "User", group.getAlertUser());
-            	ars.setReceiverParameter(receiverId, "Password", group.getAlertHost());
-            	ars.stopReceiving(receiverId);
+            	ars.setReceiverParameter(receiverId, "Password", group.getAlertPassword());
+            	ars.setReceiverActive(receiverId, group.isActive());
             	
             	group = DBAccess.getDAO().updateGroup((Group)getParent().getDefaultModelObject());
             }

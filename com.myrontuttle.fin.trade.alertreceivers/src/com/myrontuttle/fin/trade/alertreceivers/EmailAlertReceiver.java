@@ -56,7 +56,7 @@ public class EmailAlertReceiver {
 	public EmailAlertReceiver() {
 	}
 
-	public String getName() {
+	public static String getName() {
 		return NAME;
 	}
 	
@@ -65,13 +65,14 @@ public class EmailAlertReceiver {
 	}
 	
 	public static boolean validateParameters(ReceiverDAO receiverDAO, Receiver r) {
-		for (String param : r.getParameters().keySet()) {
+		for (String param : availableParameters.keySet()) {
 			String value = r.getParameter(param);
 			switch(param) {
 			case HOST:
 				if (value == null || value.isEmpty()) {
-					System.out.println("No email host specified for " + r.getUserId());
-					return false;
+					System.out.println("No email host specified for " + r.getUserId() + ". Using default: " +
+							DEFAULT_HOST);
+					r.addParameter(HOST, DEFAULT_HOST);
 				}
 				break;
 			case PORT:
@@ -79,19 +80,19 @@ public class EmailAlertReceiver {
 					int port = Integer.parseInt(value);
 					if (port < 1) {
 						System.out.println(value + " is not a valid email port for user " + r.getUserId() +
-								". Setting to default = " + DEFAULT_PORT);
+								". Using default = " + DEFAULT_PORT);
 						r.addParameter(PORT, DEFAULT_PORT);
 					}
 				} catch (NumberFormatException nfe) {
 					System.out.println(value + " is not a valid email port for user " + r.getUserId() +
-							". Setting to default = " + DEFAULT_PORT);
+							". Using default = " + DEFAULT_PORT);
 					r.addParameter(PORT, DEFAULT_PORT);
 				}
 				break;
 			case PROTOCOL:
 				if (value == null || value.isEmpty()) {
 					System.out.println(value + " is not a valid email protocol for user " + r.getUserId() +
-							". Setting to default = " + DEFAULT_PROTOCOL);
+							". Using default = " + DEFAULT_PROTOCOL);
 					r.addParameter(PROTOCOL, DEFAULT_PROTOCOL);
 				}
 				break;

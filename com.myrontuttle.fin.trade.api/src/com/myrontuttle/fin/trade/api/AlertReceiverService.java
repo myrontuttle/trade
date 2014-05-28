@@ -65,6 +65,13 @@ public interface AlertReceiverService {
 	public boolean parametersAreSet(String receiverId);
 	
 	/**
+	 * Toggles whether this receiver should be actively receiving
+	 * @param receiverId Receiver to set
+	 * @param isActive
+	 */
+	public void setReceiverActive(String receiverId, boolean isActive);
+	
+	/**
 	 * Starts receiving alerts for a user from a specific receiver
 	 * @param receiverId Id of the receiver to start
 	 */

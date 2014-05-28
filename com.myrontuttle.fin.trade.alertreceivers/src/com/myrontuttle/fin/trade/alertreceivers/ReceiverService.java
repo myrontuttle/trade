@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import com.myrontuttle.fin.trade.api.AlertReceiverService;
 import com.myrontuttle.fin.trade.api.TradeStrategyService;
@@ -14,6 +15,7 @@ import com.myrontuttle.fin.trade.api.TradeStrategyService;
 public class ReceiverService implements AlertReceiverService {
 
 	private final static int NUM_THREADS = 2;
+	private final static int INITIAL_DELAY = 15;	// Seconds
 	
 	private static ReceiverDAO receiverDAO;
 
@@ -24,6 +26,26 @@ public class ReceiverService implements AlertReceiverService {
 	
 	public ReceiverService() {
         this.ses = Executors.newScheduledThreadPool(NUM_THREADS);
+	}
+	
+	public void init() {
+
+		ses.schedule(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					List<Receiver> receivers = receiverDAO.findActiveReceivers();
+					if (receivers != null && receivers.size() > 0) {
+						System.out.println("Starting alert receiving");
+						for(Receiver r : receivers) {
+							startReceiving(r);
+						}
+					}
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+			}
+		}, INITIAL_DELAY, TimeUnit.SECONDS);
 	}
 	
 	public static ReceiverDAO getReceiverDAO() {
@@ -87,30 +109,36 @@ public class ReceiverService implements AlertReceiverService {
 	@Override
 	public void setReceiverParameter(String receiverId, String name, String value) {
 		if (receiverId != null && name != null && value != null) {
-			Receiver r = receiverDAO.findReceiver(receiverId);
-			r.addParameter(name, value);
-			receiverDAO.updateReceiver(r);
+			receiverDAO.addReceiverParameter(receiverId, name, value);
 		}
 	}
 
 	@Override
 	public Map<String, String> getReceiverParameters(String receiverId) {
-		Receiver r = receiverDAO.findReceiver(receiverId);
-		return r.getParameters();
+		return receiverDAO.getReceiverParameters(receiverId);
 	}
 
 	@Override
 	public boolean parametersAreSet(String receiverId) {
-		Map<String, String> params = getReceiverParameters(receiverId);
 		Receiver r = receiverDAO.findReceiver(receiverId);
+		if (r.getReceiverType().equals(EmailAlertReceiver.NAME)) {
+			EmailAlertReceiver.validateParameters(receiverDAO, r);
+		}
 		Map<String, String> availableParameters = getAvailableParameters(r.getReceiverType());
+		Map<String, String> params = r.getParameters();
 		for (String name : availableParameters.keySet()) {
 			if (!params.containsKey(name)) {
+				System.out.println(name + " missing from receiver " + receiverId);
 				return false;
 			}
 		}
 		
 		return true;
+	}
+
+	@Override
+	public void setReceiverActive(String receiverId, boolean isActive) {
+		receiverDAO.setReceiverActive(receiverId, isActive);
 	}
 
 	@Override

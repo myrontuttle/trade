@@ -8,6 +8,7 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.JoinColumn;
@@ -34,13 +35,16 @@ public class Receiver implements Serializable {
 	@Column(name = "ReceiverType")
 	private String receiverType;
 	
-	@ElementCollection
+	@ElementCollection(fetch=FetchType.EAGER)
     @MapKeyColumn(name="name")
     @Column(name="value")
     @CollectionTable(
     		name="receiver_parameters", 
     		joinColumns=@JoinColumn(name="ReceiverId"))
     private Map<String, String> parameters = new HashMap<String, String>();
+	
+	@Column(name = "Active")
+	private boolean active;
 	
 	public Receiver() {}
 	
@@ -91,5 +95,13 @@ public class Receiver implements Serializable {
 
 	public void setParameters(Map<String, String> parameters) {
 		this.parameters = parameters;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 }

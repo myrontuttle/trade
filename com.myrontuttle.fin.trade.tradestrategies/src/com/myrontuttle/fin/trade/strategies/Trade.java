@@ -44,7 +44,7 @@ public class Trade implements Serializable {
 	@Column(name = "Symbol")
 	private String symbol;
 	
-	@ElementCollection
+	@ElementCollection(fetch=FetchType.EAGER)
     @MapKeyColumn(name="name")
     @Column(name="value")
     @CollectionTable(
@@ -54,7 +54,7 @@ public class Trade implements Serializable {
 
 	@OneToMany(mappedBy = "trade", targetEntity = Event.class,
 			fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private ArrayList<Event> events;
+    private ArrayList<Event> events = new ArrayList<Event>();
 	
 	public Trade() {}
 	

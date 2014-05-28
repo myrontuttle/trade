@@ -12,7 +12,8 @@
       	<tx:transaction method="*" value="Required"/>
 	</bean>
 	
-	<bean id="ReceiverService" class="com.myrontuttle.fin.trade.alertreceivers.ReceiverService">
+	<bean id="ReceiverService" class="com.myrontuttle.fin.trade.alertreceivers.ReceiverService"
+			init-method="init">
 		<property name="receiverDAO" ref="ReceiverDAO" />
 		<property name="tradeStrategyService" ref="TradeStrategyService" />
 	</bean>

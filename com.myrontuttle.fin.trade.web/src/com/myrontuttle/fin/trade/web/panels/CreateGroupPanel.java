@@ -30,18 +30,18 @@ public class CreateGroupPanel extends Panel {
 		super(id);
 		final IModel<Group> compound = new CompoundPropertyModel<Group>(new Group());
 		final Form<Group> form = new Form<Group>("newGroupForm", compound);
-
+/*
 		List<String> alertReceiverTypes = Arrays.
 					asList(AlertReceiverAccess.getAlertReceiverService().availableReceiverTypes());
 		form.add(new DropDownChoice<String>("alertReceiverType", alertReceiverTypes));
 		
-		form.add(new TextField<String>("alertUser")
-					.add(EmailAddressValidator.getInstance()));
-
 		form.add(new TextField<String>("alertHost")
 						.setRequired(true)
 						.add(new AttributeModifier("value", "imap.gmail.com")));
-
+*/	
+		form.add(new TextField<String>("alertUser")
+					.add(EmailAddressValidator.getInstance()));
+		
 		form.add(new TextField<String>("alertPassword")
 						.setRequired(true));
 		
@@ -99,14 +99,17 @@ public class CreateGroupPanel extends Panel {
             public void onSubmit() {
             	Group group = (Group)compound.getObject();
             	group.setStartTime(new Date());
-            	DBAccess.getDAO().saveGroup(group);
+            	group.setAlertReceiverType("EmailAlert");
             	
             	AlertReceiverService ars = AlertReceiverAccess.getAlertReceiverService();
             	String receiverId = ars.addReceiver(group.getGroupId(), group.getAlertReceiverType());
-            	ars.setReceiverParameter(receiverId, "Host", group.getAlertHost());
+            	//ars.setReceiverParameter(receiverId, "Host", group.getAlertHost());
             	ars.setReceiverParameter(receiverId, "User", group.getAlertUser());
-            	ars.setReceiverParameter(receiverId, "Password", group.getAlertHost());
+            	ars.setReceiverParameter(receiverId, "Password", group.getAlertPassword());
+            	ars.setReceiverActive(receiverId, group.isActive());
             	group.setAlertReceiverId(receiverId);
+            	
+            	DBAccess.getDAO().saveGroup(group);
             	
             	EvolveAccess.getEvolveService().createInitialCandidates(group.getGroupId());
             }

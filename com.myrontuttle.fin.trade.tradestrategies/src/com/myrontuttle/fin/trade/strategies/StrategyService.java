@@ -7,8 +7,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.persistence.PersistenceException;
-
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
 
@@ -21,6 +19,7 @@ import com.myrontuttle.fin.trade.api.TradeStrategyService;
 public class StrategyService implements TradeStrategyService {
 
 	private final static int NUM_THREADS = 2;
+	private final static int INITIAL_DELAY = 10;	// Seconds
 	
 	public final static String MOMENT_PASSED = "momentPassed";
 	
@@ -76,16 +75,23 @@ public class StrategyService implements TradeStrategyService {
 	}
 	
 	public void init() {
-		try {
-			List<Event> events = tradeDAO.findEventsWithTrigger(MOMENT_PASSED);
-			if (events != null) {
-				for(Event event : events) {
-					scheduleEvent(event);
+		
+		ses.schedule(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					List<Event> events = tradeDAO.findEventsWithTrigger(MOMENT_PASSED);
+					if (events != null) {
+						System.out.println("Starting strategy event tracking");
+						for(Event event : events) {
+							scheduleEvent(event);
+						}
+					}
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
 				}
 			}
-		} catch (PersistenceException pe) {
-			System.out.println(pe.getMessage());
-		}
+		}, INITIAL_DELAY, TimeUnit.SECONDS);
 	}
 
 	@Override

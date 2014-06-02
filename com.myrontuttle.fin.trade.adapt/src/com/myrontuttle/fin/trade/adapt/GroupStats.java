@@ -12,40 +12,40 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Version;
 
-@Entity(name = "GroupStats")
+@Entity(name = "GROUP_STATS")
 public class GroupStats implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name = "StatsId", nullable = false)
+	@Column(name = "STATS_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private String statsId;
 	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "GroupId", referencedColumnName = "GroupId")
+	@JoinColumn(name = "GROUP_ID", referencedColumnName = "GROUP_ID")
 	private Group group;
 	
-	@Column(name = "GroupId")
+	@Column(name = "GROUP_ID")
 	private String groupId;
 	
-	@Column(name = "BestCandidateFitness")
+	@Column(name = "BEST_CANDIDATE_FITNESS")
 	private double bestCandidateFitness;
 	
-	@Column(name = "MeanFitness")
+	@Column(name = "MEAN_FITNESS")
     private double meanFitness;
 	
-	@Column(name = "FitnessStandardDeviation")
+	@Column(name = "FITNESS_STANDARD_DEVIATION")
     private double fitnessStandardDeviation;
 	
-	@Column(name = "GenerationNumber")
+	@Column(name = "GENERATION_NUMBER")
     private int generationNumber;
 	
-	@Column(name = "Variability")
+	@Column(name = "VARIABILITY")
 	private double variability;
 
 	@Version
-    @Column(name = "RecordedTime")
+    @Column(name = "RECORDED_TIME")
     private Date recordedTime;
 	
 	public GroupStats() {}

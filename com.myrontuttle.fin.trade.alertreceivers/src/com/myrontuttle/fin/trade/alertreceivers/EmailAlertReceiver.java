@@ -64,7 +64,7 @@ public class EmailAlertReceiver {
 		return availableParameters;
 	}
 	
-	public static boolean validateParameters(ReceiverDAO receiverDAO, Receiver r) {
+	public static boolean validateParameters(ReceiverDAO receiverDAO, AlertReceiver r) {
 		for (String param : availableParameters.keySet()) {
 			String value = r.getParameter(param);
 			switch(param) {
@@ -137,7 +137,7 @@ public class EmailAlertReceiver {
 	}
 
 	public static ScheduledFuture<?> startReceiving(ScheduledExecutorService ses, TradeStrategyService tss,
-														Receiver r) {
+														AlertReceiver r) {
 
 		System.out.println("Started receiving alerts for " + r.getParameter(USER) + " on " + r.getParameter(HOST));
 		return ses.scheduleAtFixedRate(

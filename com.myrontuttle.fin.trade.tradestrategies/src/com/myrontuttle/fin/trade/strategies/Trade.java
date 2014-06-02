@@ -22,34 +22,34 @@ import javax.persistence.OneToMany;
  * A record of a trade
  * @author Myron Tuttle
  */
-@Entity(name = "Trades")
+@Entity(name = "TRADES")
 public class Trade implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name = "TradeId", nullable = false)
+	@Column(name = "TRADE_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private String tradeId;
 	
-	@Column(name = "TradeStrategy")
+	@Column(name = "TRADE_STRATEGY")
 	private String tradeStrategy;
 
-	@Column(name = "UserId")
+	@Column(name = "USER_ID")
 	private String userId;
 
-	@Column(name = "PortfolioId")
+	@Column(name = "PORTFOLIO_ID")
 	private String portfolioId;
 	
-	@Column(name = "Symbol")
+	@Column(name = "SYMBOL")
 	private String symbol;
 	
 	@ElementCollection(fetch=FetchType.EAGER)
-    @MapKeyColumn(name="name")
-    @Column(name="value")
+    @MapKeyColumn(name="NAME")
+    @Column(name="VALUE")
     @CollectionTable(
-    		name="TradeParameters", 
-    		joinColumns=@JoinColumn(name="TradeId"))
+    		name="TRADE_PARAMETERS", 
+    		joinColumns=@JoinColumn(name="TRADE_ID"))
     private Map<String, Integer> parameters = new HashMap<String, Integer>();
 
 	@OneToMany(mappedBy = "trade", targetEntity = Event.class,

@@ -12,34 +12,34 @@ import javax.persistence.ManyToOne;
 
 import com.myrontuttle.fin.trade.api.SelectedAlert;
 
-@Entity(name = "SavedAlerts")
+@Entity(name = "SAVED_ALERTS")
 public class SavedAlert implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	public static final String SEPARATOR = ",";
 	
 	@Id
-	@Column(name = "SavedAlertId", nullable = false)
+	@Column(name = "SAVED_ALERT_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private String savedAlertId;
 
-	@Column(name = "TraderId")
+	@Column(name = "TRADER_ID")
 	private String traderId;
 	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "TraderId", referencedColumnName = "TraderId")
+	@JoinColumn(name = "TRADER_ID", referencedColumnName = "TRADER_ID")
 	private Trader trader;
 
-	@Column(name = "AlertId")
+	@Column(name = "ALERT_ID")
 	private int alertId;
 	
-	@Column(name = "Condition")
+	@Column(name = "CONDITION")
 	private String condition;
 
-	@Column(name = "Symbol")
+	@Column(name = "SYMBOL")
 	private String symbol;
 
-	@Column(name = "Params")
+	@Column(name = "PARAMS")
 	private String params;
 	
 	public SavedAlert() {}

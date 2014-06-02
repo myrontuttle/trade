@@ -330,7 +330,8 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			for (int j=0; j<group.getAlertsPerSymbol(); j++) {
 				position = (i * group.getAlertsPerSymbol()) + j;
 				
-				if (alerts.length > position && alertIds.length > position) {
+				if (position < alerts.length && position < alertIds.length && 
+						alertIds[position] != null) {
 					tradeId = tradeStrategyService.addTrade(tradeStrategy, candidateId, 
 													portfolioId, alerts[position].getSymbol());
 					trades.add(tradeId);

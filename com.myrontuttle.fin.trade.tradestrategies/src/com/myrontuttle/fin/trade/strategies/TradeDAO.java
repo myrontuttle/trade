@@ -31,19 +31,14 @@ public class TradeDAO {
 	
 	public boolean tradeExists(String tradeId) {
 		return em.createQuery(
-				"SELECT t FROM Trades t WHERE t.tradeId = :tradeId", 
+				"SELECT t FROM TRADES t WHERE t.tradeId = :tradeId", 
 				Trade.class).setParameter("tradeId", tradeId).getResultList().size() == 1;
 	}
 
 	public List<Trade> findTrades(String userId) {
 		return em.createQuery(
-				"SELECT t FROM Trades t WHERE t.userId = :userId", 
+				"SELECT t FROM TRADES t WHERE t.userId = :userId", 
 				Trade.class).setParameter("userId", userId).getResultList();
-	}
-	
-	public List<Trade> findTradesWithEvent(String event) {
-		return em.createQuery("SELECT t FROM Trades t, IN(t.TradeEvents) e WHERE e.event = :event",
-				Trade.class).setParameter("event", event).getResultList();
 	}
 
 	public void removeTrade(String tradeId) {
@@ -54,14 +49,14 @@ public class TradeDAO {
 
 		// Retrieve events from database
 		return em.createQuery(
-				"SELECT e FROM Events e WHERE e.event = :event", 
+				"SELECT e FROM EVENTS e WHERE e.event = :event", 
 				Event.class).setParameter("event", event).getResultList();
 	}
 
 	public List<Event> findEventsWithTrigger(String trigger) {
 		// Retrieve events from database
 		return em.createQuery(
-				"SELECT e FROM Events e WHERE e.trigger = :trigger", 
+				"SELECT e FROM EVENTS e WHERE e.trigger = :trigger", 
 				Event.class).setParameter("trigger", trigger).getResultList();
 	}
 }

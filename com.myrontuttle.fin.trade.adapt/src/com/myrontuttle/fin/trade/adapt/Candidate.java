@@ -11,7 +11,7 @@ import com.myrontuttle.sci.evolve.api.ExpressedCandidate;
  * A candidate which expresses a trading strategy
  * @author Myron Tuttle
  */
-@Entity(name = "Candidates")
+@Entity(name = "CANDIDATES")
 public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	
 	private static final long serialVersionUID = 1L;
@@ -19,28 +19,28 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	public static final String GENE_SEPARATOR = ",";
 
 	@Id
-	@Column(name = "CandidateId", nullable = false)
+	@Column(name = "CANDIDATE_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private String candidateId;
 
-	@Column(name = "GroupId")
+	@Column(name = "GROUP_ID")
 	private String groupId;
 	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "GroupId", referencedColumnName = "GroupId")
+	@JoinColumn(name = "GROUP_ID", referencedColumnName = "GROUP_ID")
 	private Group group;
 	
 	@Transient
 	private int[] genome;
 	
-	@Column(name = "GenomeString")
+	@Column(name = "GENOME_STRING")
 	@Lob
 	private String genomeString;
 
-	@Column(name = "WatchlistId")
+	@Column(name = "WATCHLIST_ID")
 	private String watchlistId;
 
-	@Column(name = "PortfolioId")
+	@Column(name = "PORTFOLIO_ID")
 	private String portfolioId;
 	
 	public Candidate(){ }

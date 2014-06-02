@@ -10,7 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-@Entity(name = "TradeInstructions")
+@Entity(name = "TRADE_INSTRUCTIONS")
 public class TradeInstruction implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -18,18 +18,18 @@ public class TradeInstruction implements Serializable {
 	public static final String ASSIGN = "=";
 	
 	@Id
-	@Column(name = "TradeInstructionId", nullable = false)
+	@Column(name = "TRADE_INSTRUCTION_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private String tradeInstructionId;
 
-	@Column(name = "TraderId")
+	@Column(name = "TRADER_ID")
 	private String traderId;
 	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "TraderId", referencedColumnName = "TraderId")
+	@JoinColumn(name = "TRADER_ID", referencedColumnName = "TRADER_ID")
 	private Trader trader;
 	
-	@Column(name = "Instruction")
+	@Column(name = "INSTRUCTION")
 	private String instruction;
 	
 	public TradeInstruction() {}

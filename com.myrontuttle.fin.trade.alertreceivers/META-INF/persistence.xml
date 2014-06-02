@@ -6,7 +6,7 @@
     <persistence-unit name="ReceiverPU" transaction-type="JTA">
     	<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
         <jta-data-source>osgi:service/javax.sql.DataSource/(osgi.jndi.service.name=jdbc/h2ds)</jta-data-source>
-        <class>com.myrontuttle.fin.trade.alertreceivers.Receiver</class>
+        <class>com.myrontuttle.fin.trade.alertreceivers.AlertReceiver</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
        
         <properties>

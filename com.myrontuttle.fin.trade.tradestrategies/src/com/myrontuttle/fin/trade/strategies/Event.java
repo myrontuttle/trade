@@ -14,30 +14,30 @@ import javax.persistence.ManyToOne;
  * A record of an event that takes part of a trade
  * @author Myron Tuttle
  */
-@Entity(name = "Events")
+@Entity(name = "EVENTS")
 public class Event implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name = "EventId", nullable = false)
+	@Column(name = "EVENT_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private String eventId;
 
-	@Column(name = "TradeId")
+	@Column(name = "TRADE_ID")
 	private String tradeId;
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "TradeId", referencedColumnName = "TradeId")
+	@JoinColumn(name = "TRADE_ID", referencedColumnName = "TRADE_ID")
 	private Trade trade;
 	
-	@Column(name="Event")
+	@Column(name="EVENT")
 	private String event;
 
-    @Column(name="ActionType")
+    @Column(name="ACTION_TYPE")
 	private String actionType;
 
-    @Column(name="Trigger")
+    @Column(name="TRIGGER")
 	private String trigger;
     
     public Event() {}

@@ -12,30 +12,30 @@ import javax.persistence.ManyToOne;
 
 import com.myrontuttle.fin.trade.api.SelectedScreenCriteria;
 
-@Entity(name = "SavedScreens")
+@Entity(name = "SAVED_SCREENS")
 public class SavedScreen implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@Column(name = "SavedScreenId", nullable = false)
+	@Column(name = "SAVED_SCREEN_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private String savedScreenId;
 
-	@Column(name = "TraderId")
+	@Column(name = "TRADER_ID")
 	private String traderId;
 	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "TraderId", referencedColumnName = "TraderId")
+	@JoinColumn(name = "TRADER_ID", referencedColumnName = "TRADER_ID")
 	private Trader trader;
 	
-	@Column(name = "Name")
+	@Column(name = "NAME")
 	private String name;
 
-	@Column(name = "ScreenValue")
+	@Column(name = "SCREEN_VALUE")
 	private String screenValue;
 
-	@Column(name = "ArgOperator")
+	@Column(name = "ARG_OPERATOR")
 	private String argsOperator;
 	
 	public SavedScreen() {}

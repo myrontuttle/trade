@@ -32,7 +32,7 @@ public class GroupDAOImpl implements GroupDAO {
 	// Retrieve all groups
 	public List<Group> findGroups() {
 		return em.createQuery(
-				"SELECT g FROM Groups g", Group.class).getResultList();
+				"SELECT g FROM GROUPS g", Group.class).getResultList();
 	}
 	
 	public Group updateGroup(Group group) {
@@ -56,13 +56,13 @@ public class GroupDAOImpl implements GroupDAO {
 	// Retrieve candidates from database
 	public List<Candidate> findCandidatesInGroup(String groupId) {
 		return em.createQuery(
-				"SELECT c FROM Candidates c WHERE c.groupId = :groupId", 
+				"SELECT c FROM CANDIDATES c WHERE c.groupId = :groupId", 
 				Candidate.class).setParameter("groupId", groupId).getResultList();
 	}
 	
 	public Candidate findCandidateByGenome(int[] genome) throws Exception {
 		List<Candidate> candidates = em.createQuery(
-				"SELECT c FROM Candidates c WHERE c.genomeString = :genomeString", 
+				"SELECT c FROM CANDIDATES c WHERE c.genomeString = :genomeString", 
 					Candidate.class).
 				setParameter("genomeString", Candidate.generateGenomeString(genome)).
 				getResultList();
@@ -111,7 +111,7 @@ public class GroupDAOImpl implements GroupDAO {
 	// Retrieve group stats from database
 	public List<GroupStats> findStatsForGroup(String groupId) {
 		return em.createQuery(
-				"SELECT s FROM GroupStats s WHERE s.groupId = :groupId", 
+				"SELECT s FROM GROUP_STATS s WHERE s.groupId = :groupId", 
 				GroupStats.class).setParameter("groupId", groupId).getResultList();
 	}
 
@@ -156,7 +156,7 @@ public class GroupDAOImpl implements GroupDAO {
 	public Trader getBestTrader(String groupId) {
 		try {
 			return em.createQuery(
-					"SELECT t FROM Traders t WHERE t.groupId = :groupId", 
+					"SELECT t FROM TRADERS t WHERE t.groupId = :groupId", 
 					Trader.class).setParameter("groupId", groupId).getSingleResult();
 		} catch (NoResultException nre) {
 			return null;
@@ -199,7 +199,7 @@ public class GroupDAOImpl implements GroupDAO {
 	@Override
 	public List<SavedScreen> findScreensForTrader(String traderId) {
 		return em.createQuery(
-				"SELECT s FROM SavedScreens s WHERE s.traderId = :traderId", 
+				"SELECT s FROM SAVED_SCREENS s WHERE s.traderId = :traderId", 
 				SavedScreen.class).setParameter("traderId", traderId).getResultList();
 	}
 
@@ -212,14 +212,14 @@ public class GroupDAOImpl implements GroupDAO {
 	@Override
 	public List<SavedAlert> findAlertsForTrader(String traderId) {
 		return em.createQuery(
-				"SELECT a FROM SavedAlerts a WHERE a.traderId = :traderId", 
+				"SELECT a FROM SAVED_ALERTS a WHERE a.traderId = :traderId", 
 				SavedAlert.class).setParameter("traderId", traderId).getResultList();
 	}
 
 	@Override
 	public List<TradeInstruction> findInstructionsForTrader(String traderId) {
 		return em.createQuery(
-				"SELECT t FROM TradeInstructions t WHERE t.traderId = :traderId", 
+				"SELECT t FROM TRADE_INSTRUCTIONS t WHERE t.traderId = :traderId", 
 				TradeInstruction.class).setParameter("traderId", traderId).getResultList();
 	}
 

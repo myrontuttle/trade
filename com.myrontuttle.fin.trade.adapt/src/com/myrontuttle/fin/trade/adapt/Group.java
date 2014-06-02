@@ -11,7 +11,7 @@ import javax.persistence.*;
  * A group of trade strategy candidates which are generated with common settings
  * @author Myron Tuttle
  */
-@Entity(name = "Groups")
+@Entity(name = "GROUPS")
 public class Group implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
@@ -25,7 +25,7 @@ public class Group implements Serializable {
 	public static final String SAT_EXPRESSION = "SATExpression";
 
 	@Id
-	@Column(name = "GroupId", nullable = false)
+	@Column(name = "GROUP_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private String groupId;
 	
@@ -37,70 +37,70 @@ public class Group implements Serializable {
 			optional = true, cascade = CascadeType.ALL)
 	private Trader bestTrader;
 	
-	@Column(name = "AlertReceiverType")
+	@Column(name = "ALERT_RECEIVER_TYPE")
 	private String alertReceiverType;
 
-	@Column(name = "AlertReceiverId")
+	@Column(name = "ALERT_RECEIVER_ID")
 	private String alertReceiverId;
 	
-	@Column(name = "AlertUser")
+	@Column(name = "ALERT_USER")
 	private String alertUser;
 	
-	@Column(name = "AlertHost")
+	@Column(name = "ALERT_HOST")
 	private String alertHost;
 	
-	@Column(name = "AlertPassword")
+	@Column(name = "ALERT_PASSWORD")
 	private String alertPassword;
 
-	@Column(name = "Size")
+	@Column(name = "SIZE")
 	private int size;
 	
-	@Column(name = "EliteCount")
+	@Column(name = "ELITE_COUNT")
 	private int eliteCount;
 	
-	@Column(name = "GeneUpperValue")
+	@Column(name = "GENE_UPPER_VALUE")
 	private int geneUpperValue;
 	
-	@Column(name = "ExpressionStrategy")
+	@Column(name = "EXPRESSION_STRATEGY")
 	private String expressionStrategy;
 	
-	@Column(name = "EvaluationStrategy")
+	@Column(name = "EVALUATION_STRATEGY")
 	private String evaluationStrategy;
 	
-	@Column(name = "TradeStrategy")
+	@Column(name = "TRADE_STRATEGY")
 	private String tradeStrategy;
 	
-	@Column(name = "AllowShorting")
+	@Column(name = "ALLOW_SHORTING")
 	private boolean allowShorting;
 	
-	@Column(name = "StartTime")
+	@Column(name = "START_TIME")
 	private Date startTime;
 	
-	@Column(name = "Frequency")
+	@Column(name = "FREQUENCY")
 	private String frequency;
 	
-	@Column(name = "MutationFactor")
+	@Column(name = "MUTATION_FACTOR")
 	private double mutationFactor;
 	
-	@Column(name = "NumberOfScreens")
+	@Column(name = "NUMBER_OF_SCREENS")
 	private int numberOfScreens;
 	
-	@Column(name = "MaxSymbolsPerScreen")
+	@Column(name = "MAX_SYMBOLS_PER_SCREEN")
 	private int maxSymbolsPerScreen;
 	
-	@Column(name = "AlertsPerSymbol")
+	@Column(name = "ALERTS_PER_SYMBOL")
 	private int alertsPerSymbol;
 	
-	@Column(name = "StartingCash")
+	@Column(name = "STARTING_CASH")
 	private double startingCash;
 	
-	@Column(name = "Generation")
+	@Column(name = "GENERATION")
 	private int generation;
 	
-	@Column(name = "Active")
+	@Column(name = "ACTIVE")
 	private boolean active;
 	
-	@Column(name = "Variability")
+	@Column(name = "VARIABILITY")
 	private double variability;
 	
 	// Group Stats
@@ -108,7 +108,7 @@ public class Group implements Serializable {
 	private ArrayList<GroupStats> stats;
 	
 	@Version
-    @Column(name = "UpdatedTime")
+    @Column(name = "UPDATED_TIME")
     private Date updatedTime;
 	
 	public Group() {}

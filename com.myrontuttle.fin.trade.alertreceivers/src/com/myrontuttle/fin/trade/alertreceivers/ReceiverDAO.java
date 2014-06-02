@@ -14,47 +14,47 @@ public class ReceiverDAO {
 		this.em = em;
 	}
 	
-	public void saveReceiver(Receiver r) {
+	public void saveReceiver(AlertReceiver r) {
 		em.persist(r);
 	}
 	
-	public Receiver updateReceiver(Receiver r) {
+	public AlertReceiver updateReceiver(AlertReceiver r) {
 		return em.merge(r);
 	}
 
 	// Get a receiver based on its receiverId
-	public Receiver findReceiver(String receiverId) {
-		return em.find(Receiver.class, receiverId);
+	public AlertReceiver findReceiver(String receiverId) {
+		return em.find(AlertReceiver.class, receiverId);
 	}
 
-	public List<Receiver> findReceivers(String userId) {
+	public List<AlertReceiver> findReceivers(String userId) {
 		return em.createQuery(
-				"SELECT a FROM Receivers a WHERE a.userId = :userId", 
-				Receiver.class).setParameter("userId", userId).getResultList();
+				"SELECT a FROM ALERT_RECEIVERS a WHERE a.userId = :userId", 
+				AlertReceiver.class).setParameter("userId", userId).getResultList();
 	}
 
 	public void removeReceiver(String receiverId) {
-		em.remove(em.find(Receiver.class, receiverId));
+		em.remove(em.find(AlertReceiver.class, receiverId));
 	}
 	
 	public void addReceiverParameter(String receiverId, String name, String value) {
-		Receiver r = em.find(Receiver.class, receiverId);
+		AlertReceiver r = em.find(AlertReceiver.class, receiverId);
 		r.addParameter(name, value);
 	}
 	
 	public Map<String, String> getReceiverParameters(String receiverId) {
-		Receiver r = em.find(Receiver.class, receiverId);
+		AlertReceiver r = em.find(AlertReceiver.class, receiverId);
 		return r.getParameters();
 	}
 	
 	public void setReceiverActive(String receiverId, boolean isActive) {
-		Receiver r = em.find(Receiver.class, receiverId);
+		AlertReceiver r = em.find(AlertReceiver.class, receiverId);
 		r.setActive(isActive);
 	}
 	
-	public List<Receiver> findActiveReceivers() {
+	public List<AlertReceiver> findActiveReceivers() {
 		return em.createQuery(
-				"SELECT a FROM Receivers a WHERE a.active = :active", 
-				Receiver.class).setParameter("active", true).getResultList();
+				"SELECT a FROM ALERT_RECEIVERS a WHERE a.active = :active", 
+				AlertReceiver.class).setParameter("active", true).getResultList();
 	}
 }

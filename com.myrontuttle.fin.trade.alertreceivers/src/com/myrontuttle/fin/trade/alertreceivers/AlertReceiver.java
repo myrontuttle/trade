@@ -19,36 +19,36 @@ import javax.persistence.MapKeyColumn;
  * A record of the receiver used to receive alerts for a user
  * @author Myron Tuttle
  */
-@Entity(name = "Receivers")
-public class Receiver implements Serializable {
+@Entity(name = "ALERT_RECEIVERS")
+public class AlertReceiver implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name = "ReceiverId", nullable = false)
+	@Column(name = "RECEIVER_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private String receiverId;
 
-	@Column(name = "UserId")
+	@Column(name = "USER_ID")
 	private String userId;
 
-	@Column(name = "ReceiverType")
+	@Column(name = "RECEIVER_TYPE")
 	private String receiverType;
 	
 	@ElementCollection(fetch=FetchType.EAGER)
-    @MapKeyColumn(name="name")
-    @Column(name="value")
+    @MapKeyColumn(name="NAME")
+    @Column(name="VALUE")
     @CollectionTable(
-    		name="receiver_parameters", 
-    		joinColumns=@JoinColumn(name="ReceiverId"))
+    		name="RECEIVER_PARAMETERS", 
+    		joinColumns=@JoinColumn(name="RECEIVER_ID"))
     private Map<String, String> parameters = new HashMap<String, String>();
 	
 	@Column(name = "Active")
 	private boolean active;
 	
-	public Receiver() {}
+	public AlertReceiver() {}
 	
-	public Receiver(String userId, String receiverType) {
+	public AlertReceiver(String userId, String receiverType) {
 		this.userId = userId;
 		this.receiverType = receiverType;
 	}

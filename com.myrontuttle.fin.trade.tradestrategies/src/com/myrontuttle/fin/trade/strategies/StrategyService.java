@@ -182,7 +182,7 @@ public class StrategyService implements TradeStrategyService {
 		t.addEvent(e);
 		tradeDAO.updateTrade(t);
 		
-		if (trigger.equals(MOMENT_PASSED)) {
+		if (trigger != null && trigger.equals(MOMENT_PASSED)) {
 			scheduleEvent(e);
 		}
 	}

@@ -34,10 +34,10 @@ public class ReceiverService implements AlertReceiverService {
 			@Override
 			public void run() {
 				try {
-					List<Receiver> receivers = receiverDAO.findActiveReceivers();
+					List<AlertReceiver> receivers = receiverDAO.findActiveReceivers();
 					if (receivers != null && receivers.size() > 0) {
 						System.out.println("Starting alert receiving");
-						for(Receiver r : receivers) {
+						for(AlertReceiver r : receivers) {
 							startReceiving(r);
 						}
 					}
@@ -85,16 +85,16 @@ public class ReceiverService implements AlertReceiverService {
 
 	@Override
 	public String addReceiver(String userId, String receiverType) {
-		Receiver r = new Receiver(userId, receiverType);
+		AlertReceiver r = new AlertReceiver(userId, receiverType);
 		receiverDAO.saveReceiver(r);
 		return r.getReceiverId();
 	}
 
 	@Override
 	public List<String> getReceivers(String userId) {
-		List<Receiver> rs = receiverDAO.findReceivers(userId);
+		List<AlertReceiver> rs = receiverDAO.findReceivers(userId);
 		List<String> receiverIds = new ArrayList<String>(rs.size());
-		for (Receiver r : rs) {
+		for (AlertReceiver r : rs) {
 			receiverIds.add(r.getReceiverId());
 		}
 		return receiverIds;
@@ -120,7 +120,7 @@ public class ReceiverService implements AlertReceiverService {
 
 	@Override
 	public boolean parametersAreSet(String receiverId) {
-		Receiver r = receiverDAO.findReceiver(receiverId);
+		AlertReceiver r = receiverDAO.findReceiver(receiverId);
 		if (r.getReceiverType().equals(EmailAlertReceiver.NAME)) {
 			EmailAlertReceiver.validateParameters(receiverDAO, r);
 		}
@@ -147,13 +147,13 @@ public class ReceiverService implements AlertReceiverService {
 			System.out.println("Missing parameters for receiver: " + receiverId);
 			return;
 		}
-		Receiver r = receiverDAO.findReceiver(receiverId);
+		AlertReceiver r = receiverDAO.findReceiver(receiverId);
 		if (r != null) {
 			startReceiving(r);
 		}
 	}
 	
-	private void startReceiving(Receiver r) {
+	private void startReceiving(AlertReceiver r) {
 		if (r.getReceiverType().equals(EmailAlertReceiver.NAME)) {	
 			if (!EmailAlertReceiver.validateParameters(receiverDAO, r)) {
 				System.out.println("Invalid email parameters for receiver: " + r.getReceiverId());
@@ -172,8 +172,8 @@ public class ReceiverService implements AlertReceiverService {
 
 	@Override
 	public void startReceivingAll(String userId) {
-		List<Receiver> receivers = receiverDAO.findReceivers(userId);
-		for (Receiver r : receivers) {
+		List<AlertReceiver> receivers = receiverDAO.findReceivers(userId);
+		for (AlertReceiver r : receivers) {
 			startReceiving(r);
 		}
 	}
@@ -188,8 +188,8 @@ public class ReceiverService implements AlertReceiverService {
 
 	@Override
 	public void stopReceivingAll(String userId) {
-		List<Receiver> receivers = receiverDAO.findReceivers(userId);
-		for (Receiver r : receivers) {
+		List<AlertReceiver> receivers = receiverDAO.findReceivers(userId);
+		for (AlertReceiver r : receivers) {
 			stopReceiving(r.getReceiverId());
 		}
 	}

@@ -22,24 +22,24 @@ import javax.persistence.OneToOne;
  * Models a trader
  * @author Myron Tuttle
  */
-@Entity(name = "Traders")
+@Entity(name = "TRADERS")
 public class Trader implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name = "TraderId", nullable = false)
+	@Column(name = "TRADER_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private String traderId;
 	
-	@Column(name = "GroupId")
+	@Column(name = "GROUP_ID")
 	private String groupId;
 	
 	@OneToOne
-	@JoinColumn(name = "GroupId", referencedColumnName = "GroupId")
+	@JoinColumn(name = "GROUP_ID", referencedColumnName = "GROUP_ID")
 	private Group group;
 
-	@Column(name = "GenomeString")
+	@Column(name = "GENOME_STRING")
 	@Lob
 	private String genomeString;
 	
@@ -49,10 +49,10 @@ public class Trader implements Serializable {
 	
 	@ElementCollection
 	@CollectionTable(
-			name="Symbol",
-			joinColumns=@JoinColumn(name="TraderId")
+			name="SYMBOLS",
+			joinColumns=@JoinColumn(name="TRADER_ID")
 	)
-	@Column(name="SYMBOLS")
+	@Column(name="SYMBOL")
 	private List<String> symbols;
 	
 	@OneToMany(mappedBy = "trader", targetEntity = SavedAlert.class,

@@ -79,7 +79,7 @@ public class CreateGroupPanel extends Panel {
 		
 		form.add(new TextField<Integer>("numberOfScreens")
 						.setRequired(true)
-						.add(new AttributeModifier("value", "3")));
+						.add(new AttributeModifier("value", "2")));
 		
 		form.add(new TextField<Integer>("maxSymbolsPerScreen")
 						.setRequired(true)

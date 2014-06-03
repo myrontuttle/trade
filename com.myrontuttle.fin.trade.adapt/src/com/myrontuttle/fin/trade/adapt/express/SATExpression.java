@@ -21,7 +21,7 @@ import com.myrontuttle.sci.evolve.api.ExpressionStrategy;
 public class SATExpression<T> implements ExpressionStrategy<int[]> {
 
 	// Gene lengths
-	public static final int SCREEN_GENE_LENGTH = 3;
+	public static final int SCREEN_GENE_LENGTH = 2;
 	public static final int ALERT_GENE_LENGTH = 4;
 	public static final int TRADE_GENE_LENGTH = 5;
 	
@@ -122,9 +122,8 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 	/**
 	 * Creates a set of SelectedScreenCriteria based on a candidate's screener genes
 	 * Screen Gene Data Map
-	 * 1. Is screen criteria active?
-	 * 2. Criteria to use
-	 * 3. Criteria value
+	 * 1. Criteria to use
+	 * 2. Criteria value
 	 * 
 	 * @param candidate A candidate
 	 * @param group The candidates group
@@ -149,17 +148,16 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		int screens = group.getNumberOfScreens();
 		int geneUpperValue = group.getGeneUpperValue();
 		for (int i=0; i<screens; i++) {
-			int active = transpose(genome[position], geneUpperValue, 0, 1);
-			if (active == 1) {
-				int criteriaIndex = transpose(genome[position + 1], geneUpperValue, 
-												0, availableScreenCriteria.length - 1);
-				String name = availableScreenCriteria[criteriaIndex].getName();
-				int valueIndex = transpose(genome[position + 2], geneUpperValue, 0, 
-								availableScreenCriteria[criteriaIndex].getAcceptedValues().length - 1);
-				String value = availableScreenCriteria[criteriaIndex].getAcceptedValue(valueIndex);
-				String argOp = availableScreenCriteria[criteriaIndex].getArgsOperator();
-				selected.add(new SelectedScreenCriteria(name, value, argOp));
-			}
+
+			int criteriaIndex = transpose(genome[position], geneUpperValue, 
+											0, availableScreenCriteria.length - 1);
+			String name = availableScreenCriteria[criteriaIndex].getName();
+			int valueIndex = transpose(genome[position + 1], geneUpperValue, 0, 
+							availableScreenCriteria[criteriaIndex].getAcceptedValues().length - 1);
+			String value = availableScreenCriteria[criteriaIndex].getAcceptedValue(valueIndex);
+			String argOp = availableScreenCriteria[criteriaIndex].getArgsOperator();
+			selected.add(new SelectedScreenCriteria(name, value, argOp));
+			
 			position += SCREEN_GENE_LENGTH;
 		}
 		return selected.toArray(new SelectedScreenCriteria[selected.size()]);

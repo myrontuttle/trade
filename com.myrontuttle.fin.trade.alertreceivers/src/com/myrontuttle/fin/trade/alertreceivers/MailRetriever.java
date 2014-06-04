@@ -95,11 +95,9 @@ public class MailRetriever implements Runnable {
 			inbox.close(true);
 			store.close();
 		} catch (NoSuchProviderException e) {
-			e.printStackTrace();
-			System.exit(1);
+			System.out.println(e.getMessage());
 		} catch (MessagingException e) {
-			e.printStackTrace();
-			System.exit(2);
+			System.out.println(e.getMessage());
 		}
 	}
 

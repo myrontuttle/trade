@@ -211,6 +211,9 @@ public class StrategyService implements TradeStrategyService {
 	@Override
 	public void eventOccurred(String event) {
 		List<Event> events = tradeDAO.findEvents(event);
+		if (events.size() == 0) {
+			System.out.println("No events found matching: " + event);
+		} 
 		for (Event e : events) {
 			Trade trade = tradeDAO.findTrade(e.getTradeId());
 			String strategy = trade.getTradeStrategy();

@@ -45,6 +45,11 @@ public class TradeDAO {
 		em.remove(em.find(Trade.class, tradeId));
 	}
 	
+	public void addEvent(String tradeId, Event e) {
+		Trade trade = em.find(Trade.class, tradeId);
+		trade.addEvent(e);
+	}
+	
 	public List<Event> findEvents(String event) {
 
 		// Retrieve events from database
@@ -58,5 +63,25 @@ public class TradeDAO {
 		return em.createQuery(
 				"SELECT e FROM EVENTS e WHERE e.trigger = :trigger", 
 				Event.class).setParameter("trigger", trigger).getResultList();
+	}
+	
+	public void removeEventsFromDB(String event) {
+		List<Event> events = findEvents(event);
+		for (Event e : events) {
+			em.remove(e);
+		}
+	}
+	
+	public void removeAllTradeEvents(String tradeId) {
+		Trade trade = em.find(Trade.class, tradeId);
+		for (Event e : trade.getEvents()) {
+			em.remove(e);
+		}
+		trade.getEvents().clear();
+	}
+
+	public void addParameter(String tradeId, String name, int value) {
+		Trade trade = em.find(Trade.class, tradeId);
+		trade.addParameter(name, value);
 	}
 }

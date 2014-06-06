@@ -153,9 +153,7 @@ public class StrategyService implements TradeStrategyService {
 
 	@Override
 	public void setTradeParameter(String tradeId, String name, int value) {
-		Trade t = tradeDAO.findTrade(tradeId);
-		t.addParameter(name, value);
-		tradeDAO.updateTrade(t);
+		tradeDAO.addParameter(tradeId, name, value);
 	}
 
 	@Override
@@ -177,10 +175,8 @@ public class StrategyService implements TradeStrategyService {
 
 	@Override
 	public void setTradeEvent(String tradeId, String event, String actionType, String trigger) {
-		Trade t = tradeDAO.findTrade(tradeId);
 		Event e = new Event(event, actionType, trigger);
-		t.addEvent(e);
-		tradeDAO.updateTrade(t);
+		tradeDAO.addEvent(tradeId, e);
 		
 		if (trigger != null && trigger.equals(MOMENT_PASSED)) {
 			scheduleEvent(e);
@@ -204,13 +200,12 @@ public class StrategyService implements TradeStrategyService {
 	public void removeAllTradeEvents(String tradeId) {
 		Trade t = tradeDAO.findTrade(tradeId);
 		for(Event event : t.getEvents()) {
-			t.removeEvent(event);
 			if (event.getTrigger().equals(MOMENT_PASSED) && eventFutures.containsKey(event.getEvent())) {
 				eventFutures.get(event.getEvent()).cancel(true);
 				eventFutures.remove(event.getEvent());
 			}
 		}
-		tradeDAO.updateTrade(t);
+		tradeDAO.removeAllTradeEvents(tradeId);
 	}
 
 	@Override
@@ -240,7 +235,7 @@ public class StrategyService implements TradeStrategyService {
 					eventFutures.remove(e.getEvent());
 				}
 				trade.removeEvent(e);
-				tradeDAO.updateTrade(trade);
+				tradeDAO.removeEventsFromDB(event);
 			} catch (Exception exp) {
 				exp.printStackTrace();
 			}

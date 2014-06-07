@@ -31,6 +31,7 @@ public class UpdateGroupPanel extends Panel {
 		super(id);
 		
 		final Form<Group> form = new Form<Group>("updateGroupForm", model);
+    	group = (Group)model.getObject();
 /*
 		List<String> alertReceiverTypes = Arrays.
 					asList(AlertReceiverAccess.getAlertReceiverService().availableReceiverTypes());

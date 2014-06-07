@@ -34,8 +34,14 @@ public class TradeDAO {
 				"SELECT t FROM TRADES t WHERE t.tradeId = :tradeId", 
 				Trade.class).setParameter("tradeId", tradeId).getResultList().size() == 1;
 	}
+	
+	public List<Trade> findTradesWithSymbol(String symbol) {
+		return em.createQuery(
+				"SELECT t FROM TRADES t WHERE t.symbol = :symbol", 
+				Trade.class).setParameter("symbol", symbol).getResultList();
+	}
 
-	public List<Trade> findTrades(String userId) {
+	public List<Trade> findTradesForUser(String userId) {
 		return em.createQuery(
 				"SELECT t FROM TRADES t WHERE t.userId = :userId", 
 				Trade.class).setParameter("userId", userId).getResultList();

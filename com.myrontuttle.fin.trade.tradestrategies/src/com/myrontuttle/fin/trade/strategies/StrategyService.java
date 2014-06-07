@@ -6,6 +6,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
@@ -20,6 +22,8 @@ public class StrategyService implements TradeStrategyService {
 
 	private final static int NUM_THREADS = 2;
 	private final static int INITIAL_DELAY = 10;	// Seconds
+	
+	private final static String RT_ACC = "^ACCEPTANCE=>Reuters Alert: ";
 	
 	public final static String MOMENT_PASSED = "momentPassed";
 	
@@ -133,7 +137,7 @@ public class StrategyService implements TradeStrategyService {
 
 	@Override
 	public void removeAllTrades(String userId) {
-		List<Trade> trades = tradeDAO.findTrades(userId);
+		List<Trade> trades = tradeDAO.findTradesForUser(userId);
 		for (Trade t : trades) {
 			tradeDAO.removeTrade(t.getTradeId());
 		}
@@ -210,39 +214,63 @@ public class StrategyService implements TradeStrategyService {
 
 	@Override
 	public void eventOccurred(String event) {
-		List<Event> events = tradeDAO.findEvents(event);
-		if (events.size() == 0) {
-			System.out.println("No events found matching: " + event);
-		} 
-		for (Event e : events) {
-			Trade trade = tradeDAO.findTrade(e.getTradeId());
-			String strategy = trade.getTradeStrategy();
-			try {
-				if (strategy.equals(BoundedStrategy.NAME)) {
-					BoundedStrategy.takeAction(e, 
-							trade, 
-							portfolioService, 
-							quoteService, 
-							alertService,
-							this);
-				} else if (strategy.equals(BoundedWAdjustStrategy.NAME)) {
-					BoundedWAdjustStrategy.takeAction(e, 
-							trade, 
-							portfolioService, 
-							quoteService, 
-							alertService,
-							this);
+		// Remove Reuters subject start
+		event = event.replaceFirst(RT_ACC, "");
+		
+		// Get the symbol from the event
+		Pattern pattern = Pattern.compile("^(\\w*\\.?\\w*)");
+		Matcher matcher = pattern.matcher(event);
+		if (!matcher.find()) {
+			System.out.println("No symbol found for event: " + event);
+			return;
+		}
+		String symbol = matcher.group(1);
+		
+		// Find trades with the symbol
+		List<Trade> trades = tradeDAO.findTradesWithSymbol(symbol);
+		if (trades.size() == 0) {
+			System.out.println("No trades with symbol " + symbol + " found.");
+		}
+		for (Trade trade : trades) {
+			List<Event> events = trade.getEvents();
+
+			if (events.size() == 0) {
+				System.out.println("No events found matching: " + event);
+			} 
+			for (Event e : events) {
+				if (event.matches(e.getEvent())) {
+
+					String strategy = trade.getTradeStrategy();
+					try {
+						if (strategy.equals(BoundedStrategy.NAME)) {
+							BoundedStrategy.takeAction(e, 
+									trade, 
+									portfolioService, 
+									quoteService, 
+									alertService,
+									this);
+						} else if (strategy.equals(BoundedWAdjustStrategy.NAME)) {
+							BoundedWAdjustStrategy.takeAction(e, 
+									trade, 
+									portfolioService, 
+									quoteService, 
+									alertService,
+									this);
+						}
+						if (e.getTrigger().equals(MOMENT_PASSED)) {
+							eventFutures.get(e.getEvent()).cancel(true);
+							eventFutures.remove(e.getEvent());
+						}
+						trade.removeEvent(e);
+						tradeDAO.removeEventsFromDB(event);
+					} catch (Exception exp) {
+						exp.printStackTrace();
+					}
+				} else {
+					System.out.println("Event: " + event + " != " + e.getEvent());
 				}
-				if (e.getTrigger().equals(MOMENT_PASSED)) {
-					eventFutures.get(e.getEvent()).cancel(true);
-					eventFutures.remove(e.getEvent());
-				}
-				trade.removeEvent(e);
-				tradeDAO.removeEventsFromDB(event);
-			} catch (Exception exp) {
-				exp.printStackTrace();
 			}
-		}		
+		}
 	}
 	
 }

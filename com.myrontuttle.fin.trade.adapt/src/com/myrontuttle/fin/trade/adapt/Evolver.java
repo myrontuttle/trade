@@ -268,10 +268,18 @@ public class Evolver implements EvolveService {
 					List<Group> groups = groupDAO.findGroups();
 					for (Group group : groups) {
 						if (group.isActive()) {
-							if ((group.getFrequency().equals(Group.HOURLY) && isMarketOpenNow()) ||
-								(group.getFrequency().equals(Group.DAILY) && wasMarketOpenToday()) ||
-								((group.getFrequency().equals(Group.WEEKLY) && isSaturday()))) {
+							DateTime now = new DateTime();
+							if (group.getFrequency().equals(Group.HOURLY) && isMarketOpenNow()) {
 								evolveNow(group.getGroupId());
+							}
+							if (group.getFrequency().equals(Group.DAILY) && wasMarketOpenToday() &&
+									now.getHourOfDay() == Integer.parseInt(EVOLVE_HOUR)) {
+								evolveNow(group.getGroupId());
+							}
+							if (group.getFrequency().equals(Group.WEEKLY) && isSaturday() &&
+									now.getHourOfDay() == Integer.parseInt(EVOLVE_HOUR)) {
+								evolveNow(group.getGroupId());
+								
 							}
 						}
 					}

@@ -175,37 +175,34 @@ public class BoundedStrategy {
 		String openOrderType = portfolioService.
 									openOrderTypesAvailable(trade.getUserId())[tradeParams.get(OPEN_ORDER)];
 		
-		try {
-			double portfolioBalance = portfolioService.getAvailableBalance(trade.getUserId(), 
-																		trade.getPortfolioId());
-			double maxTradeAmount = portfolioBalance * (tradeParams.get(TRADE_ALLOC) / 100.0);
-			double currentPrice = quoteService.getLast(trade.getUserId(), trade.getSymbol());
 
-			if (currentPrice <= maxTradeAmount) {
-				
-				// Open position
-				int quantity = (int)Math.floor(maxTradeAmount / currentPrice);
-				portfolioService.openPosition(trade.getUserId(), trade.getPortfolioId(), trade.getSymbol(), 
-												quantity, openOrderType);
+		double portfolioBalance = portfolioService.getAvailableBalance(trade.getUserId(), 
+																	trade.getPortfolioId());
+		double maxTradeAmount = portfolioBalance * (tradeParams.get(TRADE_ALLOC) / 100.0);
+		double currentPrice = quoteService.getLast(trade.getUserId(), trade.getSymbol());
 
-				// stop loss
-				createStopTrade(trade, currentPrice, true, alertService, tradeStrategyService);
-				
-				// time in trade
-				createTimeLimit(trade, tradeParams.get(TIME_LIMIT), tradeStrategyService);
-				
-				// capture profits
-				createStopTrade(trade, currentPrice, false, alertService, tradeStrategyService);
-				
-			} else {
-				throw new Exception("Not enough allocated to trade " + trade.getSymbol() +
-						". Current Price(" + currentPrice + ") > Max Allowed Trade Amount (" + 
-						maxTradeAmount + ")");
-				
-			}			
-		} catch (Exception e) {
-			throw new Exception("Unable to complete trade. " + e.getMessage());
-		}
+		if (currentPrice <= maxTradeAmount) {
+			
+			// Open position
+			int quantity = (int)Math.floor(maxTradeAmount / currentPrice);
+			portfolioService.openPosition(trade.getUserId(), trade.getPortfolioId(), trade.getSymbol(), 
+											quantity, openOrderType);
+
+			// stop loss
+			createStopTrade(trade, currentPrice, true, alertService, tradeStrategyService);
+			
+			// time in trade
+			createTimeLimit(trade, tradeParams.get(TIME_LIMIT), tradeStrategyService);
+			
+			// capture profits
+			createStopTrade(trade, currentPrice, false, alertService, tradeStrategyService);
+			
+		} else {
+			throw new Exception("Not enough allocated to trade " + trade.getSymbol() +
+					". Current Price(" + currentPrice + ") > Max Allowed Trade Amount (" + 
+					maxTradeAmount + ")");
+			
+		}	
 	}
 
 	protected static void closeTrade(Trade trade, 

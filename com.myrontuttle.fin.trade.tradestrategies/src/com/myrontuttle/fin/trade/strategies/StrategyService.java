@@ -263,6 +263,7 @@ public class StrategyService implements TradeStrategyService {
 						}
 						trade.removeEvent(e);
 						tradeDAO.removeEventsFromDB(event);
+						break;
 					} catch (Exception exp) {
 						exp.printStackTrace();
 					}

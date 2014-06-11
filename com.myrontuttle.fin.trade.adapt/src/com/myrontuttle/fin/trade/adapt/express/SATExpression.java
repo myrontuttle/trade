@@ -524,31 +524,30 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		
 		try {
 			Candidate c = groupDAO.findCandidateByGenome(genome);
+			
+			groupDAO.removeCandidate(c.getCandidateId());
 
-			// Remove Watchlist
-			if (c.getWatchlistId() != null) {
-				watchlistService.delete(c.getCandidateId(), c.getWatchlistId());
-			}
+			// Remove alert trade mapping
+			tradeStrategyService.removeAllTrades(c.getCandidateId());
+			
+			// Remove Alerts
+			alertService.removeAllAlerts(c.getGroupId());
 
 			// Remove Portfolio
 			if (c.getPortfolioId() != null) {
 				portfolioService.delete(c.getCandidateId(), c.getPortfolioId());
 			}
-			
-			// Remove Alerts
-			alertService.removeAllAlerts(c.getGroupId());
-			
-			// Remove alert trade mapping
-			tradeStrategyService.removeAllTrades(c.getCandidateId());
-			
-			groupDAO.removeCandidate(c.getCandidateId());
+
+			// Remove Watchlist
+			if (c.getWatchlistId() != null) {
+				watchlistService.delete(c.getCandidateId(), c.getWatchlistId());
+			}
 			
 		} catch (Exception e) {
 			System.out.println("Unable to destroy candidate with genome: " + 
 					Arrays.toString(genome));
 			e.printStackTrace();
-		}
-		
+		}		
 	}
 	
 	/**

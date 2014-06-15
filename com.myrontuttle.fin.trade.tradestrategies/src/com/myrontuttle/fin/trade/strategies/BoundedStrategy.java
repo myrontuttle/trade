@@ -232,21 +232,21 @@ public class BoundedStrategy {
 		try {
 			for(Event e : trade.getEvents()) {
 				if (!e.getTrigger().equals(StrategyService.MOMENT_PASSED)) {
-					alertService.removeAlert(trade.getUserId(), e.getTrigger());
+					alertService.removeAlert(trade.getAlertUserId(), e.getTrigger());
 				}
 			}
 		} catch (Exception e) {
-			throw new Exception("Unable to remove alerts for user: " + trade.getUserId());
+			throw new Exception("Unable to remove alerts for user: " + trade.getAlertUserId());
 		}
 	}
 	
 	protected static void createStopTrade(Trade trade, double currentPrice, boolean priceRiseGood,
 					AlertService alertService, TradeStrategyService tradeStrategyService) throws Exception {
 
-		String userId = trade.getUserId();
+		String alertUserId = trade.getAlertUserId();
 		
-		AvailableAlert alertWhen = (priceRiseGood) ? alertService.getPriceBelowAlert(userId) :
-										alertService.getPriceAboveAlert(userId);
+		AvailableAlert alertWhen = (priceRiseGood) ? alertService.getPriceBelowAlert(alertUserId) :
+										alertService.getPriceAboveAlert(alertUserId);
 		String alertParam = (priceRiseGood) ? PERCENT_BELOW : PERCENT_ABOVE;
 		
 		double priceDiff = currentPrice - (trade.getParameters().get(alertParam) / 100.0) * currentPrice;
@@ -254,7 +254,7 @@ public class BoundedStrategy {
 														alertWhen.getCondition(),
 														trade.getSymbol(), 
 														priceDiff);
-		String[] alertIds = alertService.setupAlerts(userId, stopLossAlert);
+		String[] alertIds = alertService.setupAlerts(alertUserId, stopLossAlert);
 		for(String alertId : alertIds) {
 			tradeStrategyService.setTradeEvent(trade.getTradeId(), alertWhen.getCondition(), CLOSE, alertId);
 		}

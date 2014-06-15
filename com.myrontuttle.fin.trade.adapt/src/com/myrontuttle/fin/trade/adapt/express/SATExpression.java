@@ -332,7 +332,8 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 				if (position < alerts.length && position < alertIds.length && 
 						alertIds[position] != null) {
 					tradeId = tradeStrategyService.addTrade(tradeStrategy, candidateId, 
-													portfolioId, alerts[position].getSymbol());
+													portfolioId, group.getGroupId(), 
+													alerts[position].getSymbol());
 					trades.add(tradeId);
 					tradeStrategyService.setTradeEvent(tradeId, alerts[position].getCondition(), 
 																actionType, alertIds[position]);

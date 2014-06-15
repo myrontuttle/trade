@@ -16,10 +16,12 @@ public interface TradeStrategyService {
 	 * @param tradeStrategy One of the availableTradeStrategies
 	 * @param userId The user the trade will be for
 	 * @param portfolioId The account the trade will affect
+	 * @param alertUserId The id to create alerts for
 	 * @param symbol The symbol to be traded
 	 * @return The id of this trade
 	 */
-	public String addTrade(String tradeStrategy, String userId, String portfolioId, String symbol);
+	public String addTrade(String tradeStrategy, String userId, String portfolioId, 
+			String alertUserId, String symbol);
 	
 	/**
 	 * Indicates whether a trade with this Id exists

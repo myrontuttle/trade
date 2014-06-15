@@ -105,8 +105,8 @@ public class StrategyService implements TradeStrategyService {
 
 	@Override
 	public String addTrade(String tradeStrategy, String userId,
-			String portfolioId, String symbol) {
-		Trade t = new Trade(tradeStrategy, userId, portfolioId, symbol);
+			String portfolioId, String alertUserId, String symbol) {
+		Trade t = new Trade(tradeStrategy, userId, portfolioId, alertUserId, symbol);
 		tradeDAO.saveTrade(t);
 		return t.getTradeId();
 	}
@@ -189,7 +189,7 @@ public class StrategyService implements TradeStrategyService {
 	
 	private void scheduleEvent(final Event event) {
 		
-		int delay = Seconds.secondsBetween(new DateTime(), new DateTime(event.getTrigger())).getSeconds();
+		int delay = Seconds.secondsBetween(new DateTime(), new DateTime(event.getEvent())).getSeconds();
 		if (delay > 0) {
 			eventFutures.put(event.getEvent(), ses.schedule(new Runnable() {
 				@Override

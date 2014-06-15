@@ -41,6 +41,9 @@ public class Trade implements Serializable {
 	@Column(name = "PORTFOLIO_ID")
 	private String portfolioId;
 	
+	@Column(name = "ALERT_USER_ID")
+	private String alertUserId;
+	
 	@Column(name = "SYMBOL")
 	private String symbol;
 	
@@ -58,10 +61,11 @@ public class Trade implements Serializable {
 	
 	public Trade() {}
 	
-	public Trade(String tradeStrategy, String userId, String portfolioId, String symbol) {
+	public Trade(String tradeStrategy, String userId, String portfolioId, String alertUserId, String symbol) {
 		this.tradeStrategy = tradeStrategy;
 		this.userId = userId;
 		this.portfolioId = portfolioId;
+		this.alertUserId = alertUserId;
 		this.symbol = symbol;
 	}
 
@@ -107,6 +111,14 @@ public class Trade implements Serializable {
 
 	public void setPortfolioId(String portfolioId) {
 		this.portfolioId = portfolioId;
+	}
+
+	public String getAlertUserId() {
+		return alertUserId;
+	}
+
+	public void setAlertUserId(String alertUserId) {
+		this.alertUserId = alertUserId;
 	}
 
 	public String getSymbol() {

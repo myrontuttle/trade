@@ -273,11 +273,11 @@ public class Evolver implements EvolveService {
 								evolveNow(group.getGroupId());
 							}
 							if (group.getFrequency().equals(Group.DAILY) && wasMarketOpenToday() &&
-									now.getHourOfDay() == Integer.parseInt(EVOLVE_HOUR)) {
+									now.getHourOfDay() == prefs.getInt(EVOLVE_HOUR, 0)) {
 								evolveNow(group.getGroupId());
 							}
 							if (group.getFrequency().equals(Group.WEEKLY) && isSaturday() &&
-									now.getHourOfDay() == Integer.parseInt(EVOLVE_HOUR)) {
+									now.getHourOfDay() == prefs.getInt(EVOLVE_HOUR, 0)) {
 								evolveNow(group.getGroupId());
 								
 							}

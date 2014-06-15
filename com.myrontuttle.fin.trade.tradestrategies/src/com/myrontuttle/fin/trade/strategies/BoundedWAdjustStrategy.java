@@ -115,7 +115,7 @@ public class BoundedWAdjustStrategy extends BoundedStrategy {
 
 				// Open position
 				int quantity = (int)Math.floor(maxTradeAmount / currentPrice);
-				portfolioService.openPosition(trade.getUserId(), trade.getPortfolioId(), trade.getSymbol(), 
+				portfolioService.openPosition(userId, portfolioId, trade.getSymbol(), 
 						quantity, openOrderType);
 				
 				// stop loss
@@ -180,9 +180,9 @@ public class BoundedWAdjustStrategy extends BoundedStrategy {
 								AlertService alertService, TradeStrategyService tradeStrategyService) 
 													throws Exception {
 
-		String userId = trade.getUserId();
-		AvailableAlert alertWhen = (priceRiseGood) ? alertService.getPriceAboveAlert(userId) :
-										alertService.getPriceBelowAlert(userId);
+		String alertUserId = trade.getAlertUserId();
+		AvailableAlert alertWhen = (priceRiseGood) ? alertService.getPriceAboveAlert(alertUserId) :
+										alertService.getPriceBelowAlert(alertUserId);
 		String alertType = (priceRiseGood) ? PERCENT_BELOW : PERCENT_ABOVE;
 		
 		double adjustmentPrice = currentPrice + 
@@ -191,7 +191,7 @@ public class BoundedWAdjustStrategy extends BoundedStrategy {
 											alertWhen.getCondition(),
 											trade.getSymbol(),
 											adjustmentPrice);
-		String[] alertIds = alertService.setupAlerts(userId, adjustmentAlert);
+		String[] alertIds = alertService.setupAlerts(alertUserId, adjustmentAlert);
 		for(String alertId : alertIds) {
 			tradeStrategyService.setTradeEvent(trade.getTradeId(), alertWhen.getCondition(), CLOSE, alertId);
 		}

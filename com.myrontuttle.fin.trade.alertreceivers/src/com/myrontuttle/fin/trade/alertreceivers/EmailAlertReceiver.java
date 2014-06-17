@@ -7,6 +7,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.myrontuttle.fin.trade.api.TradeStrategyService;
 
 /**
@@ -14,6 +17,8 @@ import com.myrontuttle.fin.trade.api.TradeStrategyService;
  * @author Myron Tuttle
  */
 public class EmailAlertReceiver {
+
+	private static final Logger logger = LoggerFactory.getLogger( EmailAlertReceiver.class );
 
 	public final static String NAME = "EmailAlert";
 	public final static String HOST = "Host";
@@ -70,7 +75,7 @@ public class EmailAlertReceiver {
 			switch(param) {
 			case HOST:
 				if (value == null || value.isEmpty()) {
-					System.out.println("No email host specified for " + r.getUserId() + ". Using default: " +
+					logger.warn("No email host specified for {}. Using default: {}.", r.getUserId(),
 							DEFAULT_HOST);
 					r.addParameter(HOST, DEFAULT_HOST);
 				}
@@ -79,32 +84,32 @@ public class EmailAlertReceiver {
 				try {
 					int port = Integer.parseInt(value);
 					if (port < 1) {
-						System.out.println(value + " is not a valid email port for user " + r.getUserId() +
-								". Using default = " + DEFAULT_PORT);
+						logger.warn("{} is not a valid email port for user {}. Using default = {}.", 
+								new Object[]{value, r.getUserId(), DEFAULT_PORT});
 						r.addParameter(PORT, DEFAULT_PORT);
 					}
 				} catch (NumberFormatException nfe) {
-					System.out.println(value + " is not a valid email port for user " + r.getUserId() +
-							". Using default = " + DEFAULT_PORT);
+					logger.warn("{} is not a valid email port for user {}. Using default = {}.", 
+							new Object[]{value, r.getUserId(), DEFAULT_PORT});
 					r.addParameter(PORT, DEFAULT_PORT);
 				}
 				break;
 			case PROTOCOL:
 				if (value == null || value.isEmpty()) {
-					System.out.println(value + " is not a valid email protocol for user " + r.getUserId() +
-							". Using default = " + DEFAULT_PROTOCOL);
+					logger.warn("{} is not a valid email protocol for user {}. Using default = {}.", 
+							new Object[]{value, r.getUserId(), DEFAULT_PROTOCOL});
 					r.addParameter(PROTOCOL, DEFAULT_PROTOCOL);
 				}
 				break;
 			case USER:
 				if (value == null || value.isEmpty()) {
-					System.out.println("No email user/address specified for " + r.getUserId());
+					logger.error("No email user/address specified for {}.", r.getUserId());
 					return false;
 				}
 				break;
 			case PASS:
 				if (value == null || value.isEmpty()) {
-					System.out.println("No email password specified for " + r.getUserId());
+					logger.error("No email password specified for {}.", r.getUserId());
 					return false;
 				}
 				break;
@@ -112,13 +117,15 @@ public class EmailAlertReceiver {
 				try {
 					int period = Integer.parseInt(value);
 					if (period < 1) {
-						System.out.println(value + " is not a valid email retrieval period for user " + r.getUserId() +
-								". Setting to default = " + DEFAULT_PERIOD);
+						logger.warn("{} is not a valid email retrieval period for user {}. " +
+								"Setting to default = {}.", 
+								new Object[]{value, r.getUserId(), DEFAULT_PERIOD});
 						r.addParameter(PERIOD, String.valueOf(DEFAULT_PERIOD));
 					}
 				} catch (NumberFormatException nfe) {
-					System.out.println(value + " is not a valid email retrieval period for user " + r.getUserId() +
-							". Setting to default = " + DEFAULT_PERIOD);
+					logger.warn("{} is not a valid email retrieval period for user {}. " +
+							"Setting to default = {}.", 
+							new Object[]{value, r.getUserId(), DEFAULT_PERIOD});
 					r.addParameter(PERIOD, String.valueOf(DEFAULT_PERIOD));
 				}
 				break;
@@ -126,8 +133,9 @@ public class EmailAlertReceiver {
 				try {
 					TimeUnit.valueOf(value);
 				} catch (Exception e) {
-					System.out.println(value + " is not a valid email retrieval time unit for user " + r.getUserId() +
-							". Setting to default = " + DEFAULT_TIME_UNIT);
+					logger.warn("{} is not a valid email retrieval time unit for user {}. " +
+							"Setting to default = {}.", 
+							new Object[]{value, r.getUserId(), DEFAULT_TIME_UNIT});
 					r.addParameter(TIME_UNIT, DEFAULT_TIME_UNIT);
 				}
 			}
@@ -139,7 +147,7 @@ public class EmailAlertReceiver {
 	public static ScheduledFuture<?> startReceiving(ScheduledExecutorService ses, TradeStrategyService tss,
 														AlertReceiver r) {
 
-		System.out.println("Started receiving alerts for " + r.getParameter(USER) + " on " + r.getParameter(HOST));
+		logger.debug("Started receiving alerts for {} on {}.", r.getParameter(USER), r.getParameter(HOST));
 		return ses.scheduleAtFixedRate(
 				new MailRetriever(
 						tss, r.getParameter(HOST), r.getParameter(PROTOCOL), 

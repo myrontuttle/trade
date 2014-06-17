@@ -9,11 +9,16 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.myrontuttle.fin.trade.api.AlertReceiverService;
 import com.myrontuttle.fin.trade.api.TradeStrategyService;
 
 public class ReceiverService implements AlertReceiverService {
 
+	private static final Logger logger = LoggerFactory.getLogger( ReceiverService.class );
+			
 	private final static int NUM_THREADS = 2;
 	private final static int INITIAL_DELAY = 15;	// Seconds
 	
@@ -36,13 +41,13 @@ public class ReceiverService implements AlertReceiverService {
 				try {
 					List<AlertReceiver> receivers = receiverDAO.findActiveReceivers();
 					if (receivers != null && receivers.size() > 0) {
-						System.out.println("Starting alert receiving");
+						logger.info("Starting alert receiving");
 						for(AlertReceiver r : receivers) {
 							startReceiving(r);
 						}
 					}
 				} catch (Exception e) {
-					System.out.println(e.getMessage());
+					logger.error(e.getMessage());
 				}
 			}
 		}, INITIAL_DELAY, TimeUnit.SECONDS);
@@ -128,7 +133,7 @@ public class ReceiverService implements AlertReceiverService {
 		Map<String, String> params = r.getParameters();
 		for (String name : availableParameters.keySet()) {
 			if (!params.containsKey(name)) {
-				System.out.println(name + " missing from receiver " + receiverId);
+				logger.debug("{} missing from receiver {}.", name, receiverId);
 				return false;
 			}
 		}
@@ -144,7 +149,7 @@ public class ReceiverService implements AlertReceiverService {
 	@Override
 	public void startReceiving(String receiverId) {
 		if (!parametersAreSet(receiverId)) {
-			System.out.println("Missing parameters for receiver: " + receiverId);
+			logger.warn("Missing parameters for receiver: {}");
 			return;
 		}
 		AlertReceiver r = receiverDAO.findReceiver(receiverId);
@@ -156,7 +161,7 @@ public class ReceiverService implements AlertReceiverService {
 	private void startReceiving(AlertReceiver r) {
 		if (r.getReceiverType().equals(EmailAlertReceiver.NAME)) {	
 			if (!EmailAlertReceiver.validateParameters(receiverDAO, r)) {
-				System.out.println("Invalid email parameters for receiver: " + r.getReceiverId());
+				logger.warn("Invalid email parameters for receiver: {}", r.getReceiverId());
 				return;
 			}
 			

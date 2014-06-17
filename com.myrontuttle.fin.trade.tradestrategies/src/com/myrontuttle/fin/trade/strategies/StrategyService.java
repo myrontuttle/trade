@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.myrontuttle.fin.trade.api.AlertService;
 import com.myrontuttle.fin.trade.api.AvailableStrategyParameter;
@@ -26,6 +28,8 @@ public class StrategyService implements TradeStrategyService {
 	private final static String RT_ACC = "^ACCEPTANCE=>Reuters Alert: ";
 	
 	public final static String MOMENT_PASSED = "momentPassed";
+
+	private static final Logger logger = LoggerFactory.getLogger( StrategyService.class );
 	
 	private static TradeDAO tradeDAO;
 
@@ -86,13 +90,13 @@ public class StrategyService implements TradeStrategyService {
 				try {
 					List<Event> events = tradeDAO.findEventsWithTrigger(MOMENT_PASSED);
 					if (events != null) {
-						System.out.println("Starting strategy event tracking");
+						logger.info("Starting strategy event tracking");
 						for(Event event : events) {
 							scheduleEvent(event);
 						}
 					}
 				} catch (Exception e) {
-					System.out.println(e.getMessage());
+					logger.error(e.getLocalizedMessage());
 				}
 			}
 		}, INITIAL_DELAY, TimeUnit.SECONDS);
@@ -221,7 +225,7 @@ public class StrategyService implements TradeStrategyService {
 		Pattern pattern = Pattern.compile("^(\\w*\\.?\\w*)");
 		Matcher matcher = pattern.matcher(event);
 		if (!matcher.find()) {
-			System.out.println("No symbol found for event: " + event);
+			logger.debug("No symbol found for event: {}", event);
 			return;
 		}
 		String symbol = matcher.group(1);
@@ -229,13 +233,13 @@ public class StrategyService implements TradeStrategyService {
 		// Find trades with the symbol
 		List<Trade> trades = tradeDAO.findTradesWithSymbol(symbol);
 		if (trades.size() == 0) {
-			System.out.println("No trades with symbol " + symbol + " found.");
+			logger.debug("No trades with symbol {} found.", symbol);
 		}
 		for (Trade trade : trades) {
 			List<Event> events = trade.getEvents();
 
 			if (events.size() == 0) {
-				System.out.println("No events found matching: " + event);
+				logger.debug("No events found matching: {}", event);
 			} 
 			for (Event e : events) {
 				if (event.matches(e.getEvent())) {
@@ -268,7 +272,7 @@ public class StrategyService implements TradeStrategyService {
 						exp.printStackTrace();
 					}
 				} else {
-					System.out.println("Event: " + event + " != " + e.getEvent());
+					logger.debug("Event: {} != {}", event, e.getEvent());
 				}
 			}
 		}

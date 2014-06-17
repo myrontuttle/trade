@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Trade Adapt
 Bundle-SymbolicName: com.myrontuttle.fin.trade.adapt
-Bundle-Version: 2.6.1.qualifier
+Bundle-Version: 2.6.2.qualifier
 Bundle-Vendor: Myron Tuttle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Meta-Persistence: META-INF/persistence.xml
@@ -19,7 +19,8 @@ Import-Package: com.myrontuttle.fin.trade.api,
  javax.persistence,
  org.joda.time;version="1.6.2",
  org.joda.time.base;version="1.6.2",
- org.osgi.framework;version="1.7.0"
+ org.osgi.framework;version="1.7.0",
+ org.slf4j;version="1.6.6"; provider=paxlogging
 Export-Package: com.myrontuttle.fin.trade.adapt,
  com.myrontuttle.fin.trade.adapt.eval,
  com.myrontuttle.fin.trade.adapt.express

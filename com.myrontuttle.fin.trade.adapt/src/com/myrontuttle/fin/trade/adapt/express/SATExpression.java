@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.myrontuttle.fin.trade.adapt.*;
 import com.myrontuttle.fin.trade.api.*;
 import com.myrontuttle.sci.evolve.api.ExpressedCandidate;
@@ -19,6 +22,8 @@ import com.myrontuttle.sci.evolve.api.ExpressionStrategy;
  * @param <T> The candidate to be expressed
  */
 public class SATExpression<T> implements ExpressionStrategy<int[]> {
+
+	private static final Logger logger = LoggerFactory.getLogger( SATExpression.class );
 
 	// Gene lengths
 	public static final int SCREEN_GENE_LENGTH = 2;
@@ -327,8 +332,8 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		for (int i=0; i<numberOfSymbols; i++) {
 			for (int j=0; j<group.getAlertsPerSymbol(); j++) {
 				position = (i * group.getAlertsPerSymbol()) + j;
-				System.out.println("New Trade for " + candidateId + ": Pos=" + position +
-						", alertId=" + alertIds[position] + ", alert=" + alerts[position].getCondition());
+				logger.debug("New Trade for {}. Pos={}, alertId={}, alert={}", 
+						new Object[]{candidateId, position, alertIds[position], alerts[position].getCondition()});
 				if (position < alerts.length && position < alertIds.length && 
 						alertIds[position] != null) {
 					tradeId = tradeStrategyService.addTrade(tradeStrategy, candidateId, 
@@ -421,7 +426,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 	public Candidate express(int[] genome, String groupId) {
 		
 		if (genome == null || genome.length == 0) {
-			System.out.println("No Genome to Express");
+			logger.debug("No genome to express for group: {}.", groupId);
 		}
 		Candidate candidate = new Candidate();
 		candidate.setGenome(genome);
@@ -438,7 +443,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 
 			if (screenCriteria.length == 0) {
 				// All of the screen symbols are turned off and we won't get any symbols from screening
-				System.out.println("No active screen criteria for " + candidate.getCandidateId());
+				logger.debug("No active screen criteria for {}.", candidate.getCandidateId());
 				return candidate;
 			}
 			
@@ -447,7 +452,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			
 			// If the screener didn't produce any symbols there's no point using the other services
 			if (symbols.length == 0) {
-				System.out.println("No symbols found for candidate " + candidate.getCandidateId());
+				logger.debug("No symbols found for candidate {}.", candidate.getCandidateId());
 				return candidate;
 			}
 			
@@ -460,7 +465,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 
 			// No point continuing if there's no portfolio to track trades
 			if (portfolioId == null || portfolioId == "") {
-				System.out.println("Unable to create portfolio for " + candidate.getCandidateId());
+				logger.debug("Unable to create portfolio for {}.", candidate.getCandidateId());
 				return candidate;
 			} else {
 				candidate.setPortfolioId(portfolioId);
@@ -476,9 +481,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			setupTradeParams(params);
 			
 		} catch (Exception e) {
-			System.out.println("Unable to express candidate " + 
-					candidate.getCandidateId());
-			e.printStackTrace();
+			logger.warn("Unable to express candidate {}", candidate.getCandidateId(), e);
 		}
 
 		// Save candidate to database, and return
@@ -545,9 +548,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			}
 			
 		} catch (Exception e) {
-			System.out.println("Unable to destroy candidate with genome: " + 
-					Arrays.toString(genome));
-			e.printStackTrace();
+			logger.warn("Unable to destroy candidate with genome: {}.", Arrays.toString(genome), e);
 		}		
 	}
 	

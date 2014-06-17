@@ -2,6 +2,8 @@ package com.myrontuttle.fin.trade.adapt.eval;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.GroupDAO;
@@ -14,6 +16,8 @@ import com.myrontuttle.sci.evolve.api.ExpressedFitnessEvaluator;
  * @author Myron Tuttle
  */
 public class RealizedGainEvaluator implements ExpressedFitnessEvaluator<int[]> {
+
+	private static final Logger logger = LoggerFactory.getLogger(RealizedGainEvaluator.class);
 
 	private static PortfolioService portfolioService = null;
 	private static GroupDAO groupDAO;
@@ -60,9 +64,8 @@ public class RealizedGainEvaluator implements ExpressedFitnessEvaluator<int[]> {
 			balance = portfolioService.closeAllPositions(tradeCandidate.getCandidateId(),
 														tradeCandidate.getPortfolioId());
 		} catch (Exception e) {
-			System.out.println("Error getting portfolio balance for candidate: " + 
-					tradeCandidate.getCandidateId() + ". Group: " + tradeCandidate.getGroupId());
-			e.printStackTrace();
+			logger.warn("Error getting portfolio balance for candidate: {}. Group: {}.",
+					tradeCandidate.getCandidateId(), tradeCandidate.getGroupId(), e);
 			return 0;
 		}
 

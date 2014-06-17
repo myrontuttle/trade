@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.myrontuttle.fin.trade.api.AlertService;
 import com.myrontuttle.fin.trade.api.AvailableAlert;
@@ -23,6 +25,8 @@ import com.myrontuttle.fin.trade.api.TradeStrategyService;
  * @author Myron Tuttle
  */
 public class BoundedStrategy {
+	
+	private static final Logger logger = LoggerFactory.getLogger( BoundedStrategy.class );
 	
 	public final static String NAME = "Bounded";
 	public final static String DESCRIPTION = "Creates bounds around a trade to exit after a certain time or " +
@@ -85,7 +89,7 @@ public class BoundedStrategy {
 
 	public void setParameterLimits(HashMap<String, Integer> limits) {
 		if (limits == null || limits.values().isEmpty()) {
-			System.out.println("No limits set for Bounded With Adjust Strategy. Using defaults");
+			logger.warn("No limits set for Bounded With Adjust Strategy. Using defaults");
 			return;
 		}
 		if (limits.containsKey(OPEN_ORDER + LOWER)) {

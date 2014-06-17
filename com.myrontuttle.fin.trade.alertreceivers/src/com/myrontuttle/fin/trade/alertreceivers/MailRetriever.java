@@ -17,6 +17,9 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.search.FlagTerm;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.myrontuttle.fin.trade.api.TradeStrategyService;
 
 /**
@@ -24,6 +27,8 @@ import com.myrontuttle.fin.trade.api.TradeStrategyService;
  * @author Myron Tuttle
  */
 public class MailRetriever implements Runnable {
+
+	private static final Logger logger = LoggerFactory.getLogger( MailRetriever.class );
 	
 	private final TradeStrategyService tradeStrategyService;
 	private final String host;
@@ -60,8 +65,7 @@ public class MailRetriever implements Runnable {
 			/* Mention the folder name which you want to read. */
 			Folder inbox = store.getFolder("Inbox");
 			if (inbox.getUnreadMessageCount() > 0) {
-				System.out.println("Unread Messages Found: "
-						+ inbox.getUnreadMessageCount());
+				logger.debug("Unread Messages Found: {}", inbox.getUnreadMessageCount());
 			}
 
 			/* Open the inbox using store. */
@@ -83,11 +87,11 @@ public class MailRetriever implements Runnable {
 				try {
 					subject = message.getSubject();
 				} catch (MessagingException me) {
-					System.out.println("Problem reading mail: " + me.getMessage());
+					logger.warn("Problem reading mail: {}", me.getMessage());
 					subject = message.getHeader("Subject")[0];
 				}
 
-				System.out.println("Retrieved email: " + subject);
+				logger.debug("Retrieved email: {}", subject);
 				tradeStrategyService.eventOccurred(subject);
 				inbox.setFlags(new Message[] {message}, new Flags(Flags.Flag.SEEN), true);
 			}
@@ -95,12 +99,13 @@ public class MailRetriever implements Runnable {
 			inbox.close(true);
 			store.close();
 		} catch (NoSuchProviderException e) {
-			System.out.println(e.getMessage());
+			logger.warn("Unable to retrieve email.", e);
 		} catch (MessagingException e) {
-			System.out.println(e.getMessage());
+			logger.warn("Unable to retrieve email.", e);
 		}
 	}
 
+	/*
 	void printAllMessages(Message[] msgs) throws Exception {
 		for (int i = 0; i < msgs.length; i++) {
 			System.out.println("MESSAGE #" + (i + 1) + ":");
@@ -108,7 +113,7 @@ public class MailRetriever implements Runnable {
 		}
 	}
 
-	/* Print the envelope(FromAddress,ReceivedDate,Subject) */
+	// Print the envelope(FromAddress,ReceivedDate,Subject)
 	void printEnvelope(Message message) throws Exception {
 		Address[] a;
 		// FROM
@@ -161,4 +166,5 @@ public class MailRetriever implements Runnable {
 			System.out.write(c);
 		}
 	}
+	*/
 }

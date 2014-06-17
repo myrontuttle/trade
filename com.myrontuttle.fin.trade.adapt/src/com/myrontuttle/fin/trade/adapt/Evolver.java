@@ -12,6 +12,8 @@ import java.util.prefs.Preferences;
 
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.myrontuttle.fin.trade.adapt.eval.RealizedGainEvaluator;
 import com.myrontuttle.fin.trade.adapt.eval.RandomEvaluator;
@@ -27,6 +29,8 @@ import com.myrontuttle.sci.evolve.termination.*;
 import com.myrontuttle.sci.evolve.util.RNG;
 
 public class Evolver implements EvolveService {
+
+	private static final Logger logger = LoggerFactory.getLogger(Evolver.class);
 
 	private final static int NUM_THREADS = 1;
 	private final static int MINUTES_IN_HOUR = 60;
@@ -71,8 +75,8 @@ public class Evolver implements EvolveService {
 				groupDAO.setBestTrader(trader, group.getGroupId());
 				
 			} catch (Exception e1) {
-				System.out.println("Can't find best candidate with genome: " + 
-										Arrays.toString(data.getBestCandidate()));
+				logger.warn("Can't find best candidate with genome: {}.", 
+										Arrays.toString(data.getBestCandidate()), e1);
 			}
 
 			if (group.getExpressionStrategy().equals(Group.SAT_EXPRESSION)) {
@@ -83,9 +87,8 @@ public class Evolver implements EvolveService {
 					try {
 						expression.setupTrader(bestCandidate, group, trader);
 					} catch (Exception e) {
-						System.out.println("Unable to setup trader " + 
-								bestCandidate.getCandidateId());
-						e.printStackTrace();
+						logger.warn("Unable to setup trader {}.", 
+								bestCandidate.getCandidateId(), e);
 					}
 				}
 				
@@ -252,11 +255,11 @@ public class Evolver implements EvolveService {
 	 */
 	public void evolveActiveAt(DateTime date) {
 		if (date.isBeforeNow()) {
-			System.out.println("Date to evolve is before now.  Setting to evolve at same time tomorrow");
 			date = new DateTime().
 						plusDays(1).
 						withHourOfDay(date.getHourOfDay()).
 						withMinuteOfHour(date.getMinuteOfHour());
+			logger.info("Date to evolve is before now.  Setting to evolve at same time tomorrow: ", date);
 		}
 
         this.ses = Executors.newScheduledThreadPool(NUM_THREADS);
@@ -284,8 +287,7 @@ public class Evolver implements EvolveService {
 						}
 					}
 				} catch (Exception e) {
-					System.out.println("Unable to evolve all groups. ");
-					e.printStackTrace();
+					logger.warn("Unable to evolve all groups.", e);
 				}
 			}
 		}, minutesToTime(date), MINUTES_IN_HOUR, TimeUnit.MINUTES);
@@ -311,7 +313,7 @@ public class Evolver implements EvolveService {
 	        sf.cancel(true);
 	        ses.shutdown();
 		} catch (SecurityException se) {
-			System.out.println("Unable to stop evolving. " + se.getMessage());
+			logger.warn("Unable to stop evolving.", se);
 			return false;
 		}
 		prefs.putBoolean(EVOLVE_ACTIVE, false);

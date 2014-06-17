@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Trade Alert Receivers
 Bundle-SymbolicName: com.myrontuttle.fin.trade.alertreceivers
-Bundle-Version: 2.3.1.qualifier
+Bundle-Version: 2.3.2.qualifier
 Bundle-Vendor: Myron Tuttle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Meta-Persistence: META-INF/persistence.xml
@@ -10,5 +10,6 @@ JPA-PersistenceUnits: ReceiverPU
 Import-Package: com.myrontuttle.fin.trade.api,
  javax.mail,
  javax.mail.search,
- javax.persistence
+ javax.persistence,
+ org.slf4j;version="1.6.6"; provider=paxlogging
 Export-Package: com.myrontuttle.fin.trade.alertreceivers

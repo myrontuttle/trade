@@ -193,7 +193,8 @@ public class BoundedWAdjustStrategy extends BoundedStrategy {
 											adjustmentPrice);
 		String[] alertIds = alertService.setupAlerts(alertUserId, adjustmentAlert);
 		for(String alertId : alertIds) {
-			tradeStrategyService.setTradeEvent(trade.getTradeId(), alertWhen.getCondition(), CLOSE, alertId);
+			String event = alertService.parseCondition(alertWhen, trade.getSymbol(), adjustmentPrice);
+			tradeStrategyService.setTradeEvent(trade.getTradeId(), event, CLOSE, alertId);
 		}
 	}
 }

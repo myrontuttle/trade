@@ -41,7 +41,6 @@ public class ReceiverService implements AlertReceiverService {
 				try {
 					List<AlertReceiver> receivers = receiverDAO.findActiveReceivers();
 					if (receivers != null && receivers.size() > 0) {
-						logger.info("Starting alert receiving");
 						for(AlertReceiver r : receivers) {
 							startReceiving(r);
 						}
@@ -159,6 +158,8 @@ public class ReceiverService implements AlertReceiverService {
 	}
 	
 	private void startReceiving(AlertReceiver r) {
+
+		logger.info("Starting receiving alerts for receiver: {}.", r.getReceiverId());
 		if (r.getReceiverType().equals(EmailAlertReceiver.NAME)) {	
 			if (!EmailAlertReceiver.validateParameters(receiverDAO, r)) {
 				logger.warn("Invalid email parameters for receiver: {}", r.getReceiverId());

@@ -243,7 +243,7 @@ public class StrategyService implements TradeStrategyService {
 			} 
 			for (Event e : events) {
 				if (event.matches(e.getEvent())) {
-
+					logger.debug("Event: {} matches {}", event, e.getEvent());
 					String strategy = trade.getTradeStrategy();
 					try {
 						if (strategy.equals(BoundedStrategy.NAME)) {

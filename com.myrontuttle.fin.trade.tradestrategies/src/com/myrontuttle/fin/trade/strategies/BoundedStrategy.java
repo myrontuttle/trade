@@ -260,7 +260,8 @@ public class BoundedStrategy {
 														priceDiff);
 		String[] alertIds = alertService.setupAlerts(alertUserId, stopLossAlert);
 		for(String alertId : alertIds) {
-			tradeStrategyService.setTradeEvent(trade.getTradeId(), alertWhen.getCondition(), CLOSE, alertId);
+			String event = alertService.parseCondition(alertWhen, trade.getSymbol(), priceDiff);
+			tradeStrategyService.setTradeEvent(trade.getTradeId(), event, CLOSE, alertId);
 		}
 	}
 	

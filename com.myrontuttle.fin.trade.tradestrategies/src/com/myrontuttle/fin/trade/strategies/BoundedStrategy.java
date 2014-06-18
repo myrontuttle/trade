@@ -217,19 +217,15 @@ public class BoundedStrategy {
 			TradeStrategyService tradeStrategyService) throws Exception {
 		logger.trace("Closing trade: {}", trade.getTradeId());
 		if (tradeStrategyService.tradeExists(trade.getTradeId())) {
-			try {
-				portfolioService.closePosition(trade.getUserId(), 
-						trade.getPortfolioId(), trade.getSymbol(), 0, null);
-				
-				deleteTradeAlerts(trade, tradeStrategyService, alertService);
-				
-				tradeStrategyService.removeTrade(trade.getTradeId());
-				
-			} catch (Exception e) {
-				throw new Exception("Unable to close position. " + e.getMessage());
-			}
+			
+			portfolioService.closePosition(trade.getUserId(), 
+					trade.getPortfolioId(), trade.getSymbol(), 0, null);
+			
+			deleteTradeAlerts(trade, tradeStrategyService, alertService);
+			
+			tradeStrategyService.removeTrade(trade.getTradeId());
 		} else {
-			throw new Exception("Trade already closed");
+			throw new Exception("Trade " + trade.getTradeId() + " already closed.");
 		}
 		logger.trace("Finished closing trade: {}", trade.getTradeId());
 	}

@@ -12,10 +12,6 @@ public class TradeDAO {
 		this.em = em;
 	}
 	
-	public void destroy() {
-		em.close();
-	}
-	
 	public void saveTrade(Trade t) {
 		em.persist(t);
 	}

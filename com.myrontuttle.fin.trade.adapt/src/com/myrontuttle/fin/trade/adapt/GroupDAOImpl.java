@@ -15,10 +15,6 @@ public class GroupDAOImpl implements GroupDAO {
 	public void setEntityManager(EntityManager em) {
 		this.em = em;
 	}
-	
-	public void destroy() {
-		em.close();
-	}
 
 	public void saveGroup(Group group) {
 		em.persist(group);

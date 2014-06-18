@@ -237,12 +237,14 @@ public class StrategyService implements TradeStrategyService {
 			logger.debug("No trades with symbol {} found.", symbol);
 		}
 		for (Trade trade : trades) {
+			logger.trace("Looking for events for trade: {}.", trade.getTradeId());
 			List<Event> events = trade.getEvents();
 
 			if (events.size() == 0) {
 				logger.debug("No events found matching: {}", event);
 			} 
 			for (Event e : events) {
+				logger.trace("Checking event: {}.", e.getEvent());
 				if (event.matches(e.getEvent())) {
 					logger.debug("Event: {} matches {}", event, e.getEvent());
 					String strategy = trade.getTradeStrategy();

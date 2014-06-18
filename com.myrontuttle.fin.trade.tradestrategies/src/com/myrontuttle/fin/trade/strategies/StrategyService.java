@@ -218,6 +218,7 @@ public class StrategyService implements TradeStrategyService {
 
 	@Override
 	public void eventOccurred(String event) {
+		logger.trace("Event occurred: {}", event);
 		// Remove Reuters subject start
 		event = event.replaceFirst(RT_ACC, "");
 		
@@ -276,6 +277,7 @@ public class StrategyService implements TradeStrategyService {
 				}
 			}
 		}
+		logger.trace("Completed with event: {}", event);
 	}
 	
 }

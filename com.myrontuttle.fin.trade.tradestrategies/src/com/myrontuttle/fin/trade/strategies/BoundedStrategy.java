@@ -127,13 +127,14 @@ public class BoundedStrategy {
 	public static void takeAction(Event event, Trade t, 
 			PortfolioService portfolioService, QuoteService quoteService,
 			AlertService alertService, TradeStrategyService tradeStrategyService) throws Exception {
-		
+		logger.trace("Taking action for Bounded Strategy");
 		String actionType = event.getActionType();
 		if (actionType.equals(OPEN)) {
 			openTrade(t, portfolioService, quoteService, alertService, tradeStrategyService);
 		} else if (actionType.equals(CLOSE)) {
 			closeTrade(t, portfolioService, alertService, tradeStrategyService);
 		}
+		logger.trace("Finished action for Bounded Strategy");
 	}
 	
 	public static String[] describeTrade(Trade trade, PortfolioService portfolioService) throws Exception {
@@ -169,7 +170,7 @@ public class BoundedStrategy {
 			QuoteService quoteService,
 			AlertService alertService,
 			TradeStrategyService tradeStrategyService) throws Exception {
-		
+		logger.trace("Opening trade: {}", trade.getTradeId());
 		if (portfolioService.openOrderTypesAvailable(trade.getUserId()).length != 
 				portfolioService.closeOrderTypesAvailable(trade.getUserId()).length) {
 			throw new Exception("Open and close order types must match.  Trade not made.");
@@ -206,13 +207,15 @@ public class BoundedStrategy {
 					". Current Price(" + currentPrice + ") > Max Allowed Trade Amount (" + 
 					maxTradeAmount + ")");
 			
-		}	
+		}
+		logger.trace("Finished opening trade: {}", trade.getTradeId());
 	}
 
 	protected static void closeTrade(Trade trade, 
 			PortfolioService portfolioService,
 			AlertService alertService,
 			TradeStrategyService tradeStrategyService) throws Exception {
+		logger.trace("Closing trade: {}", trade.getTradeId());
 		if (tradeStrategyService.tradeExists(trade.getTradeId())) {
 			try {
 				portfolioService.closePosition(trade.getUserId(), 
@@ -228,6 +231,7 @@ public class BoundedStrategy {
 		} else {
 			throw new Exception("Trade already closed");
 		}
+		logger.trace("Finished closing trade: {}", trade.getTradeId());
 	}
 	
 	protected static void deleteTradeAlerts(Trade trade, TradeStrategyService tradeStrategyService, 
@@ -246,7 +250,7 @@ public class BoundedStrategy {
 	
 	protected static void createStopTrade(Trade trade, double currentPrice, boolean priceRiseGood,
 					AlertService alertService, TradeStrategyService tradeStrategyService) throws Exception {
-
+		logger.trace("Creating stopTrade for {}", trade.getTradeId());
 		String alertUserId = trade.getAlertUserId();
 		
 		AvailableAlert alertWhen = (priceRiseGood) ? alertService.getPriceBelowAlert(alertUserId) :
@@ -263,6 +267,7 @@ public class BoundedStrategy {
 			String event = alertService.parseCondition(alertWhen, trade.getSymbol(), priceDiff);
 			tradeStrategyService.setTradeEvent(trade.getTradeId(), event, CLOSE, alertId);
 		}
+		logger.trace("Finished creating stopTrade for {}", trade.getTradeId());
 	}
 	
 	protected static void createTimeLimit(Trade trade, int time, 

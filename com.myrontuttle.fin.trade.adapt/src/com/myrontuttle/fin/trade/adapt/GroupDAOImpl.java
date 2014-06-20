@@ -83,7 +83,7 @@ public class GroupDAOImpl implements GroupDAO {
 	}
 
 	public void removeAllCandidates(String groupId) {
-		Group group = findGroup(groupId);
+		Group group = em.find(Group.class, groupId);
 		for (Candidate c : group.getCandidates()) {
 			em.remove(c);
 		}
@@ -125,7 +125,7 @@ public class GroupDAOImpl implements GroupDAO {
 
 	@Override
 	public void removeAllStats(String groupId) {
-		Group group = findGroup(groupId);
+		Group group = em.find(Group.class, groupId);
 		for (GroupStats gs : group.getStats()) {
 			em.remove(gs);
 		}
@@ -134,7 +134,7 @@ public class GroupDAOImpl implements GroupDAO {
 
 	@Override
 	public void setBestTrader(Trader trader, String groupId) {
-		Group group = findGroup(groupId);		
+		Group group = em.find(Group.class, groupId);		
 		group.setBestTrader(trader);		
 	}
 

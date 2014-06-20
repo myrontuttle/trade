@@ -34,7 +34,8 @@ public class Group implements Serializable {
 	private Collection<Candidate> candidates;
 	
 	@OneToOne(mappedBy = "group", targetEntity = Trader.class,
-			optional = true, cascade = CascadeType.ALL)
+			optional = true, fetch = FetchType.EAGER, 
+			cascade = CascadeType.ALL)
 	private Trader bestTrader;
 	
 	@Column(name = "ALERT_RECEIVER_TYPE")

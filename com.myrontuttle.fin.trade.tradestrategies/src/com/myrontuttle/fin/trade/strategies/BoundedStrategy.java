@@ -218,8 +218,11 @@ public class BoundedStrategy {
 		logger.trace("Closing trade: {}", trade.getTradeId());
 		if (tradeStrategyService.tradeExists(trade.getTradeId())) {
 			
+			String closeOrderType = portfolioService.closeOrderTypesAvailable(
+										trade.getUserId())[trade.getParameter(OPEN_ORDER)];
 			portfolioService.closePosition(trade.getUserId(), 
-					trade.getPortfolioId(), trade.getSymbol(), 0, null);
+					trade.getPortfolioId(), trade.getSymbol(), 0, 
+					closeOrderType);
 			
 			deleteTradeAlerts(trade, tradeStrategyService, alertService);
 			

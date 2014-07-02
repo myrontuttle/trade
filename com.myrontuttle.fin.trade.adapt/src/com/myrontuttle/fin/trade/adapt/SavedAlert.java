@@ -13,7 +13,7 @@ import javax.persistence.ManyToOne;
 import com.myrontuttle.fin.trade.api.SelectedAlert;
 
 @Entity(name = "SAVED_ALERTS")
-public class SavedAlert implements Serializable {
+public class SavedAlert implements Serializable, SelectedAlert {
 
 	private static final long serialVersionUID = 1L;
 	public static final String SEPARATOR = ",";
@@ -39,21 +39,20 @@ public class SavedAlert implements Serializable {
 	@Column(name = "SYMBOL")
 	private String symbol;
 
-	@Column(name = "PARAMS")
-	private String params;
+	@Column(name = "PARAM_STRING")
+	private String paramString;
+	
+	private double[] params;
 	
 	public SavedAlert() {}
-	
-	public SavedAlert(String traderId, SelectedAlert alert) {
+
+	public SavedAlert(String traderId, int alertId, String condition, String symbol, double... params) {
 		this.traderId = traderId;
-		this.alertId = alert.getId();
-		this.condition = alert.getCondition();
-		this.symbol = alert.getSymbol();
-		this.params = generateParams(alert.getParams());
-	}
-	
-	public SelectedAlert createAlert() {
-		return new SelectedAlert(alertId, condition, symbol, parseParams(params));
+		this.alertId = alertId;
+		this.condition = condition;
+		this.symbol = symbol;
+		this.params = params;
+		this.paramString = generateParams(params);
 	}
 	
 	public static String generateParams(double[] p) {
@@ -127,11 +126,23 @@ public class SavedAlert implements Serializable {
 		this.symbol = symbol;
 	}
 
-	public String getParams() {
+	public String getParamString() {
+		return paramString;
+	}
+
+	public void setParamString(String paramString) {
+		this.paramString = paramString;
+	}
+	
+	public double getParam(int index) {
+		return params[index];
+	}
+
+	public double[] getParams() {
 		return params;
 	}
 
-	public void setParams(String params) {
+	public void setParams(double[] params) {
 		this.params = params;
 	}
 }

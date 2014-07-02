@@ -15,6 +15,7 @@ import org.mockito.stubbing.Answer;
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.Group;
 import com.myrontuttle.fin.trade.adapt.GroupDAO;
+import com.myrontuttle.fin.trade.adapt.SavedAlert;
 import com.myrontuttle.fin.trade.adapt.express.SATExpression;
 import com.myrontuttle.fin.trade.api.*;
 
@@ -106,11 +107,11 @@ public class BasicExpressionTest {
 			priceBelowAlert
 	};
 	private SelectedAlert[] selectedAlerts = new SelectedAlert[]{
-			new SelectedAlert(alertId, condition, screenSymbols[0], new double[]{300}),
-			new SelectedAlert(alertId, condition, screenSymbols[1], new double[]{200}),
-			new SelectedAlert(alertId, condition, screenSymbols[2], new double[]{100}),
-			new SelectedAlert(alertId, condition, screenSymbols[3], new double[]{50}),
-			new SelectedAlert(alertId, condition, screenSymbols[4], new double[]{25}),
+			new SavedAlert(CID, alertId, condition, screenSymbols[0], new double[]{300}),
+			new SavedAlert(CID, alertId, condition, screenSymbols[1], new double[]{200}),
+			new SavedAlert(CID, alertId, condition, screenSymbols[2], new double[]{100}),
+			new SavedAlert(CID, alertId, condition, screenSymbols[3], new double[]{50}),
+			new SavedAlert(CID, alertId, condition, screenSymbols[4], new double[]{25}),
 	};
 	private String[] setupAlerts = new String[]{
 			"1-123",

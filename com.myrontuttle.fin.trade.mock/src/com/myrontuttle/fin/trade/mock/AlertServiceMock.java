@@ -4,7 +4,7 @@ import com.myrontuttle.fin.trade.api.AlertService;
 import com.myrontuttle.fin.trade.api.AvailableAlert;
 import com.myrontuttle.fin.trade.api.SelectedAlert;
 
-public class AlertMock implements AlertService {
+public class AlertServiceMock implements AlertService {
 
 	private final int belowId = 1;
 	private final int aboveId = 2;
@@ -30,9 +30,8 @@ public class AlertMock implements AlertService {
 			"1-123",
 			"2-456"
 	};
-
 	private SelectedAlert[] selectedAlerts = new SelectedAlert[]{
-			new SelectedAlert(belowId, belowCondition, "AAPL", new double[]{400})
+			new ActiveAlert()
 	};
 	
 	@Override
@@ -106,4 +105,40 @@ public class AlertMock implements AlertService {
 		return false;
 	}
 
+	@Override
+	public String setupAlert(String userId, int alertId, String condition,
+			String symbol, double... params) {
+		return setupAlerts[0];
+	}
+}
+
+class ActiveAlert implements SelectedAlert {
+
+	double[] params = new double[]{400};
+	
+	@Override
+	public int getAlertId() {
+		return 1;
+	}
+
+	@Override
+	public String getCondition() {
+		return "{symbol}'s price fell below {Price}";
+	}
+
+	@Override
+	public String getSymbol() {
+		return "AAPL";
+	}
+
+	@Override
+	public double getParam(int index) {
+		return params[index];
+	}
+
+	@Override
+	public double[] getParams() {
+		return params;
+	}
+	
 }

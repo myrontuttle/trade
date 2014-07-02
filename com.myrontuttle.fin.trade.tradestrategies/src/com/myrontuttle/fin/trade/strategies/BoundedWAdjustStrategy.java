@@ -6,7 +6,6 @@ import com.myrontuttle.fin.trade.api.AlertService;
 import com.myrontuttle.fin.trade.api.AvailableAlert;
 import com.myrontuttle.fin.trade.api.PortfolioService;
 import com.myrontuttle.fin.trade.api.QuoteService;
-import com.myrontuttle.fin.trade.api.SelectedAlert;
 import com.myrontuttle.fin.trade.api.TradeStrategyService;
 
 /**
@@ -187,14 +186,12 @@ public class BoundedWAdjustStrategy extends BoundedStrategy {
 		
 		double adjustmentPrice = currentPrice + 
 					(trade.getParameters().get(alertType) / 100) * currentPrice;
-		SelectedAlert adjustmentAlert = new SelectedAlert(alertWhen.getId(),
-											alertWhen.getCondition(),
-											trade.getSymbol(),
-											adjustmentPrice);
-		String[] alertIds = alertService.setupAlerts(alertUserId, adjustmentAlert);
-		for(String alertId : alertIds) {
-			String event = alertService.parseCondition(alertWhen, trade.getSymbol(), adjustmentPrice);
-			tradeStrategyService.setTradeEvent(trade.getTradeId(), event, CLOSE, alertId);
-		}
+		String alertId = alertService.setupAlert(alertUserId, 
+				alertWhen.getId(),
+				alertWhen.getCondition(),
+				trade.getSymbol(),
+				adjustmentPrice);
+		String event = alertService.parseCondition(alertWhen, trade.getSymbol(), adjustmentPrice);
+		tradeStrategyService.setTradeEvent(trade.getTradeId(), event, CLOSE, alertId);
 	}
 }

@@ -102,6 +102,17 @@ public interface AlertService {
 	public String[] setupAlerts(String userId, SelectedAlert... alerts) throws Exception;
 	
 	/**
+	 * Sets up a single alert to potentially be triggered
+	 * @param userId User to receive alerts
+	 * @param alertId Id of alert
+	 * @param condition Condition that triggers alert
+	 * @param symbol Symbol that alert triggers for
+	 * @param params Parameters that define when the alert is triggered
+	 * @return Id of the setup alert
+	 */
+	public String setupAlert(String userId, int alertId, String condition, String symbol, double... params);
+	
+	/**
 	 * Returns the alerts that have been setup
 	 * @param userId User to receive alerts
 	 * @return Array of active alerts

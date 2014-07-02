@@ -12,7 +12,6 @@ import com.myrontuttle.fin.trade.api.AvailableAlert;
 import com.myrontuttle.fin.trade.api.AvailableStrategyParameter;
 import com.myrontuttle.fin.trade.api.PortfolioService;
 import com.myrontuttle.fin.trade.api.QuoteService;
-import com.myrontuttle.fin.trade.api.SelectedAlert;
 import com.myrontuttle.fin.trade.api.TradeStrategyService;
 
 /**
@@ -257,15 +256,13 @@ public class BoundedStrategy {
 		String alertParam = (priceRiseGood) ? PERCENT_BELOW : PERCENT_ABOVE;
 		
 		double priceDiff = currentPrice - (trade.getParameters().get(alertParam) / 100.0) * currentPrice;
-		SelectedAlert stopLossAlert = new SelectedAlert(alertWhen.getId(),
-														alertWhen.getCondition(),
-														trade.getSymbol(), 
-														priceDiff);
-		String[] alertIds = alertService.setupAlerts(alertUserId, stopLossAlert);
-		for(String alertId : alertIds) {
-			String event = alertService.parseCondition(alertWhen, trade.getSymbol(), priceDiff);
-			tradeStrategyService.setTradeEvent(trade.getTradeId(), event, CLOSE, alertId);
-		}
+		String alertId = alertService.setupAlert(alertUserId, 
+				alertWhen.getId(),
+				alertWhen.getCondition(),
+				trade.getSymbol(), 
+				priceDiff);
+		String event = alertService.parseCondition(alertWhen, trade.getSymbol(), priceDiff);
+		tradeStrategyService.setTradeEvent(trade.getTradeId(), event, CLOSE, alertId);
 		logger.trace("Finished creating stopTrade for {}", trade.getTradeId());
 	}
 	

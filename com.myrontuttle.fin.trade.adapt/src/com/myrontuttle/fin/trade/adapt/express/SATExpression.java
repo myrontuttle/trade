@@ -252,7 +252,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 	 * @param symbols The symbols found during screening
 	 * @return A set of alert criteria selected by this candidate
 	 */
-	public SelectedAlert[] expressAlertGenes(Candidate candidate, Group group, 
+	public SavedAlert[] expressAlertGenes(Candidate candidate, Group group, 
 			String[] symbols) throws Exception {
 
 		int[] genome = candidate.getGenome();
@@ -263,7 +263,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			throw new Exception("No available alerts for " + group.getGroupId());
 		}
 		
-		SelectedAlert[] selected = new SelectedAlert[symbols.length * group.getAlertsPerSymbol()];
+		SavedAlert[] selected = new SavedAlert[symbols.length * group.getAlertsPerSymbol()];
 		
 		int position = getAlertStartPosition(group);
 		int s = 0;
@@ -273,24 +273,24 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 				AvailableAlert alert = availableAlerts[transpose(genome[position],  
 																	group.getGeneUpperValue(),
 																	0, availableAlerts.length - 1)];
-				int id = alert.getId();
+				int alertId = alert.getId();
 				String[] criteriaTypes = alert.getCriteriaTypes();
 				double[] params = new double[criteriaTypes.length];
 				for (int k=0; k<criteriaTypes.length; k++) {
 					if (criteriaTypes[k].equals(AvailableAlert.DOUBLE)) {
-						double upper = alertService.getUpperDouble(group.getGroupId(), id, symbols[i], k);
-						double lower = alertService.getLowerDouble(group.getGroupId(), id, symbols[i], k);
+						double upper = alertService.getUpperDouble(group.getGroupId(), alertId, symbols[i], k);
+						double lower = alertService.getLowerDouble(group.getGroupId(), alertId, symbols[i], k);
 						params[k] = transpose(genome[position + 1], group.getGeneUpperValue(),
 												lower, upper);
 					} else if (criteriaTypes[k].equals(AvailableAlert.LIST)) {
-						int upper = alertService.getListLength(group.getGroupId(), id, k);
+						int upper = alertService.getListLength(group.getGroupId(), alertId, k);
 						params[k] = transpose(genome[position + 1], group.getGeneUpperValue(), 
 												0, upper);
 					}
 				}
 				String selectedCondition = alertService.parseCondition(alert, symbols[i], 
 																		params);
-				selected[s] = new SelectedAlert(id, selectedCondition, 
+				selected[s] = new SavedAlert(candidate.getCandidateId(), alertId, selectedCondition, 
 													symbols[i], params);
 				s++;
 				position += ALERT_GENE_LENGTH;
@@ -609,13 +609,12 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			groupDAO.addSymbol(symbol, trader.getTraderId());
 		}
 		
-		SelectedAlert[] alerts = expressAlertGenes(candidate, group, symbols);
+		SavedAlert[] alerts = expressAlertGenes(candidate, group, symbols);
 		if (alerts.length == 0) {
 			return trader;
 		}
-		for (SelectedAlert alert : alerts) {
-			groupDAO.addSavedAlert(new SavedAlert(trader.getTraderId(), alert), 
-					trader.getTraderId());
+		for (SavedAlert alert : alerts) {
+			groupDAO.addSavedAlert(alert, trader.getTraderId());
 		}
 
 		ArrayList<SelectedStrategyParameter> params = expressTradeGenes(candidate, group, symbols);

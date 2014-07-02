@@ -6,7 +6,7 @@ import com.myrontuttle.fin.trade.adapt.SavedAlert;
 import com.myrontuttle.fin.trade.web.data.DBAccess;
 
 /**
- * detachable model for an instance of SavedScreen
+ * detachable model for an instance of SavedAlert
  * 
  */
 public class DetachableAlertModel extends LoadableDetachableModel<SavedAlert> {

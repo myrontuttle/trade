@@ -1,6 +1,9 @@
 package com.myrontuttle.fin.trade.mock;
 
+import java.util.ArrayList;
+
 import com.myrontuttle.fin.trade.api.PortfolioService;
+import com.myrontuttle.fin.trade.api.Transaction;
 
 public class PortfolioMock implements PortfolioService {
 
@@ -13,6 +16,8 @@ public class PortfolioMock implements PortfolioService {
 	
 	private String[] openOrderTypes = new String[]{ BUY, SHORT };
 	private String[] closeOrderTypes = new String[]{ SELL, COVER };
+	
+	private ArrayList<Transaction> transactions = new ArrayList<Transaction>(2);
 	
 	@Override
 	public String create(String userId, String name) throws Exception {
@@ -40,6 +45,20 @@ public class PortfolioMock implements PortfolioService {
 	public double getAvailableBalance(String userId, String portfolioId)
 			throws Exception {
 		return STARTING_CASH;
+	}
+
+	@Override
+	public Transaction getTransaction(String transactionId) throws Exception {
+		return new TransactionMock("01", "2014-06-25 09:30", BUY, "AAPL", 20, 134.23);
+	}
+	
+	@Override
+	public ArrayList<Transaction> getTransactions(String userId, String portfolioId)
+			throws Exception {
+
+		transactions.add(new TransactionMock("01", "2014-06-25 09:30", BUY, "AAPL", 20, 134.23));
+		transactions.add(new TransactionMock("02", "2014-06-25 14:30", SELL, "AAPL", 20, 140.89));
+		return transactions;
 	}
 
 	@Override
@@ -80,4 +99,5 @@ public class PortfolioMock implements PortfolioService {
 			throws Exception {
 		return STARTING_CASH + (Math.random() - 0.5) * 100;
 	}
+
 }

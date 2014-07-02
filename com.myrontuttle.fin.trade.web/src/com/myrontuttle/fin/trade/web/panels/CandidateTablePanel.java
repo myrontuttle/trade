@@ -13,14 +13,19 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColu
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
+import com.myrontuttle.fin.trade.adapt.Group;
 import com.myrontuttle.fin.trade.web.data.DBAccess;
 import com.myrontuttle.fin.trade.web.data.SortableCandidateDataProvider;
+import com.myrontuttle.fin.trade.web.pages.CandidatePage;
+import com.myrontuttle.fin.trade.web.pages.GroupPage;
+import com.myrontuttle.fin.trade.web.panels.GroupTablePanel.DetailPanel;
 import com.myrontuttle.fin.trade.web.service.EvolveAccess;
 import com.myrontuttle.fin.trade.web.service.PortfolioAccess;
 import com.myrontuttle.fin.trade.web.service.WatchlistAccess;
@@ -36,7 +41,7 @@ public class CandidateTablePanel extends Panel {
 		List<IColumn<Candidate, String>> columns = new ArrayList<IColumn<Candidate, String>>();
 
 		columns.add(new PropertyColumn<Candidate, String>(new Model<String>("ID"), "candidateId", "candidateId"));
-		columns.add(new PropertyColumn(new Model<String>("Watchlist"), "watchlistId"));
+		//columns.add(new PropertyColumn(new Model<String>("Watchlist"), "watchlistId"));
 		columns.add(new AbstractColumn<Candidate, String>(new Model<String>("Watch Symbols")) {
 			@Override
 			public void populateItem(Item<ICellPopulator<Candidate>> cellItem,
@@ -55,7 +60,14 @@ public class CandidateTablePanel extends Panel {
 				}
 			}
 		});
-		columns.add(new PropertyColumn(new Model<String>("Portfolio"), "portfolioId"));
+
+		columns.add(new AbstractColumn<Candidate, String>(new Model<String>("Details")) {
+			public void populateItem(Item<ICellPopulator<Candidate>> cellItem, String componentId,
+				IModel<Candidate> model) {
+				cellItem.add(new DetailsLinkPanel(componentId, model));
+			}
+		});
+		
 		columns.add(new AbstractColumn<Candidate, String>(new Model<String>("Portfolio Value")) {
 			@Override
 			public void populateItem(Item<ICellPopulator<Candidate>> cellItem,
@@ -89,6 +101,24 @@ public class CandidateTablePanel extends Panel {
 				new SortableCandidateDataProvider(groupId), 20);
 
 		add(dataTable);
+	}
+
+	class DetailsLinkPanel extends Panel {
+		/**
+		 * @param id component id
+		 * @param model model for contact
+		 */
+		public DetailsLinkPanel(String id, IModel<Candidate> model) {
+			super(id, model);
+			add(new Link(model.getObject().getPortfolioId()) {
+				@Override
+				public void onClick() {
+					String candidateId = ((Candidate)getParent().getDefaultModelObject()).getCandidateId();
+					CandidatePage cp = new CandidatePage(candidateId);
+					setResponsePage(cp);
+				}
+			});
+		}
 	}
 	
 	class DeleteCandidatePanel extends Panel {

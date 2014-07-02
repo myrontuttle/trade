@@ -1,5 +1,7 @@
 package com.myrontuttle.fin.trade.api;
 
+import java.util.ArrayList;
+
 /**
  * Service for creating portfolios of issue holdings 
  * @author Myron Tuttle
@@ -51,6 +53,25 @@ public interface PortfolioService {
 	 * @return Available cash
 	 */
 	public double getAvailableBalance(String userId, String portfolioId) throws Exception;
+	
+	/**
+	 * Provides all of the transactions that have occurred for this user's portfolio
+	 * @param userId
+	 * @param portfolioId
+	 * @return Array of transactions
+	 * @throws Exception
+	 */
+	public ArrayList<Transaction> getTransactions(String userId, String portfolioId) throws Exception;
+	
+	/**
+	 * Provides a single transaction with the provided transactionId
+	 * @param userId User this transaction belongs to
+	 * @param portfolioId Portfolio which contains this transaction
+	 * @param transactionId Id of transaction to retrieve
+	 * @return
+	 * @throws Exception
+	 */
+	public Transaction getTransaction(String transactionId) throws Exception;
 	
 	/**
 	 * The order types available to open a position

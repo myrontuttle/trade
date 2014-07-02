@@ -26,7 +26,7 @@ public class ScreenerMock implements ScreenerService {
 	
 	private SelectedScreenCriteria[] selectedScreenCriteria = 
 			new SelectedScreenCriteria[] {
-				new SelectedScreenCriteria("RCCAssetClass", "LIKE[0]=Large Cap", "OR")
+				new SetScreenCriteria("RCCAssetClass", "LIKE[0]=Large Cap", "OR")
 	};
 	
 	private HashSet<String> usedCriteria = new HashSet<String>();
@@ -83,4 +83,29 @@ public class ScreenerMock implements ScreenerService {
 		return usedCriteria;
 	}
 
+}
+
+class SetScreenCriteria implements SelectedScreenCriteria {
+	
+	private final String name;
+	private final String selectedValue;
+	private final String argsOperator;
+
+	public SetScreenCriteria(String name, String selectedValue, String argOp){
+		this.name = name;
+		this.selectedValue = selectedValue;
+		this.argsOperator = argOp;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public String getValue() {
+		return selectedValue;
+	}
+
+	public String getArgsOperator() {
+		return argsOperator;
+	}
 }

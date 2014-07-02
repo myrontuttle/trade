@@ -16,6 +16,7 @@ import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.Group;
 import com.myrontuttle.fin.trade.adapt.GroupDAO;
 import com.myrontuttle.fin.trade.adapt.SavedAlert;
+import com.myrontuttle.fin.trade.adapt.SavedScreen;
 import com.myrontuttle.fin.trade.adapt.express.SATExpression;
 import com.myrontuttle.fin.trade.api.*;
 
@@ -83,8 +84,8 @@ public class BasicExpressionTest {
 	};
 	private SelectedScreenCriteria[] selectedScreenCriteria =
 			new SelectedScreenCriteria[]{
-				new SelectedScreenCriteria("RCCAssetClass", "LIKE[0]=Large Cap", "OR"),
-				new SelectedScreenCriteria("RCCRegion", "LIKE[0]=Americas", "OR")
+				new SavedScreen(CID, "RCCAssetClass", "LIKE[0]=Large Cap", "OR"),
+				new SavedScreen(CID, "RCCRegion", "LIKE[0]=Americas", "OR")
 	};
 	private String[] screenSymbols = new String[]{"AAPL", "MSFT", "CSCO", "AA", "T"};
 	

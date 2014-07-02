@@ -134,10 +134,11 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 	 * @param group The candidates group
 	 * @return A set of screener criteria selected by this candidate
 	 */
-	public SelectedScreenCriteria[] expressScreenerGenes(Candidate candidate, Group group) 
+	public SavedScreen[] expressScreenerGenes(Candidate candidate, Group group) 
 			throws Exception {
 		
 		int[] genome = candidate.getGenome();
+		String candidateId = candidate.getCandidateId();
 
 		// Get screener possibilities
 		AvailableScreenCriteria[] availableScreenCriteria = 
@@ -149,7 +150,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 
 		// Start at the first screen gene
 		int position = getScreenStartPosition();
-		ArrayList<SelectedScreenCriteria> selected = new ArrayList<SelectedScreenCriteria>();
+		ArrayList<SavedScreen> selected = new ArrayList<SavedScreen>();
 		int screens = group.getNumberOfScreens();
 		int geneUpperValue = group.getGeneUpperValue();
 		for (int i=0; i<screens; i++) {
@@ -161,11 +162,11 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 							availableScreenCriteria[criteriaIndex].getAcceptedValues().length - 1);
 			String value = availableScreenCriteria[criteriaIndex].getAcceptedValue(valueIndex);
 			String argOp = availableScreenCriteria[criteriaIndex].getArgsOperator();
-			selected.add(new SelectedScreenCriteria(name, value, argOp));
+			selected.add(new SavedScreen(candidateId, name, value, argOp));
 			
 			position += SCREEN_GENE_LENGTH;
 		}
-		return selected.toArray(new SelectedScreenCriteria[selected.size()]);
+		return selected.toArray(new SavedScreen[selected.size()]);
 	}
 	
 	public String[] getScreenSymbols(Candidate candidate, Group group, 
@@ -256,6 +257,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			String[] symbols) throws Exception {
 
 		int[] genome = candidate.getGenome();
+		String candidateId = candidate.getCandidateId();
 		
 		// Get alert possibilities
 		AvailableAlert[] availableAlerts = alertService.getAvailableAlerts(group.getGroupId());
@@ -290,7 +292,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 				}
 				String selectedCondition = alertService.parseCondition(alert, symbols[i], 
 																		params);
-				selected[s] = new SavedAlert(candidate.getCandidateId(), alertId, selectedCondition, 
+				selected[s] = new SavedAlert(candidateId, alertId, selectedCondition, 
 													symbols[i], params);
 				s++;
 				position += ALERT_GENE_LENGTH;
@@ -592,13 +594,12 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 	public Trader setupTrader(Candidate candidate, Group group, Trader trader) 
 			throws Exception {
 
-		SelectedScreenCriteria[] screenCriteria = expressScreenerGenes(candidate, group);
+		SavedScreen[] screenCriteria = expressScreenerGenes(candidate, group);
 		if (screenCriteria.length == 0) {
 			return trader;
 		}
-		for (SelectedScreenCriteria criteria : screenCriteria) {
-			groupDAO.addSavedScreen(new SavedScreen(trader.getTraderId(), criteria), 
-									trader.getTraderId());
+		for (SavedScreen criteria : screenCriteria) {
+			groupDAO.addSavedScreen(criteria, trader.getTraderId());
 		}
 		
 		String[] symbols = getScreenSymbols(candidate, group, screenCriteria);

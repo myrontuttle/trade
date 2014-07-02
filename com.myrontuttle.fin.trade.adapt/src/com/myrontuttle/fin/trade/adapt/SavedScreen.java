@@ -13,7 +13,7 @@ import javax.persistence.ManyToOne;
 import com.myrontuttle.fin.trade.api.SelectedScreenCriteria;
 
 @Entity(name = "SAVED_SCREENS")
-public class SavedScreen implements Serializable {
+public class SavedScreen implements Serializable, SelectedScreenCriteria {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -32,23 +32,19 @@ public class SavedScreen implements Serializable {
 	@Column(name = "NAME")
 	private String name;
 
-	@Column(name = "SCREEN_VALUE")
-	private String screenValue;
+	@Column(name = "VALUE")
+	private String value;
 
 	@Column(name = "ARG_OPERATOR")
 	private String argsOperator;
 	
 	public SavedScreen() {}
 	
-	public SavedScreen(String traderId, SelectedScreenCriteria screen) {
+	public SavedScreen(String traderId, String name, String value, String argsOperator) {
 		this.traderId = traderId;
-		this.name = screen.getName();
-		this.screenValue = screen.getValue();
-		this.argsOperator = screen.getArgsOperator();
-	}
-	
-	public SelectedScreenCriteria createCriteria() {
-		return new SelectedScreenCriteria(name, screenValue, argsOperator);
+		this.name = name;
+		this.value = value;
+		this.argsOperator = argsOperator;
 	}
 
 	public String getSavedScreenId() {
@@ -83,12 +79,12 @@ public class SavedScreen implements Serializable {
 		this.name = name;
 	}
 
-	public String getScreenValue() {
-		return screenValue;
+	public String getValue() {
+		return value;
 	}
 
-	public void setScreenValue(String screenValue) {
-		this.screenValue = screenValue;
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 	public String getArgsOperator() {

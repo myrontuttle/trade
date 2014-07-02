@@ -19,9 +19,9 @@ public class FixedCriteriaPanel extends Panel {
 
 	public FixedCriteriaPanel(String id) {
 		super(id);
-		final Criteria criteria = new Criteria();
-		Form<Criteria> form = new Form<Criteria>(
-				"fixedCriteriaForm", new CompoundPropertyModel<Criteria>(criteria));
+		final FixedCriteria criteria = new FixedCriteria();
+		Form<FixedCriteria> form = new Form<FixedCriteria>(
+				"fixedCriteriaForm", new CompoundPropertyModel<FixedCriteria>(criteria));
 		
 		form.add(new TextArea<String>("text"));
 
@@ -41,9 +41,11 @@ public class FixedCriteriaPanel extends Panel {
 	}
 
     /** Simple data class that acts as a model for the input fields. */
-    private static class Criteria implements IClusterable {
+    private static class FixedCriteria implements IClusterable {
     	
 		private static final long serialVersionUID = 1L;
+
+		public static final String SEPARATOR = ";";
 		
 		/** settings text. */
         public String text = getStoredFixedCriteria();
@@ -62,9 +64,9 @@ public class FixedCriteriaPanel extends Panel {
         	ArrayList<SelectedScreenCriteria> screenCriteria = new ArrayList<SelectedScreenCriteria>();
         	String[] criteriaLines = text.split("\\r?\\n");
         	for (String criteria : criteriaLines) {
-        		String[] details = criteria.split(SelectedScreenCriteria.SEPARATOR);
+        		String[] details = criteria.split(SEPARATOR);
         		if (details.length >= 3) {
-            		screenCriteria.add(new SelectedScreenCriteria(details[0], details[1], details[2]));
+            		screenCriteria.add(new Criteria(details[0], details[1], details[2]));
         		}
         	}
         	return screenCriteria.toArray(new SelectedScreenCriteria[screenCriteria.size()]);
@@ -76,8 +78,8 @@ public class FixedCriteriaPanel extends Panel {
         		SelectedScreenCriteria[] fixed = ScreenerAccess.getScreenerService().getFixedCriteria();
 
 	        	for (int i=0; i<fixed.length; i++) {
-	        		sb.append(fixed[i].getName() + SelectedScreenCriteria.SEPARATOR +
-	        				fixed[i].getValue() + SelectedScreenCriteria.SEPARATOR +
+	        		sb.append(fixed[i].getName() + SEPARATOR +
+	        				fixed[i].getValue() + SEPARATOR +
 	        				fixed[i].getArgsOperator() + "\n");
 	        	}
 			} catch (Exception e) {
@@ -87,4 +89,33 @@ public class FixedCriteriaPanel extends Panel {
         	return sb.toString();
         }
     }
+}
+
+class Criteria implements SelectedScreenCriteria {
+
+	String name;
+	String value;
+	String argsOperator;
+
+	public Criteria(String name, String value, String argsOperator) {
+		this.name = name;
+		this.value = value;
+		this.argsOperator = argsOperator;
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public String getValue() {
+		return value;
+	}
+
+	@Override
+	public String getArgsOperator() {
+		return argsOperator;
+	}
+	
 }

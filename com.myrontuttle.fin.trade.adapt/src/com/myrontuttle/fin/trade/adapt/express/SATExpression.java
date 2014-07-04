@@ -365,11 +365,12 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 	 * @param symbols The symbols found during screening
 	 * @return A set of strategy parameters selected for this candidate
 	 */
-	public ArrayList<SelectedStrategyParameter> expressTradeGenes(Candidate candidate, Group group, 
+	public ArrayList<TradeInstruction> expressTradeGenes(Candidate candidate, Group group, 
 												String[] tradeIds) throws Exception {
 
 		String tradeStrategy = group.getTradeStrategy();
 		int[] genome = candidate.getGenome();
+		String candidateId = candidate.getCandidateId();
 		
 		AvailableStrategyParameter[] availableParameters = tradeStrategyService.availableTradeParameters(
 																tradeStrategy);
@@ -377,12 +378,13 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		int position = getAlertStartPosition(group) + 
 				group.getMaxSymbolsPerScreen() * ALERT_GENE_LENGTH * group.getAlertsPerSymbol();
 		
-		ArrayList<SelectedStrategyParameter> selectedParams = 
-				new ArrayList<SelectedStrategyParameter>(tradeIds.length*availableParameters.length);
+		ArrayList<TradeInstruction> selectedParams = 
+				new ArrayList<TradeInstruction>(tradeIds.length*availableParameters.length);
 		for (int i=0; i<tradeIds.length; i++) {
 			
 			for (int j=0; j<availableParameters.length; j++) {
-				selectedParams.add(new SelectedStrategyParameter(
+				selectedParams.add(new TradeInstruction(
+						candidateId,
 						tradeIds[i], 
 						availableParameters[j].getName(),
 						transpose(genome[position + j],
@@ -396,7 +398,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		return selectedParams;
 	}
 	
-	void setupTradeParams(ArrayList<SelectedStrategyParameter> params) {
+	void setupTradeParams(ArrayList<TradeInstruction> params) {
 		for (SelectedStrategyParameter p : params) {
 			tradeStrategyService.setTradeParameter(p.getTradeId(), 
 					p.getName(), p.getValue());
@@ -479,7 +481,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			
 			// Create (symbol*alertsPerSymbol) trades to be made when alerts are triggered
 			String[] tradeIds = createTrades(candidate, group, symbols.length, openAlerts, alertIDs);
-			ArrayList<SelectedStrategyParameter> params = expressTradeGenes(candidate, group, tradeIds);
+			ArrayList<TradeInstruction> params = expressTradeGenes(candidate, group, tradeIds);
 			setupTradeParams(params);
 			
 		} catch (Exception e) {
@@ -618,11 +620,9 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			groupDAO.addSavedAlert(alert, trader.getTraderId());
 		}
 
-		ArrayList<SelectedStrategyParameter> params = expressTradeGenes(candidate, group, symbols);
-		for (SelectedStrategyParameter p : params) {
-			String tradeDesc = p.getTradeId() + ": " + p.getName() + " = " + p.getValue();
-			groupDAO.addTradeInstruction(new TradeInstruction(trader.getTraderId(), tradeDesc), 
-					trader.getTraderId());
+		ArrayList<TradeInstruction> params = expressTradeGenes(candidate, group, symbols);
+		for (TradeInstruction p : params) {
+			groupDAO.addTradeInstruction(p, trader.getTraderId());
 		}
 		return trader;
 	}

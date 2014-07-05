@@ -9,23 +9,27 @@ public class DetachableTransactionModel extends
 		LoadableDetachableModel<Transaction> {
 	
 	private static final long serialVersionUID = 1L;
-	
+
+	private final String userId;
+	private final String portfolioId;
 	private final String transactionId;
 
 	/**
 	 * @param s
 	 */
 	public DetachableTransactionModel(Transaction t) {
-		this(t.getTransactionId());
+		this(t.getUserId(), t.getPortfolioId(), t.getTransactionId());
 	}
 
 	/**
 	 * @param id
 	 */
-	public DetachableTransactionModel(String transactionId) {
-		if (transactionId == null) {
+	public DetachableTransactionModel(String userId, String portfolioId, String transactionId) {
+		if (userId == null || portfolioId == null || transactionId == null) {
 			throw new IllegalArgumentException();
 		}
+		this.userId = userId;
+		this.portfolioId = portfolioId;
 		this.transactionId = transactionId;
 	}
 
@@ -59,7 +63,7 @@ public class DetachableTransactionModel extends
 	@Override
 	protected Transaction load() {
 		try {
-			return PortfolioAccess.getPortfolioService().getTransaction(transactionId);
+			return PortfolioAccess.getPortfolioService().getTransaction(userId, portfolioId, transactionId);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

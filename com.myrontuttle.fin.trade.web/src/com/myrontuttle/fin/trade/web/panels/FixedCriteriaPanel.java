@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.util.io.IClusterable;
 
+import com.myrontuttle.fin.trade.adapt.SavedScreen;
 import com.myrontuttle.fin.trade.api.SelectedScreenCriteria;
 import com.myrontuttle.fin.trade.web.service.ScreenerAccess;
 
@@ -19,18 +20,18 @@ public class FixedCriteriaPanel extends Panel {
 
 	public FixedCriteriaPanel(String id) {
 		super(id);
-		final FixedCriteria criteria = new FixedCriteria();
-		Form<FixedCriteria> form = new Form<FixedCriteria>(
-				"fixedCriteriaForm", new CompoundPropertyModel<FixedCriteria>(criteria));
+		final FixedCriteriaForm fixedCriteriaForm = new FixedCriteriaForm();
+		Form<FixedCriteriaForm> form = new Form<FixedCriteriaForm>(
+				"fixedCriteriaForm", new CompoundPropertyModel<FixedCriteriaForm>(fixedCriteriaForm));
 		
 		form.add(new TextArea<String>("text"));
 
 		form.add(new Button("update") {
             public void onSubmit() {
             	try {
-					ScreenerAccess.getScreenerService().setFixedCriteria(criteria.parseText());
+					ScreenerAccess.getScreenerService().setFixedCriteria(fixedCriteriaForm.parseText());
 				} catch (Exception e) {
-					criteria.status = e.getMessage();
+					fixedCriteriaForm.status = e.getMessage();
 				}
             }
         });
@@ -41,7 +42,7 @@ public class FixedCriteriaPanel extends Panel {
 	}
 
     /** Simple data class that acts as a model for the input fields. */
-    private static class FixedCriteria implements IClusterable {
+    private static class FixedCriteriaForm implements IClusterable {
     	
 		private static final long serialVersionUID = 1L;
 
@@ -66,7 +67,7 @@ public class FixedCriteriaPanel extends Panel {
         	for (String criteria : criteriaLines) {
         		String[] details = criteria.split(SEPARATOR);
         		if (details.length >= 3) {
-            		screenCriteria.add(new Criteria(details[0], details[1], details[2]));
+            		screenCriteria.add(new SavedScreen("fixed", details[0], details[1], details[2]));
         		}
         	}
         	return screenCriteria.toArray(new SelectedScreenCriteria[screenCriteria.size()]);
@@ -89,33 +90,4 @@ public class FixedCriteriaPanel extends Panel {
         	return sb.toString();
         }
     }
-}
-
-class Criteria implements SelectedScreenCriteria {
-
-	String name;
-	String value;
-	String argsOperator;
-
-	public Criteria(String name, String value, String argsOperator) {
-		this.name = name;
-		this.value = value;
-		this.argsOperator = argsOperator;
-	}
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	public String getValue() {
-		return value;
-	}
-
-	@Override
-	public String getArgsOperator() {
-		return argsOperator;
-	}
-	
 }

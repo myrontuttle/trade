@@ -71,7 +71,7 @@ public interface PortfolioService {
 	 * @return
 	 * @throws Exception
 	 */
-	public Transaction getTransaction(String transactionId) throws Exception;
+	public Transaction getTransaction(String userId, String portfolioId, String transactionId) throws Exception;
 	
 	/**
 	 * The order types available to open a position

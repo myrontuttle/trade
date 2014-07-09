@@ -68,7 +68,7 @@ public class CandidateTablePanel extends Panel {
 			}
 		});
 		
-		columns.add(new AbstractColumn<Candidate, String>(new Model<String>("Portfolio Value")) {
+		columns.add(new AbstractColumn<Candidate, String>(new Model<String>("Portfolio Cash Balance")) {
 			@Override
 			public void populateItem(Item<ICellPopulator<Candidate>> cellItem,
 					String componentId, IModel<Candidate> model) {
@@ -110,7 +110,7 @@ public class CandidateTablePanel extends Panel {
 		 */
 		public DetailsLinkPanel(String id, IModel<Candidate> model) {
 			super(id, model);
-			add(new Link(model.getObject().getPortfolioId()) {
+			add(new Link("details") {
 				@Override
 				public void onClick() {
 					String candidateId = ((Candidate)getParent().getDefaultModelObject()).getCandidateId();

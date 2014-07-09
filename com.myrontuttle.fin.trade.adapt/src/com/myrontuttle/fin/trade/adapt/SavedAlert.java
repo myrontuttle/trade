@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import com.myrontuttle.fin.trade.api.SelectedAlert;
 
@@ -42,6 +43,7 @@ public class SavedAlert implements Serializable, SelectedAlert {
 	@Column(name = "PARAM_STRING")
 	private String paramString;
 	
+	@Transient
 	private double[] params;
 	
 	public SavedAlert() {}

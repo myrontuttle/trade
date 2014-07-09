@@ -31,10 +31,13 @@ public class TradeInstruction implements Serializable, SelectedStrategyParameter
 	@JoinColumn(name = "TRADER_ID", referencedColumnName = "TRADER_ID")
 	private Trader trader;
 
+	@Column(name = "TRADE_ID")
 	private String tradeId;
 	
+	@Column(name = "NAME")
 	private String name;
 	
+	@Column(name = "VALUE")
 	private int value;
 	
 	@Column(name = "INSTRUCTION")

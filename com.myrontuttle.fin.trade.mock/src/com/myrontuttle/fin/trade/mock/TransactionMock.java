@@ -4,6 +4,8 @@ import com.myrontuttle.fin.trade.api.Transaction;
 
 public class TransactionMock implements Transaction {
 	
+	private String userId;
+	private String portfolioId;
 	private String transactionId;
 	private String dateTime;
 	private String orderType;
@@ -11,8 +13,11 @@ public class TransactionMock implements Transaction {
 	private double quantity;
 	private double value;
 	
-	public TransactionMock(String transactionId, String dateTime, String orderType,
+	public TransactionMock(String userId, String portfolioId, String transactionId, 
+			String dateTime, String orderType,
 			String symbol, double quantity, double value) {
+		this.userId = userId;
+		this.portfolioId = portfolioId;
 		this.transactionId = transactionId;
 		this.dateTime = dateTime;
 		this.orderType = orderType;
@@ -49,6 +54,16 @@ public class TransactionMock implements Transaction {
 	@Override
 	public double getValue() {
 		return value;
+	}
+
+	@Override
+	public String getUserId() {
+		return userId;
+	}
+
+	@Override
+	public String getPortfolioId() {
+		return portfolioId;
 	}
 
 }

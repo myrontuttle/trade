@@ -7,6 +7,8 @@ import com.myrontuttle.fin.trade.api.Transaction;
 
 public class PortfolioMock implements PortfolioService {
 
+	private final static String UID = "UserID";
+	private final static String PID = "PortfolioID";
 	private final static String LID = "LotID";
 	private final double STARTING_CASH = 10000.00;
 	private final static String BUY = "Buy";
@@ -48,16 +50,17 @@ public class PortfolioMock implements PortfolioService {
 	}
 
 	@Override
-	public Transaction getTransaction(String transactionId) throws Exception {
-		return new TransactionMock("01", "2014-06-25 09:30", BUY, "AAPL", 20, 134.23);
+	public Transaction getTransaction(String userId, String portfolioId, 
+			String transactionId) throws Exception {
+		return new TransactionMock(UID, PID, "01", "2014-06-25 09:30", BUY, "AAPL", 20, 134.23);
 	}
 	
 	@Override
 	public ArrayList<Transaction> getTransactions(String userId, String portfolioId)
 			throws Exception {
 
-		transactions.add(new TransactionMock("01", "2014-06-25 09:30", BUY, "AAPL", 20, 134.23));
-		transactions.add(new TransactionMock("02", "2014-06-25 14:30", SELL, "AAPL", 20, 140.89));
+		transactions.add(new TransactionMock(UID, PID, "01", "2014-06-25 09:30", BUY, "AAPL", 20, 134.23));
+		transactions.add(new TransactionMock(UID, PID, "02", "2014-06-25 14:30", SELL, "AAPL", 20, 140.89));
 		return transactions;
 	}
 
@@ -99,5 +102,4 @@ public class PortfolioMock implements PortfolioService {
 			throws Exception {
 		return STARTING_CASH + (Math.random() - 0.5) * 100;
 	}
-
 }

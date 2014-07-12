@@ -87,7 +87,8 @@ public class CandidateTablePanel extends Panel {
 			}
 		});
 		
-		columns.add(new AbstractColumn<Candidate, String>(new Model<String>("Analysis")) {
+		Group group = DBAccess.getDAO().findGroup(groupId);
+		columns.add(new AbstractColumn<Candidate, String>(new Model<String>(group.getEvaluationStrategy())) {
 			@Override
 			public void populateItem(Item<ICellPopulator<Candidate>> cellItem,
 					String componentId, IModel<Candidate> model) {

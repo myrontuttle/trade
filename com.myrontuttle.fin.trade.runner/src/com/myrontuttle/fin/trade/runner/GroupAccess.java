@@ -48,7 +48,6 @@ public class GroupAccess {
 				group.setAlertsPerSymbol(2);
 				group.setEliteCount(3);
 				group.setSize(15);
-				group.setEvaluationStrategy(Group.RANDOM_EVALUATOR);
 				group.setExpressionStrategy(Group.SAT_EXPRESSION);
 				group.setFrequency(Group.DAILY);
 				group.setNumberOfScreens(1);

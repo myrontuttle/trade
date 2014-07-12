@@ -20,8 +20,6 @@ public class Group implements Serializable {
 	public static final String DAILY = "DAILY";
 	public static final String WEEKLY = "WEEKLY";
 
-	public static final String RANDOM_EVALUATOR = "RandomEvaluator";
-	public static final String REALIZED_GAIN_EVAL = "RealizedGainEvaluator";
 	public static final String SAT_EXPRESSION = "SATExpression";
 
 	@Id

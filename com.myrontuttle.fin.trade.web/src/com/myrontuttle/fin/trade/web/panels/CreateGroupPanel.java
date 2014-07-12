@@ -20,6 +20,7 @@ import com.myrontuttle.fin.trade.api.AlertReceiverService;
 import com.myrontuttle.fin.trade.web.data.DBAccess;
 import com.myrontuttle.fin.trade.web.service.AlertReceiverAccess;
 import com.myrontuttle.fin.trade.web.service.EvolveAccess;
+import com.myrontuttle.fin.trade.web.service.PortfolioAccess;
 import com.myrontuttle.fin.trade.web.service.StrategyAccess;
 
 public class CreateGroupPanel extends Panel {
@@ -45,14 +46,18 @@ public class CreateGroupPanel extends Panel {
 		form.add(new TextField<String>("alertPassword")
 						.setRequired(true));
 		
-		
 		List<String> frequencies = Arrays.asList(Group.HOURLY, Group.DAILY, Group.WEEKLY);
 		form.add(new DropDownChoice<String>("frequency", frequencies));
 
 		List<String> expressions = Arrays.asList(Group.SAT_EXPRESSION);
 		form.add(new DropDownChoice<String>("expressionStrategy", expressions));
 
-		List<String> evaluators = Arrays.asList(Group.REALIZED_GAIN_EVAL,Group.RANDOM_EVALUATOR);
+		List<String> evaluators;
+		try {
+			evaluators = Arrays.asList(PortfolioAccess.getPortfolioService().availableAnalysis());
+		} catch (Exception e) {
+			evaluators = Arrays.asList(new String[0]);
+		}
 		form.add(new DropDownChoice<String>("evaluationStrategy", evaluators));
 
 		List<String> tradeStrategies = Arrays.

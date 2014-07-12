@@ -15,8 +15,6 @@ import org.joda.time.Minutes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.myrontuttle.fin.trade.adapt.eval.RealizedGainEvaluator;
-import com.myrontuttle.fin.trade.adapt.eval.RandomEvaluator;
 import com.myrontuttle.fin.trade.adapt.express.SATExpression;
 import com.myrontuttle.sci.evolve.api.*;
 import com.myrontuttle.sci.evolve.engines.GenerationalEvolutionEngine;
@@ -177,14 +175,6 @@ public class Evolver implements EvolveService {
 		return null;
 	}
 	
-	protected static ExpressedFitnessEvaluator<int[]> getEvaluator(Group group) {
-		if (group.getEvaluationStrategy().equals(Group.REALIZED_GAIN_EVAL)) {
-			return new RealizedGainEvaluator();
-		} else {
-			return new RandomEvaluator();
-		}
-	}
-	
 	/**
 	 * Creates the first candidates for this group
 	 * @param groupId
@@ -198,7 +188,7 @@ public class Evolver implements EvolveService {
 		ExpressionStrategy<int[]> expressionStrategy = getExpressionStrategy(group);
 		int genomeLength = expressionStrategy.getGenomeLength(groupId);
 		
-		ExpressedFitnessEvaluator<int[]> evaluator = getEvaluator(group);
+		ExpressedFitnessEvaluator<int[]> evaluator = new PortfolioEvaluator();
 		
 		EvolutionEngine<int[]> engine = createEngine(genomeLength, 
 														group.getGeneUpperValue(), 
@@ -229,7 +219,7 @@ public class Evolver implements EvolveService {
 		ExpressionStrategy<int[]> expressionStrategy = getExpressionStrategy(group);
 		int genomeLength = expressionStrategy.getGenomeLength(groupId);
 		
-		ExpressedFitnessEvaluator<int[]> evaluator = getEvaluator(group);
+		ExpressedFitnessEvaluator<int[]> evaluator = new PortfolioEvaluator();
 		
 		EvolutionEngine<int[]> engine = createEngine(genomeLength, 
 														group.getGeneUpperValue(), 

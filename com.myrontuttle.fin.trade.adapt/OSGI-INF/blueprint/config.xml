@@ -24,7 +24,7 @@
 	
 	<service ref="Evolver" interface="com.myrontuttle.fin.trade.adapt.EvolveService" />
 	
-	<bean id="RealizedGainEvaluator" class="com.myrontuttle.fin.trade.adapt.eval.RealizedGainEvaluator">
+	<bean id="PortfolioEvaluator" class="com.myrontuttle.fin.trade.adapt.PortfolioEvaluator">
 		<property name="portfolioService" ref="PortfolioService" />
 		<property name="groupDAO" ref="GroupDAOImpl" />
 	</bean>

@@ -86,6 +86,28 @@ public class CandidateTablePanel extends Panel {
 				}
 			}
 		});
+		
+		columns.add(new AbstractColumn<Candidate, String>(new Model<String>("Analysis")) {
+			@Override
+			public void populateItem(Item<ICellPopulator<Candidate>> cellItem,
+					String componentId, IModel<Candidate> model) {
+				try {
+					Candidate candidate = model.getObject();
+					Group group = DBAccess.getDAO().findGroup(candidate.getGroupId());
+					
+					if (candidate != null && candidate.getPortfolioId() != null) {
+						double value = PortfolioAccess.getPortfolioService().
+							analyze(candidate.getCandidateId(), candidate.getPortfolioId(), 
+									group.getEvaluationStrategy());
+						cellItem.add(new Label(componentId, String.valueOf(value)));
+					} else {
+						cellItem.add(new Label(componentId, ""));
+					}
+				} catch (Exception e) {
+					cellItem.add(new Label(componentId, e.getMessage()));
+				}
+			}
+		});
 
 		columns.add(new AbstractColumn<Candidate, String>(new Model<String>("Delete")) {
 			@Override

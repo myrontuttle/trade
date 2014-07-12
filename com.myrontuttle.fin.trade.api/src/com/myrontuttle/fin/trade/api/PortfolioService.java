@@ -127,4 +127,21 @@ public interface PortfolioService {
 	 * @return Available cash after closing all positions
 	 */
 	public double closeAllPositions(String userId, String portfolioId) throws Exception;
+	
+	/**
+	 * Provides list of analysis techniques the Portfolio Service can provide
+	 * @return List of analysis names
+	 * @throws Exception
+	 */
+	public String[] availableAnalysis() throws Exception;
+	
+	/**
+	 * Analyzes a portfolio based on the analysis technique
+	 * @param userId User's portfolio to analyze
+	 * @param portfolioId Id of portfolio to analyze
+	 * @param analysisType Analysis technique from availableAnalysis
+	 * @return Value of the analysis
+	 * @throws Exception
+	 */
+	public double analyze(String userId, String portfolioId, String analysisType) throws Exception;
 }

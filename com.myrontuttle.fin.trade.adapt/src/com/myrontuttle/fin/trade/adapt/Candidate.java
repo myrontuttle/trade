@@ -46,7 +46,7 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	public Candidate(){ }
 	
 	public Candidate(String candidateId, String groupId, int[] genome, 
-			String portfolioId, double startingCash) {
+			String portfolioId) {
 		this.candidateId = candidateId;
 		this.groupId = groupId;
 		this.genome = genome;

@@ -1,4 +1,4 @@
-package com.myrontuttle.fin.trade.adapt.eval;
+package com.myrontuttle.fin.trade.adapt;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -10,11 +10,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
-import com.myrontuttle.fin.trade.adapt.eval.RealizedGainEvaluator;
+import com.myrontuttle.fin.trade.adapt.PortfolioEvaluator;
 import com.myrontuttle.fin.trade.api.PortfolioService;
 import com.myrontuttle.sci.evolve.api.ExpressedCandidate;
 
-public class BasicEvaluatorTest {
+public class PortfolioEvaluatorTest {
 	
 	private final static String CA = "candidateA";
 	private final static String CB = "candidateB";
@@ -22,57 +22,65 @@ public class BasicEvaluatorTest {
 	private final static String PA = "portfolioA";
 	private final static String PB = "portfolioB";
 	private final static String PC = "portfolioC";
+	private final static String G1 = "group1";
+	
+	private final static String ANALYSIS = "UnrealizedGain";
 
 	private PortfolioService portfolioService;
+	private GroupDAO groupDAO;
 	
-	private RealizedGainEvaluator evaluator;
+	private PortfolioEvaluator evaluator;
 	
-	private double startingCash = 10000.00;
 	private ExpressedCandidate<int[]> candidateA = new Candidate(CA, 
-													"group1", 
+													G1, 
 													new int[]{1,2}, 
-													PA, 
-													startingCash);
+													PA);
 	private ExpressedCandidate<int[]> candidateB = new Candidate(CB, 
-													"group1", 
+													G1, 
 													new int[]{1,2}, 
-													PB, 
-													startingCash);
+													PB);
 	private ExpressedCandidate<int[]> candidateC = new Candidate(CC, 
-													"group1", 
+													G1, 
 													new int[]{1,2}, 
-													PC, 
-													startingCash);
+													PC);
 	
-	private ArrayList<ExpressedCandidate<int[]>> group1 = 
+	private ArrayList<ExpressedCandidate<int[]>> population = 
 				new ArrayList<ExpressedCandidate<int[]>>(3);
+	
+	private Group group1 = new Group();
 	
 	@Before
 	public void setUp() throws Exception {
 
-		group1.add(candidateA);
-		group1.add(candidateB);
-		group1.add(candidateC);
+		population.add(candidateA);
+		population.add(candidateB);
+		population.add(candidateC);
+		
+		group1.setEvaluationStrategy(ANALYSIS);
 		
 	    // Arrange mocks
 		portfolioService = mock(PortfolioService.class);
-		when(portfolioService.closeAllPositions(CA, PA)).
-				thenReturn(20000.00);
-		when(portfolioService.closeAllPositions(CB, PB)).
-				thenReturn(15000.00);
-		when(portfolioService.closeAllPositions(CC, PC)).
+		when(portfolioService.analyze(CA, PA, ANALYSIS)).
+				thenReturn(10000.00);
+		when(portfolioService.analyze(CB, PB, ANALYSIS)).
 				thenReturn(5000.00);
+		when(portfolioService.analyze(CC, PC, ANALYSIS)).
+				thenReturn(0.00);
+		
+		groupDAO = mock(GroupDAO.class);
+		when(groupDAO.findGroup(G1)).thenReturn(group1);
 
-		evaluator = new RealizedGainEvaluator();
+		evaluator = new PortfolioEvaluator();
 		evaluator.setPortfolioService(portfolioService);
+		evaluator.setGroupDAO(groupDAO);
 	}
 
 	@Test
 	public void testGetFitness() {
 		
-		assertEquals(10000.00, evaluator.getFitness(candidateA, group1), .01);
-		assertEquals(5000.00, evaluator.getFitness(candidateB, group1), .01);
-		assertEquals(0, evaluator.getFitness(candidateC, group1), .01);
+		assertEquals(10000.00, evaluator.getFitness(candidateA, population), .01);
+		assertEquals(5000.00, evaluator.getFitness(candidateB, population), .01);
+		assertEquals(0.01, evaluator.getFitness(candidateC, population), .001);
 	}
 
 }

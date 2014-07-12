@@ -10,11 +10,13 @@ public class PortfolioMock implements PortfolioService {
 	private final static String UID = "UserID";
 	private final static String PID = "PortfolioID";
 	private final static String LID = "LotID";
-	private final double STARTING_CASH = 10000.00;
+	private final static double STARTING_CASH = 10000.00;
 	private final static String BUY = "Buy";
 	private final static String SELL = "Sell";
 	private final static String SHORT = "ShortSell";
 	private final static String COVER = "BuyToCover";
+	private final static String REALIZED_GAIN = "RealizedGain";
+	private final static double GAIN = 15.23;
 	
 	private String[] openOrderTypes = new String[]{ BUY, SHORT };
 	private String[] closeOrderTypes = new String[]{ SELL, COVER };
@@ -101,5 +103,16 @@ public class PortfolioMock implements PortfolioService {
 	public double closeAllPositions(String userId, String portfolioId)
 			throws Exception {
 		return STARTING_CASH + (Math.random() - 0.5) * 100;
+	}
+
+	@Override
+	public String[] availableAnalysis() throws Exception {
+		return new String[]{REALIZED_GAIN};
+	}
+
+	@Override
+	public double analyze(String userId, String portfolioId, String analysisType)
+			throws Exception {
+		return GAIN;
 	}
 }

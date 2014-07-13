@@ -1,5 +1,6 @@
 package com.myrontuttle.fin.trade.web.panels;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,12 +21,9 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
-import com.myrontuttle.fin.trade.adapt.Group;
 import com.myrontuttle.fin.trade.web.data.DBAccess;
 import com.myrontuttle.fin.trade.web.data.SortableCandidateDataProvider;
 import com.myrontuttle.fin.trade.web.pages.CandidatePage;
-import com.myrontuttle.fin.trade.web.pages.GroupPage;
-import com.myrontuttle.fin.trade.web.panels.GroupTablePanel.DetailPanel;
 import com.myrontuttle.fin.trade.web.service.EvolveAccess;
 import com.myrontuttle.fin.trade.web.service.PortfolioAccess;
 import com.myrontuttle.fin.trade.web.service.WatchlistAccess;
@@ -33,8 +31,10 @@ import com.myrontuttle.fin.trade.web.service.WatchlistAccess;
 public class CandidateTablePanel extends Panel {
 	
 	private static final long serialVersionUID = 1L;
+	
+	private static final DecimalFormat df = new DecimalFormat("#.00"); 
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes" })
 	public CandidateTablePanel(String id, String groupId) {
 		super(id);
 
@@ -77,7 +77,7 @@ public class CandidateTablePanel extends Panel {
 					if (candidate != null && candidate.getPortfolioId() != null) {
 						double value = PortfolioAccess.getPortfolioService().
 								getAvailableBalance(candidate.getCandidateId(), candidate.getPortfolioId());
-						cellItem.add(new Label(componentId, String.valueOf(value)));
+						cellItem.add(new Label(componentId, "$" + df.format(value)));
 					} else {
 						cellItem.add(new Label(componentId, ""));
 					}
@@ -87,20 +87,18 @@ public class CandidateTablePanel extends Panel {
 			}
 		});
 		
-		Group group = DBAccess.getDAO().findGroup(groupId);
-		columns.add(new AbstractColumn<Candidate, String>(new Model<String>(group.getEvaluationStrategy())) {
+		columns.add(new AbstractColumn<Candidate, String>(new Model<String>("Unrealized Gain")) {
 			@Override
 			public void populateItem(Item<ICellPopulator<Candidate>> cellItem,
 					String componentId, IModel<Candidate> model) {
 				try {
 					Candidate candidate = model.getObject();
-					Group group = DBAccess.getDAO().findGroup(candidate.getGroupId());
 					
 					if (candidate != null && candidate.getPortfolioId() != null) {
 						double value = PortfolioAccess.getPortfolioService().
 							analyze(candidate.getCandidateId(), candidate.getPortfolioId(), 
-									group.getEvaluationStrategy());
-						cellItem.add(new Label(componentId, String.valueOf(value)));
+									"Unrealized Gain (Absolute)");
+						cellItem.add(new Label(componentId, "$" + df.format(value)));
 					} else {
 						cellItem.add(new Label(componentId, ""));
 					}

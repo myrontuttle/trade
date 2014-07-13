@@ -14,15 +14,15 @@ import org.apache.wicket.util.lang.Bytes;
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.web.data.DBAccess;
 
-public class CandidateUploadPanel extends Panel {
+public class UploadCandidatePanel extends Panel {
 
 	private FileUploadField fileUploadField;
 	
-	public CandidateUploadPanel(String id, final String groupId) {
+	public UploadCandidatePanel(String id, final String groupId) {
 		super(id);
 		fileUploadField = new FileUploadField("fileUploadField");
 
-		Form form = new Form("form"){
+		Form form = new Form("uploadCandidateForm"){
 			@Override
 			protected void onSubmit() {
 				super.onSubmit();

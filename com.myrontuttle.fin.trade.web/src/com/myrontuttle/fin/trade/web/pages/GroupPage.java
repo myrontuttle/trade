@@ -13,6 +13,7 @@ import com.myrontuttle.fin.trade.web.panels.EvolveGroupPanel;
 import com.myrontuttle.fin.trade.web.panels.GroupStatsTablePanel;
 import com.myrontuttle.fin.trade.web.panels.HeaderPanel;
 import com.myrontuttle.fin.trade.web.panels.UpdateGroupPanel;
+import com.myrontuttle.fin.trade.web.panels.UploadCandidatePanel;
 
 public class GroupPage extends WebPage {
 
@@ -32,6 +33,7 @@ public class GroupPage extends WebPage {
 		
 		add(new HeaderPanel("mainNavigation", "Adaptive Trader", this));
 		add(new UpdateGroupPanel("updateGroupPanel", groupModel));
+		add(new UploadCandidatePanel("uploadCandidatePanel", groupId));
 		add(new EvolveGroupPanel("evolveGroupPanel", groupModel));
 		add(new GroupStatsTablePanel("groupStatsTablePanel", groupId));
 		add(new BestTraderPanel("bestTraderPanel", groupModel));

@@ -1,5 +1,9 @@
 package com.myrontuttle.fin.trade.web.panels;
 
+import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +23,9 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.handler.resource.ResourceStreamRequestHandler;
+import org.apache.wicket.util.io.ByteArrayOutputStream;
+import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.web.data.DBAccess;
@@ -68,7 +75,7 @@ public class CandidateTablePanel extends Panel {
 			}
 		});
 		
-		columns.add(new AbstractColumn<Candidate, String>(new Model<String>("Portfolio Cash Balance")) {
+		columns.add(new AbstractColumn<Candidate, String>(new Model<String>("Available Cash")) {
 			@Override
 			public void populateItem(Item<ICellPopulator<Candidate>> cellItem,
 					String componentId, IModel<Candidate> model) {
@@ -108,6 +115,14 @@ public class CandidateTablePanel extends Panel {
 			}
 		});
 
+		columns.add(new AbstractColumn<Candidate, String>(new Model<String>("Download")) {
+			@Override
+			public void populateItem(Item<ICellPopulator<Candidate>> cellItem, String componentId,
+				IModel<Candidate> model) {
+				cellItem.add(new DownloadCandidatePanel(componentId, model));
+			}
+		});
+		
 		columns.add(new AbstractColumn<Candidate, String>(new Model<String>("Delete")) {
 			@Override
 			public void populateItem(Item<ICellPopulator<Candidate>> cellItem, String componentId,
@@ -127,7 +142,7 @@ public class CandidateTablePanel extends Panel {
 	class DetailsLinkPanel extends Panel {
 		/**
 		 * @param id component id
-		 * @param model model for contact
+		 * @param model model for candidate
 		 */
 		public DetailsLinkPanel(String id, IModel<Candidate> model) {
 			super(id, model);
@@ -138,6 +153,46 @@ public class CandidateTablePanel extends Panel {
 					CandidatePage cp = new CandidatePage(candidateId);
 					setResponsePage(cp);
 				}
+			});
+		}
+	}
+
+	class DownloadCandidatePanel extends Panel {
+		/**
+		 * @param id component id
+		 * @param model model for candidate
+		 */
+		public DownloadCandidatePanel(String id, IModel<Candidate> model) {
+			super(id, model);
+			add(new Link<Void>("download") {
+			    @Override
+			    public void onClick() {
+			        AbstractResourceStreamWriter rstream = new AbstractResourceStreamWriter() {
+			            @Override
+			            public void write(OutputStream output) throws IOException {
+			            	ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			            	ObjectOutput out = new ObjectOutputStream(bos);
+			            	out.writeObject((Candidate)getParent().getDefaultModelObject());
+			                output.write(bos.toByteArray());
+			                
+			                try {
+			                	if (out != null) {
+			                		out.close();
+			                	}
+			                } catch (IOException ex) {
+			                	// ignore close exception
+			                }
+			                try {
+			                	bos.close();
+			                } catch (IOException ex) {
+			                	// ignore close exception
+			                }
+			            }
+			        };
+			        ResourceStreamRequestHandler handler = 
+			        		new ResourceStreamRequestHandler(rstream, "candidate.ser");        
+			        getRequestCycle().scheduleRequestHandlerAfterCurrent(handler);
+			    }
 			});
 		}
 	}

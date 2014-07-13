@@ -80,7 +80,7 @@ public class DetachableCandidateModel extends LoadableDetachableModel<Candidate>
 	 */
 	@Override
 	protected Candidate load() {
-		// loads group from the database
+		// loads candidate from the database
 		return DBAccess.getDAO().findCandidate(id);
 	}
 }

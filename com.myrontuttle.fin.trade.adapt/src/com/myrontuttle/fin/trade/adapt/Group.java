@@ -116,6 +116,7 @@ public class Group implements Serializable {
 		this.candidates.add(c);
 		if (c.getGroup() != this) {
 			c.setGroup(this);
+			c.setGroupId(groupId);
 		}
 	}
 	

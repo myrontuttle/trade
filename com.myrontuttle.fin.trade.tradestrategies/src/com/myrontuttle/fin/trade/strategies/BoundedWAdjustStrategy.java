@@ -2,6 +2,9 @@ package com.myrontuttle.fin.trade.strategies;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.myrontuttle.fin.trade.api.AlertService;
 import com.myrontuttle.fin.trade.api.AvailableAlert;
 import com.myrontuttle.fin.trade.api.PortfolioService;
@@ -19,6 +22,8 @@ import com.myrontuttle.fin.trade.api.TradeStrategyService;
  * @author Myron Tuttle
  */
 public class BoundedWAdjustStrategy extends BoundedStrategy {
+	
+	private static final Logger logger = LoggerFactory.getLogger( BoundedWAdjustStrategy.class );
 	
 	public final static String NAME = "Bounded With Adjustment";
 	public final static String DESCRIPTION = "Creates bounds around a trade to exit after a certain time or " +
@@ -127,9 +132,11 @@ public class BoundedWAdjustStrategy extends BoundedStrategy {
 				createAdjustment(trade, currentPrice, priceRiseGood, alertService, tradeStrategyService);
 				
 			} else {
-				throw new Exception("Not enough allocated to trade " + trade.getSymbol() +
-						". Current Price(" + currentPrice + ") > Max Allowed Trade Amount (" + 
-						maxTradeAmount + ")");
+				logger.debug("Not enough allocated to trade symbol: {}. Current Price: {} is greather than " +
+						"Max Allowed Trade Amount: {} which is portfolio Balance: {} times trade " +
+						"allocation: {}%", 
+						new Object[]{trade.getSymbol(), currentPrice, maxTradeAmount, portfolioBalance, 
+							tradeParams.get(TRADE_ALLOC)});
 				
 			}			
 		} catch (Exception e) {

@@ -21,7 +21,7 @@ public class EvolveGroupPanel extends Panel {
 		final Form<Group> form = new Form<Group>("evolveGroupForm", model);
 		form.add(new Button("evolve") {
 			public void onSubmit() {
-				String groupId = ((Group)getParent().getDefaultModelObject()).getGroupId();
+				long groupId = ((Group)getParent().getDefaultModelObject()).getGroupId();
 				EvolveAccess.getEvolveService().evolveNow(groupId);
 			}
 		});

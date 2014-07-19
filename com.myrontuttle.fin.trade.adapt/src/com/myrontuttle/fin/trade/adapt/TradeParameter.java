@@ -12,27 +12,30 @@ import javax.persistence.ManyToOne;
 
 import com.myrontuttle.fin.trade.api.SelectedStrategyParameter;
 
-@Entity(name = "TRADE_INSTRUCTIONS")
-public class TradeInstruction implements Serializable, SelectedStrategyParameter {
+@Entity(name = "TRADE_PARAMETERS")
+public class TradeParameter implements Serializable, SelectedStrategyParameter {
 
 	private static final long serialVersionUID = 1L;
-	public static final String CATEGORY = ":";
+	public static final String SEPARATOR = ":";
 	public static final String ASSIGN = "=";
 	
 	@Id
-	@Column(name = "TRADE_INSTRUCTION_ID", nullable = false)
+	@Column(name = "TRADE_PARAMETER_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
-	private String tradeInstructionId;
+	private long tradeInstructionId;
 
 	@Column(name = "TRADER_ID")
-	private String traderId;
+	private long traderId;
 	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "TRADER_ID", referencedColumnName = "TRADER_ID")
 	private Trader trader;
 
 	@Column(name = "TRADE_ID")
-	private String tradeId;
+	private long tradeId;
+	
+	@Column(name = "SYMBOL")
+	private String symbol;
 	
 	@Column(name = "NAME")
 	private String name;
@@ -40,36 +43,32 @@ public class TradeInstruction implements Serializable, SelectedStrategyParameter
 	@Column(name = "VALUE")
 	private int value;
 	
-	@Column(name = "INSTRUCTION")
-	private String instruction;
+	public TradeParameter() {}
 	
-	public TradeInstruction() {}
-	
-	public TradeInstruction(String traderId, String tradeId, String name, int value) {
+	public TradeParameter(long traderId, String symbol, String name, int value) {
 		this.traderId = traderId;
-		this.tradeId = tradeId;
+		this.symbol = symbol;
 		this.name = name;
 		this.value = value;
-		this.instruction = generateInstruction(tradeId, name, value);
 	}
 
-	public static String generateInstruction(String tradeId, String name, int value) {
-		return tradeId + CATEGORY + name + ASSIGN + value;
+	public static String generateInstruction(String symbol, String name, int value) {
+		return symbol + SEPARATOR + name + ASSIGN + value;
 	}
 
-	public String getTradeInstructionId() {
+	public long getTradeInstructionId() {
 		return tradeInstructionId;
 	}
 
-	public void setTradeInstructionId(String tradeInstructionId) {
+	public void setTradeInstructionId(long tradeInstructionId) {
 		this.tradeInstructionId = tradeInstructionId;
 	}
 
-	public String getTraderId() {
+	public long getTraderId() {
 		return traderId;
 	}
 
-	public void setTraderId(String traderId) {
+	public void setTraderId(long traderId) {
 		this.traderId = traderId;
 	}
 
@@ -81,12 +80,20 @@ public class TradeInstruction implements Serializable, SelectedStrategyParameter
 		this.trader = trader;
 	}
 
-	public String getTradeId() {
+	public long getTradeId() {
 		return tradeId;
 	}
 
-	public void setTradeId(String tradeId) {
+	public void setTradeId(long tradeId) {
 		this.tradeId = tradeId;
+	}
+
+	public String getSymbol() {
+		return symbol;
+	}
+
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
 	}
 
 	public String getName() {
@@ -103,13 +110,5 @@ public class TradeInstruction implements Serializable, SelectedStrategyParameter
 
 	public void setValue(int value) {
 		this.value = value;
-	}
-
-	public String getInstruction() {
-		return instruction;
-	}
-
-	public void setInstruction(String instruction) {
-		this.instruction = instruction;
 	}
 }

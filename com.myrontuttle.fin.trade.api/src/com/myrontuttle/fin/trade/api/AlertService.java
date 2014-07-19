@@ -15,7 +15,7 @@ public interface AlertService {
 	 * @param userId User to receive alerts
 	 * @return Array of alerts
 	 */
-	public AvailableAlert[] getAvailableAlerts(String userId) throws Exception;
+	public AvailableAlert[] getAvailableAlerts(long userId) throws Exception;
 	
 	/**
 	 * Gets a specific available alert given their id
@@ -23,7 +23,7 @@ public interface AlertService {
 	 * @param id The id of the alert
 	 * @return AvailableAlert
 	 */
-	public AvailableAlert getAlert(String userId, int id) throws Exception;
+	public AvailableAlert getAlert(long userId, int id) throws Exception;
 
 	/**
 	 * Gets the alert that indicates the price has gone below a value
@@ -31,7 +31,7 @@ public interface AlertService {
 	 * @return Alert for a price moving below a certain value
 	 * @throws Exception
 	 */
-	public AvailableAlert getPriceBelowAlert(String userId) throws Exception;
+	public AvailableAlert getPriceBelowAlert(long userId) throws Exception;
 	
 	/**
 	 * Gets the alert that indicates the price has gone above a value
@@ -39,7 +39,7 @@ public interface AlertService {
 	 * @return Alert for a price moving above a certain value alert
 	 * @throws Exception
 	 */
-	public AvailableAlert getPriceAboveAlert(String userId) throws Exception;
+	public AvailableAlert getPriceAboveAlert(long userId) throws Exception;
 	
 	/**
 	 * Parses a condition from the generic condition that's available to the actual
@@ -60,7 +60,7 @@ public interface AlertService {
 	 * @param criteriaIndex The number of the criteria to get the bound for
 	 * @return The lower bound
 	 */
-	public double getLowerDouble(String userId, int id, String symbol, 
+	public double getLowerDouble(long userId, int id, String symbol, 
 			int criteriaIndex) throws Exception;
 
 	/**
@@ -71,7 +71,7 @@ public interface AlertService {
 	 * @param criteriaIndex The number of the criteria to get the bound for
 	 * @return The upper bound
 	 */
-	public double getUpperDouble(String userId, int id, String symbol, 
+	public double getUpperDouble(long userId, int id, String symbol, 
 			int criteriaIndex) throws Exception;
 	
 	/**
@@ -81,7 +81,7 @@ public interface AlertService {
 	 * @param criteriaIndex The number of the criteria to get the bound for
 	 * @return The upper bound
 	 */
-	public int getListLength(String userId, int id, int criteriaIndex) throws Exception;
+	public int getListLength(long userId, int id, int criteriaIndex) throws Exception;
 	
 	/**
 	 * Adds the customer email and delivery format if it isn't already there
@@ -90,7 +90,7 @@ public interface AlertService {
 	 * @return boolean True if the action was successful
 	 * @throws Exception
 	 */
-	public boolean addAlertDestination(String userId, String alertAddress, 
+	public boolean addAlertDestination(long userId, String alertAddress, 
 										String alertType) throws Exception;
 
 	/**
@@ -99,7 +99,7 @@ public interface AlertService {
 	 * @param SelectedAlert Alerts to setup
 	 * @return Array of id's for the setup alerts
 	 */
-	public String[] setupAlerts(String userId, SelectedAlert... alerts) throws Exception;
+	public String[] setupAlerts(long userId, SelectedAlert... alerts) throws Exception;
 	
 	/**
 	 * Sets up a single alert to potentially be triggered
@@ -110,7 +110,7 @@ public interface AlertService {
 	 * @param params Parameters that define when the alert is triggered
 	 * @return Id of the setup alert
 	 */
-	public String setupAlert(String userId, int alertId, String condition, String symbol, double... params);
+	public String setupAlert(long userId, int alertId, String condition, String symbol, double... params);
 	
 	/**
 	 * Returns the alerts that have been setup
@@ -118,7 +118,7 @@ public interface AlertService {
 	 * @return Array of active alerts
 	 * @throws Exception
 	 */
-	public SelectedAlert[] getActiveAlerts(String userId) throws Exception;
+	public SelectedAlert[] getActiveAlerts(long userId) throws Exception;
 	
 	/**
 	 * Removes a specific alert
@@ -127,13 +127,13 @@ public interface AlertService {
 	 * @return true if the alert was removed
 	 * @throws Exception
 	 */
-	public boolean removeAlert(String userId, String alertId) throws Exception;
+	public boolean removeAlert(long userId, String alertId) throws Exception;
 	
 	/**
 	 * Remove all alerts
 	 * @param userId User to remove alerts from
 	 * @return Indicates if alerts were removed successfully
 	 */
-	public boolean removeAllAlerts(String userId) throws Exception;
+	public boolean removeAllAlerts(long userId) throws Exception;
 
 }

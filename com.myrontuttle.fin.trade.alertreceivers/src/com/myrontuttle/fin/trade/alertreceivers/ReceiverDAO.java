@@ -23,31 +23,31 @@ public class ReceiverDAO {
 	}
 
 	// Get a receiver based on its receiverId
-	public AlertReceiver findReceiver(String receiverId) {
+	public AlertReceiver findReceiver(long receiverId) {
 		return em.find(AlertReceiver.class, receiverId);
 	}
 
-	public List<AlertReceiver> findReceivers(String userId) {
+	public List<AlertReceiver> findReceivers(long userId) {
 		return em.createQuery(
 				"SELECT a FROM ALERT_RECEIVERS a WHERE a.userId = :userId", 
 				AlertReceiver.class).setParameter("userId", userId).getResultList();
 	}
 
-	public void removeReceiver(String receiverId) {
+	public void removeReceiver(long receiverId) {
 		em.remove(em.find(AlertReceiver.class, receiverId));
 	}
 	
-	public void addReceiverParameter(String receiverId, String name, String value) {
+	public void addReceiverParameter(long receiverId, String name, String value) {
 		AlertReceiver r = em.find(AlertReceiver.class, receiverId);
 		r.addParameter(name, value);
 	}
 	
-	public Map<String, String> getReceiverParameters(String receiverId) {
+	public Map<String, String> getReceiverParameters(long receiverId) {
 		AlertReceiver r = em.find(AlertReceiver.class, receiverId);
 		return r.getParameters();
 	}
 	
-	public void setReceiverActive(String receiverId, boolean isActive) {
+	public void setReceiverActive(long receiverId, boolean isActive) {
 		AlertReceiver r = em.find(AlertReceiver.class, receiverId);
 		r.setActive(isActive);
 	}

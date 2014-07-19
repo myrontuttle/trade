@@ -27,10 +27,10 @@ public class AlertReceiver implements Serializable {
 	@Id
 	@Column(name = "RECEIVER_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
-	private String receiverId;
+	private long receiverId;
 
 	@Column(name = "USER_ID")
-	private String userId;
+	private long userId;
 
 	@Column(name = "RECEIVER_TYPE")
 	private String receiverType;
@@ -48,7 +48,7 @@ public class AlertReceiver implements Serializable {
 	
 	public AlertReceiver() {}
 	
-	public AlertReceiver(String userId, String receiverType) {
+	public AlertReceiver(long userId, String receiverType) {
 		this.userId = userId;
 		this.receiverType = receiverType;
 	}
@@ -65,19 +65,19 @@ public class AlertReceiver implements Serializable {
 		parameters.remove(name);
 	}
 
-	public String getReceiverId() {
+	public long getReceiverId() {
 		return receiverId;
 	}
 
-	public void setReceiverId(String receiverId) {
+	public void setReceiverId(long receiverId) {
 		this.receiverId = receiverId;
 	}
 
-	public String getUserId() {
+	public long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(String userId) {
+	public void setUserId(long userId) {
 		this.userId = userId;
 	}
 

@@ -19,7 +19,7 @@ package com.myrontuttle.fin.trade.web.models;
 import org.apache.wicket.model.LoadableDetachableModel;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
-import com.myrontuttle.fin.trade.web.data.DBAccess;
+import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
 /**
  * detachable model for an instance of candidate
@@ -29,7 +29,7 @@ public class DetachableCandidateModel extends LoadableDetachableModel<Candidate>
 	
 	private static final long serialVersionUID = 1L;
 	
-	private final String id;
+	private final long id;
 
 	/**
 	 * @param c
@@ -41,8 +41,8 @@ public class DetachableCandidateModel extends LoadableDetachableModel<Candidate>
 	/**
 	 * @param id
 	 */
-	public DetachableCandidateModel(String id) {
-		if (id == null) {
+	public DetachableCandidateModel(long id) {
+		if (id == 0) {
 			throw new IllegalArgumentException();
 		}
 		this.id = id;
@@ -81,6 +81,6 @@ public class DetachableCandidateModel extends LoadableDetachableModel<Candidate>
 	@Override
 	protected Candidate load() {
 		// loads candidate from the database
-		return DBAccess.getDAO().findCandidate(id);
+		return AdaptAccess.getDAO().findCandidate(id);
 	}
 }

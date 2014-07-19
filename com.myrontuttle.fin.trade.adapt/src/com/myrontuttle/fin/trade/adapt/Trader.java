@@ -30,10 +30,10 @@ public class Trader implements Serializable {
 	@Id
 	@Column(name = "TRADER_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
-	private String traderId;
+	private long traderId;
 	
 	@Column(name = "GROUP_ID")
-	private String groupId;
+	private long groupId;
 	
 	@OneToOne
 	@JoinColumn(name = "GROUP_ID", referencedColumnName = "GROUP_ID")
@@ -59,9 +59,9 @@ public class Trader implements Serializable {
 				fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Collection<SavedAlert> savedAlerts;
 
-	@OneToMany(mappedBy = "trader", targetEntity = TradeInstruction.class,
+	@OneToMany(mappedBy = "trader", targetEntity = TradeParameter.class,
 				fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private Collection<TradeInstruction> tradeInstructions;
+	private Collection<TradeParameter> tradeInstructions;
 	
 	public Trader() {}
 	
@@ -103,33 +103,33 @@ public class Trader implements Serializable {
 		}
 	}
 	
-	public void addTradeInstruction(TradeInstruction t) {
+	public void addTradeInstruction(TradeParameter t) {
 		this.tradeInstructions.add(t);
 		if (t.getTrader() != this) {
 			t.setTrader(this);
 		}
 	}
 	
-	public void removeTradeInstruction(TradeInstruction t) {
+	public void removeTradeInstruction(TradeParameter t) {
 		if (tradeInstructions.contains(t)) {
 			tradeInstructions.remove(t);
 			t.setTrader(null);
 		}
 	}
 
-	public String getTraderId() {
+	public long getTraderId() {
 		return traderId;
 	}
 
-	public void setTraderId(String traderId) {
+	public void setTraderId(long traderId) {
 		this.traderId = traderId;
 	}
 
-	public String getGroupId() {
+	public long getGroupId() {
 		return groupId;
 	}
 
-	public void setGroupId(String groupId) {
+	public void setGroupId(long groupId) {
 		this.groupId = groupId;
 	}
 
@@ -173,11 +173,11 @@ public class Trader implements Serializable {
 		this.savedAlerts = savedAlerts;
 	}
 
-	public Collection<TradeInstruction> getTradeInstructions() {
+	public Collection<TradeParameter> getTradeInstructions() {
 		return tradeInstructions;
 	}
 
-	public void setTradeInstructions(Collection<TradeInstruction> tradeInstructions) {
+	public void setTradeInstructions(Collection<TradeParameter> tradeInstructions) {
 		this.tradeInstructions = tradeInstructions;
 	}
 	

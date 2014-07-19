@@ -1,16 +1,16 @@
 /**
  * 
  */
-package com.myrontuttle.fin.trade.adapt.express;
+package com.myrontuttle.fin.trade.adapt;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.myrontuttle.fin.trade.adapt.*;
 import com.myrontuttle.fin.trade.api.*;
 import com.myrontuttle.sci.evolve.api.ExpressedCandidate;
 import com.myrontuttle.sci.evolve.api.ExpressionStrategy;
@@ -47,7 +47,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 	private static TradeStrategyService tradeStrategyService;
 	private static AlertReceiverService alertReceiverService;
 	
-	private static GroupDAO groupDAO;
+	private static AdaptDAO groupDAO;
 	
 	public static QuoteService getQuoteService() {
 		return quoteService;
@@ -105,15 +105,15 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		SATExpression.alertReceiverService = alertReceiverService;
 	}
 
-	public static GroupDAO getGroupDAO() {
+	public static AdaptDAO getGroupDAO() {
 		return groupDAO;
 	}
 
-	public void setGroupDAO(GroupDAO groupDAO) {
+	public void setGroupDAO(AdaptDAO groupDAO) {
 		SATExpression.groupDAO = groupDAO;
 	}
 
-	public int getGenomeLength(String groupId) {
+	public int getGenomeLength(long groupId) {
 		Group group = groupDAO.findGroup(groupId);
 		return 1 + SCREEN_GENE_LENGTH * group.getNumberOfScreens() +
 				group.getMaxSymbolsPerScreen() * ALERT_GENE_LENGTH * group.getAlertsPerSymbol() +
@@ -138,7 +138,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			throws Exception {
 		
 		int[] genome = candidate.getGenome();
-		String candidateId = candidate.getCandidateId();
+		long candidateId = candidate.getCandidateId();
 
 		// Get screener possibilities
 		AvailableScreenCriteria[] availableScreenCriteria = 
@@ -199,8 +199,8 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 	
 	String setupWatchlist(Candidate candidate, Group group, String[] symbols) throws Exception {
 		String watchlistId = null;
-		String candidateId = candidate.getCandidateId();
-		String groupId = group.getGroupId();
+		long candidateId = candidate.getCandidateId();
+		long groupId = group.getGroupId();
 		String name = WATCH_NAME_PREFIX + GROUP + groupId + CANDIDATE + candidateId;
 		watchlistId = watchlistService.create(candidateId, name);
 		if (watchlistId == null) {
@@ -219,7 +219,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 	
 	String setupPortfolio(Candidate candidate, Group group) throws Exception {
 		String portfolioId = null;
-		String candidateId = candidate.getCandidateId();
+		long candidateId = candidate.getCandidateId();
 		String name = PORT_NAME_PREFIX + GROUP + group.getGroupId() + CANDIDATE + candidateId;
 		portfolioId = portfolioService.create(candidateId, name);
 		if (portfolioId == null) {
@@ -257,7 +257,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			String[] symbols) throws Exception {
 
 		int[] genome = candidate.getGenome();
-		String candidateId = candidate.getCandidateId();
+		long candidateId = candidate.getCandidateId();
 		
 		// Get alert possibilities
 		AvailableAlert[] availableAlerts = alertService.getAvailableAlerts(group.getGroupId());
@@ -275,7 +275,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 				AvailableAlert alert = availableAlerts[transpose(genome[position],  
 																	group.getGeneUpperValue(),
 																	0, availableAlerts.length - 1)];
-				int alertId = alert.getId();
+				int alertId = alert.getType();
 				String[] criteriaTypes = alert.getCriteriaTypes();
 				double[] params = new double[criteriaTypes.length];
 				for (int k=0; k<criteriaTypes.length; k++) {
@@ -302,11 +302,67 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		return selected;
 	}
 	
-	String[] setupAlerts(Group group, SelectedAlert[] openAlerts) throws Exception {
+	SavedAlert[] setupAlerts(Group group, SavedAlert[] openAlerts) throws Exception {
 
 		alertService.addAlertDestination(group.getGroupId(), group.getAlertUser(), "EMAIL");
 
-		return (alertService.setupAlerts(group.getGroupId(), openAlerts));
+		for (SavedAlert alert : openAlerts) {
+			alert.setAlertId(
+				alertService.setupAlert(group.getGroupId(), alert.getAlertType(), 
+						alert.getCondition(), alert.getSymbol(), alert.getParams()));
+		}
+		return openAlerts;
+	}
+
+	/**
+	 * Creates a set of Trades based on a candidate's trade genes
+	 * 
+	 * Trade Gene Data Map
+	 * 1. Order Type
+	 * 2. Allocation
+	 * 3. Acceptable Loss
+	 * 4. Time in Trade
+	 * 5. Close or Adjust At
+	 * @param candidate A candidate
+	 * @param group The candidate's group
+	 * @param symbols The symbols found during screening
+	 * @return A set of strategy parameters selected for this candidate associated with each symbol
+	 */
+	public HashMap<String, ArrayList<TradeParameter>> expressTradeGenes(Candidate candidate, Group group, 
+									String[] symbols) throws Exception {
+
+		String tradeStrategy = group.getTradeStrategy();
+		int[] genome = candidate.getGenome();
+		long candidateId = candidate.getCandidateId();
+		
+		AvailableStrategyParameter[] availableParameters = tradeStrategyService.availableTradeParameters(
+																tradeStrategy);
+		
+		int position = getAlertStartPosition(group) + 
+				group.getMaxSymbolsPerScreen() * ALERT_GENE_LENGTH * group.getAlertsPerSymbol();
+
+		HashMap<String, ArrayList<TradeParameter>> trades = 
+					new HashMap<String, ArrayList<TradeParameter>>();
+		ArrayList<TradeParameter> tradeParams;
+		for (int i=0; i<symbols.length; i++) {
+			
+			tradeParams = new ArrayList<TradeParameter>(availableParameters.length);
+			for (int j=0; j<availableParameters.length; j++) {
+				tradeParams.add(new TradeParameter(
+						candidateId,
+						symbols[i], 
+						availableParameters[j].getName(),
+						transpose(genome[position + j],
+								group.getGeneUpperValue(),
+								availableParameters[j].getLower(), 
+								availableParameters[j].getUpper())));
+			}
+			
+			trades.put(symbols[i], tradeParams);
+			position += TRADE_GENE_LENGTH;
+		}
+		
+		return trades;
 	}
 	
 	/**
@@ -319,100 +375,46 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 	 * @return An array of trade Ids
 	 * @throws Exception
 	 */
-	String[] createTrades(Candidate candidate, Group group, int numberOfSymbols,
-						SelectedAlert[] alerts, String[] alertIds) throws Exception {
-		
-		ArrayList<String> trades = new ArrayList<String>(alertIds.length);
+	void createTrades(Candidate candidate, Group group, SavedAlert[] alerts,  
+						HashMap<String, ArrayList<TradeParameter>> trades) throws Exception {
 
-		String candidateId = candidate.getCandidateId();
+		long candidateId = candidate.getCandidateId();
 		String portfolioId = candidate.getPortfolioId();
 		String tradeStrategy = group.getTradeStrategy();
 		String actionType = tradeStrategyService.tradeActionToStart(tradeStrategy);
-		
-		String tradeId;
-		int position;
-		for (int i=0; i<numberOfSymbols; i++) {
-			for (int j=0; j<group.getAlertsPerSymbol(); j++) {
-				position = (i * group.getAlertsPerSymbol()) + j;
-				logger.debug("New Trade for {}. Pos={}, alertId={}, alert={}", 
-						new Object[]{candidateId, position, alertIds[position], alerts[position].getCondition()});
-				if (position < alerts.length && position < alertIds.length && 
-						alertIds[position] != null) {
-					tradeId = tradeStrategyService.addTrade(tradeStrategy, candidateId, 
-													portfolioId, group.getGroupId(), 
-													alerts[position].getSymbol());
-					trades.add(tradeId);
-					tradeStrategyService.setTradeEvent(tradeId, alerts[position].getCondition(), 
-																actionType, alertIds[position]);
+
+		long tradeId;
+		for (SavedAlert alert : alerts) {
+			if (alert.getAlertId() != null && alert.getAlertId() != "") {
+				tradeId = tradeStrategyService.addTrade(tradeStrategy, candidateId, 
+						portfolioId, group.getGroupId(), alert.getSymbol());
+
+				tradeStrategyService.setTradeEvent(tradeId, alert.getCondition(), 
+													actionType, alert.getAlertId());
+				
+				for (TradeParameter p : trades.get(alert.getSymbol())) {
+					tradeStrategyService.setTradeParameter(p.getTradeId(), 
+							p.getName(), p.getValue());
 				}
-			}
-		}
-		
-		return trades.toArray(new String[trades.size()]);
-	}
 
-	/**
-	 * Creates a set of Trades based on a candidate's trade genes
-	 * 
-	 * Trade Gene Data Map
-	 * 1. Order Type
-	 * 2. Allocation
-	 * 3. Acceptable Loss
-	 * 4. Time in Trade
-	 * 5. Adjust At
-	 * @param candidate A candidate
-	 * @param group The candidate's group
-	 * @param symbols The symbols found during screening
-	 * @return A set of strategy parameters selected for this candidate
-	 */
-	public ArrayList<TradeInstruction> expressTradeGenes(Candidate candidate, Group group, 
-												String[] tradeIds) throws Exception {
-
-		String tradeStrategy = group.getTradeStrategy();
-		int[] genome = candidate.getGenome();
-		String candidateId = candidate.getCandidateId();
-		
-		AvailableStrategyParameter[] availableParameters = tradeStrategyService.availableTradeParameters(
-																tradeStrategy);
-		
-		int position = getAlertStartPosition(group) + 
-				group.getMaxSymbolsPerScreen() * ALERT_GENE_LENGTH * group.getAlertsPerSymbol();
-		
-		ArrayList<TradeInstruction> selectedParams = 
-				new ArrayList<TradeInstruction>(tradeIds.length*availableParameters.length);
-		for (int i=0; i<tradeIds.length; i++) {
-			
-			for (int j=0; j<availableParameters.length; j++) {
-				selectedParams.add(new TradeInstruction(
-						candidateId,
-						tradeIds[i], 
-						availableParameters[j].getName(),
-						transpose(genome[position + j],
-								group.getGeneUpperValue(),
-								availableParameters[j].getLower(), 
-								availableParameters[j].getUpper())));
+				logger.trace("New Trade for {}. TradeId: {}. AlertId={}: alert={}", 
+						new Object[]{candidateId, tradeId, alert.getAlertId(), alert.getCondition()});
+			} else {
+				logger.debug("Missed Trade for {}. No AlertId for symbol {}", 
+						candidateId, alert.getSymbol());
 			}
 			
-			position += TRADE_GENE_LENGTH;
-		}
-		return selectedParams;
-	}
-	
-	void setupTradeParams(ArrayList<TradeInstruction> params) {
-		for (SelectedStrategyParameter p : params) {
-			tradeStrategyService.setTradeParameter(p.getTradeId(), 
-					p.getName(), p.getValue());
 		}
 	}
 
 	@Override
-	public void beforeExpression(String populationId) {
+	public void beforeExpression(long populationId) {
 
 		Group group = groupDAO.findGroup(populationId);
-		String receiverId = group.getAlertReceiverId();
+		long receiverId = group.getAlertReceiverId();
 		
 		// Check if there's already an alert receiver
-		if (receiverId == null || receiverId.isEmpty()) {
+		if (receiverId == 0) {
 			// No receiver so set one up
 			
 			receiverId = alertReceiverService.addReceiver(populationId, group.getAlertReceiverType());
@@ -421,13 +423,14 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
         	alertReceiverService.setReceiverParameter(receiverId, "Host", group.getAlertHost());
         	alertReceiverService.setReceiverParameter(receiverId, "User", group.getAlertUser());
         	alertReceiverService.setReceiverParameter(receiverId, "Password", group.getAlertHost());
+        	alertReceiverService.setReceiverActive(receiverId, true);
 		}
 		
 		alertReceiverService.startReceiving(receiverId);
 	}
 
 	@Override
-	public Candidate express(int[] genome, String groupId) {
+	public Candidate express(int[] genome, long groupId) {
 		
 		if (genome == null || genome.length == 0) {
 			logger.debug("No genome to express for group: {}.", groupId);
@@ -476,13 +479,12 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			}
 
 			// Create (symbols*alertsPerSymbol) alerts for stocks
-			SelectedAlert[] openAlerts = expressAlertGenes(candidate, group, symbols);
-			String alertIDs[] = setupAlerts(group, openAlerts);
+			SavedAlert[] openAlerts = expressAlertGenes(candidate, group, symbols);
+			openAlerts = setupAlerts(group, openAlerts);
 			
 			// Create (symbol*alertsPerSymbol) trades to be made when alerts are triggered
-			String[] tradeIds = createTrades(candidate, group, symbols.length, openAlerts, alertIDs);
-			ArrayList<TradeInstruction> params = expressTradeGenes(candidate, group, tradeIds);
-			setupTradeParams(params);
+			HashMap<String, ArrayList<TradeParameter>> trades = expressTradeGenes(candidate, group, symbols);
+			createTrades(candidate, group, openAlerts, trades);
 			
 		} catch (Exception e) {
 			logger.warn("Unable to express candidate {}", candidate.getCandidateId(), e);
@@ -496,7 +498,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 
 	@Override
 	public void candidatesExpressed(
-			List<ExpressedCandidate<int[]>> expressedCandidates, String populationId) {
+			List<ExpressedCandidate<int[]>> expressedCandidates, long populationId) {
 		
 		// Determine average Hamming distance
 		int[] genomeA;
@@ -528,7 +530,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 	}
 
 	@Override
-	public void destroy(int[] genome, String populationId) {
+	public void destroy(int[] genome, long populationId) {
 		
 		try {
 			Candidate c = groupDAO.findCandidateByGenome(genome);
@@ -620,9 +622,12 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			groupDAO.addSavedAlert(alert, trader.getTraderId());
 		}
 
-		ArrayList<TradeInstruction> params = expressTradeGenes(candidate, group, symbols);
-		for (TradeInstruction p : params) {
-			groupDAO.addTradeInstruction(p, trader.getTraderId());
+		HashMap<String, ArrayList<TradeParameter>> trades = expressTradeGenes(candidate, group, symbols);
+		for (String key : trades.keySet()) {
+			ArrayList<TradeParameter> params = trades.get(key);
+			for (TradeParameter p : params) {
+				groupDAO.addTradeParamter(p, trader.getTraderId());
+			}
 		}
 		return trader;
 	}

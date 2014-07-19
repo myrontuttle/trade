@@ -14,7 +14,7 @@ public class PortfolioEvaluator implements ExpressedFitnessEvaluator<int[]> {
 	private static final Logger logger = LoggerFactory.getLogger(PortfolioEvaluator.class);
 
 	private static PortfolioService portfolioService = null;
-	private static GroupDAO groupDAO;
+	private static AdaptDAO groupDAO;
 
 	public static PortfolioService getPortfolioService() {
 		return portfolioService;
@@ -24,11 +24,11 @@ public class PortfolioEvaluator implements ExpressedFitnessEvaluator<int[]> {
 		PortfolioEvaluator.portfolioService = portfolioService;
 	}
 
-	public static GroupDAO getGroupDAO() {
+	public static AdaptDAO getGroupDAO() {
 		return groupDAO;
 	}
 
-	public void setGroupDAO(GroupDAO groupDAO) {
+	public void setGroupDAO(AdaptDAO groupDAO) {
 		PortfolioEvaluator.groupDAO = groupDAO;
 	}
 	
@@ -48,7 +48,8 @@ public class PortfolioEvaluator implements ExpressedFitnessEvaluator<int[]> {
 
 		Group group = groupDAO.findGroup(tradeCandidate.getGroupId());
 		try {
-			double analysis = portfolioService.analyze(tradeCandidate.getCandidateId(), 
+			double analysis = portfolioService.analyze(
+					tradeCandidate.getCandidateId(), 
 					tradeCandidate.getPortfolioId(), group.getEvaluationStrategy());
 			if (analysis > fitness) {
 				fitness = analysis;

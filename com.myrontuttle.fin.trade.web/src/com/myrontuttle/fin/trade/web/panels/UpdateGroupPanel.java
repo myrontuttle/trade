@@ -17,7 +17,7 @@ import org.apache.wicket.validation.validator.EmailAddressValidator;
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.Group;
 import com.myrontuttle.fin.trade.api.AlertReceiverService;
-import com.myrontuttle.fin.trade.web.data.DBAccess;
+import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 import com.myrontuttle.fin.trade.web.service.AlertReceiverAccess;
 import com.myrontuttle.fin.trade.web.service.EvolveAccess;
 
@@ -73,26 +73,26 @@ public class UpdateGroupPanel extends Panel {
             		EvolveAccess.getEvolveService().deleteCandidateExpression(
             				group.getGroupId(), 
             				c.getGenome());
-            		DBAccess.getDAO().removeCandidate(c.getCandidateId());
+            		AdaptAccess.getDAO().removeCandidate(c.getCandidateId());
             	}
             }
         });
 		form.add(new Button("removeStats") {
             public void onSubmit() {
-            	DBAccess.getDAO().removeAllStats(group.getGroupId());
+            	AdaptAccess.getDAO().removeAllStats(group.getGroupId());
             }
         });
 		form.add(new Button("update") {
             public void onSubmit() {
 
             	AlertReceiverService ars = AlertReceiverAccess.getAlertReceiverService();
-            	String receiverId = group.getAlertReceiverId();
+            	long receiverId = group.getAlertReceiverId();
             	//ars.setReceiverParameter(receiverId, "Host", group.getAlertHost());
             	ars.setReceiverParameter(receiverId, "User", group.getAlertUser());
             	ars.setReceiverParameter(receiverId, "Password", group.getAlertPassword());
             	ars.setReceiverActive(receiverId, group.isActive());
             	
-            	group = DBAccess.getDAO().updateGroup((Group)getParent().getDefaultModelObject());
+            	group = AdaptAccess.getDAO().updateGroup((Group)getParent().getDefaultModelObject());
             }
         });
         

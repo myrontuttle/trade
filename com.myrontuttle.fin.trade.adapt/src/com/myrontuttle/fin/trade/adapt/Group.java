@@ -25,7 +25,7 @@ public class Group implements Serializable {
 	@Id
 	@Column(name = "GROUP_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
-	private String groupId;
+	private long groupId;
 	
 	@OneToMany(mappedBy = "group", targetEntity = Candidate.class,
 			fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -35,12 +35,23 @@ public class Group implements Serializable {
 			optional = true, fetch = FetchType.EAGER, 
 			cascade = CascadeType.ALL)
 	private Trader bestTrader;
+
+	@OneToOne(mappedBy = "group", targetEntity = GroupSettings.class,
+			optional = false, fetch = FetchType.EAGER, 
+			cascade = CascadeType.ALL)
+	private GroupSettings settings;
+
+	@OneToMany(mappedBy = "group", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private ArrayList<GroupStats> stats;
 	
+	
+	
+	// Alert Receiver
 	@Column(name = "ALERT_RECEIVER_TYPE")
 	private String alertReceiverType;
 
 	@Column(name = "ALERT_RECEIVER_ID")
-	private String alertReceiverId;
+	private long alertReceiverId;
 	
 	@Column(name = "ALERT_USER")
 	private String alertUser;
@@ -51,6 +62,8 @@ public class Group implements Serializable {
 	@Column(name = "ALERT_PASSWORD")
 	private String alertPassword;
 
+	
+	// Evolve
 	@Column(name = "SIZE")
 	private int size;
 	
@@ -65,22 +78,39 @@ public class Group implements Serializable {
 	
 	@Column(name = "EVALUATION_STRATEGY")
 	private String evaluationStrategy;
-	
-	@Column(name = "TRADE_STRATEGY")
-	private String tradeStrategy;
-	
-	@Column(name = "ALLOW_SHORTING")
-	private boolean allowShorting;
-	
-	@Column(name = "START_TIME")
-	private Date startTime;
-	
+
 	@Column(name = "FREQUENCY")
 	private String frequency;
 	
 	@Column(name = "MUTATION_FACTOR")
 	private double mutationFactor;
 	
+	@Column(name = "GENERATION")
+	private int generation;
+	
+	@Column(name = "ACTIVE")
+	private boolean active;
+	
+	@Column(name = "VARIABILITY")
+	private double variability;
+	
+	@Column(name = "START_TIME")
+	private Date startTime;
+	
+	@Version
+    @Column(name = "UPDATED_TIME")
+    private Date updatedTime;
+	
+	
+	// Trade Strategy
+	@Column(name = "TRADE_STRATEGY")
+	private String tradeStrategy;
+	
+	@Column(name = "ALLOW_SHORTING")
+	private boolean allowShorting;
+	
+	
+	// Expression
 	@Column(name = "NUMBER_OF_SCREENS")
 	private int numberOfScreens;
 	
@@ -93,24 +123,25 @@ public class Group implements Serializable {
 	@Column(name = "STARTING_CASH")
 	private double startingCash;
 	
-	@Column(name = "GENERATION")
-	private int generation;
 	
-	@Column(name = "ACTIVE")
-	private boolean active;
-	
-	@Column(name = "VARIABILITY")
-	private double variability;
-	
-	// Group Stats
-	@OneToMany(mappedBy = "group", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private ArrayList<GroupStats> stats;
-	
-	@Version
-    @Column(name = "UPDATED_TIME")
-    private Date updatedTime;
 	
 	public Group() {}
+
+	public long getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(long groupId) {
+		this.groupId = groupId;
+	}
+
+	public Collection<Candidate> getCandidates() {
+		return candidates;
+	}
+
+	public void setCandidates(Collection<Candidate> candidates) {
+		this.candidates = candidates;
+	}
 	
 	public void addCandidate(Candidate c) {
 		this.candidates.add(c);
@@ -140,6 +171,22 @@ public class Group implements Serializable {
 		trader.setGroup(null);
 	}
 
+	public GroupSettings getSettings() {
+		return settings;
+	}
+
+	public void setSettings(GroupSettings settings) {
+		this.settings = settings;
+	}
+
+	public ArrayList<GroupStats> getStats() {
+		return stats;
+	}
+
+	public void setStats(ArrayList<GroupStats> stats) {
+		this.stats = stats;
+	}
+
 	public void addGroupStats(GroupStats gs) {
 		this.stats.add(gs);
 		if (gs.getGroup() != this) {
@@ -154,22 +201,6 @@ public class Group implements Serializable {
 		}
 	}
 
-	public String getGroupId() {
-		return groupId;
-	}
-
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
-
-	public Collection<Candidate> getCandidates() {
-		return candidates;
-	}
-
-	public void setCandidates(Collection<Candidate> candidates) {
-		this.candidates = candidates;
-	}
-
 	public String getAlertReceiverType() {
 		return alertReceiverType;
 	}
@@ -178,11 +209,11 @@ public class Group implements Serializable {
 		this.alertReceiverType = alertReceiverType;
 	}
 
-	public String getAlertReceiverId() {
+	public long getAlertReceiverId() {
 		return alertReceiverId;
 	}
 
-	public void setAlertReceiverId(String alertReceiverId) {
+	public void setAlertReceiverId(long alertReceiverId) {
 		this.alertReceiverId = alertReceiverId;
 	}
 
@@ -344,14 +375,6 @@ public class Group implements Serializable {
 
 	public void setVariability(double variability) {
 		this.variability = variability;
-	}
-
-	public ArrayList<GroupStats> getStats() {
-		return stats;
-	}
-
-	public void setStats(ArrayList<GroupStats> stats) {
-		this.stats = stats;
 	}
 
 	public Date getUpdatedTime() {

@@ -8,7 +8,7 @@ import javax.persistence.NoResultException;
 
 import com.myrontuttle.sci.evolve.api.PopulationStats;
 
-public class GroupDAOImpl implements GroupDAO {
+public class AdaptDAOImpl implements AdaptDAO {
 
 	private EntityManager em;
 
@@ -21,7 +21,7 @@ public class GroupDAOImpl implements GroupDAO {
 	}
 	
 	// Get the group based on a groupId
-	public Group findGroup(String groupId) {
+	public Group findGroup(long groupId) {
 		return em.find(Group.class, groupId);
 	}
 
@@ -35,22 +35,22 @@ public class GroupDAOImpl implements GroupDAO {
 		return em.merge(group);
 	}
 	
-	public void removeGroup(String groupId) {
+	public void removeGroup(long groupId) {
 		em.remove(em.find(Group.class, groupId));
 	}
 	
-	public void addCandidate(Candidate candidate, String groupId) {
+	public void addCandidate(Candidate candidate, long groupId) {
 		Group group = em.find(Group.class, groupId);
 		group.addCandidate(candidate);
 	}
 
 	// Retrieve a candidate based on it's ID
-	public Candidate findCandidate(String candidateId) {
+	public Candidate findCandidate(long candidateId) {
 		return em.find(Candidate.class, candidateId);
 	}
 
 	// Retrieve candidates from database
-	public List<Candidate> findCandidatesInGroup(String groupId) {
+	public List<Candidate> findCandidatesInGroup(long groupId) {
 		return em.createQuery(
 				"SELECT c FROM CANDIDATES c WHERE c.groupId = :groupId", 
 				Candidate.class).setParameter("groupId", groupId).getResultList();
@@ -75,14 +75,14 @@ public class GroupDAOImpl implements GroupDAO {
 		return em.merge(candidate);
 	}
 	
-	public void removeCandidate(String candidateId) {
+	public void removeCandidate(long candidateId) {
 		Candidate candidate = em.find(Candidate.class, candidateId);
 		Group group = em.find(Group.class, candidate.getGroupId());
 		group.removeCandidate(candidate);
 		em.remove(candidate);
 	}
 
-	public void removeAllCandidates(String groupId) {
+	public void removeAllCandidates(long groupId) {
 		Group group = em.find(Group.class, groupId);
 		for (Candidate c : group.getCandidates()) {
 			em.remove(c);
@@ -94,7 +94,8 @@ public class GroupDAOImpl implements GroupDAO {
 
 		Group group = em.find(Group.class, data.getPopulationId());
 		
-		GroupStats stats = new GroupStats(data.getPopulationId(), 
+		GroupStats stats = new GroupStats(
+				data.getPopulationId(), 
 				data.getBestCandidateFitness(), data.getMeanFitness(), 
 				data.getFitnessStandardDeviation(), data.getGenerationNumber(),
 				group.getVariability());
@@ -105,18 +106,18 @@ public class GroupDAOImpl implements GroupDAO {
 	}
 
 	// Retrieve group stats from database
-	public List<GroupStats> findStatsForGroup(String groupId) {
+	public List<GroupStats> findStatsForGroup(long groupId) {
 		return em.createQuery(
 				"SELECT s FROM GROUP_STATS s WHERE s.groupId = :groupId", 
 				GroupStats.class).setParameter("groupId", groupId).getResultList();
 	}
 
 	// Get the groupstats based on a statsId
-	public GroupStats findStats(String statsId) {
+	public GroupStats findStats(long statsId) {
 		return em.find(GroupStats.class, statsId);
 	}
 	
-	public void removeStats(String statsId) {
+	public void removeStats(long statsId) {
 		GroupStats stats = em.find(GroupStats.class, statsId);
 		Group group = em.find(Group.class, stats.getGroupId());
 		group.removeStats(stats);
@@ -124,7 +125,7 @@ public class GroupDAOImpl implements GroupDAO {
 	}
 
 	@Override
-	public void removeAllStats(String groupId) {
+	public void removeAllStats(long groupId) {
 		Group group = em.find(Group.class, groupId);
 		for (GroupStats gs : group.getStats()) {
 			em.remove(gs);
@@ -133,7 +134,7 @@ public class GroupDAOImpl implements GroupDAO {
 	}
 
 	@Override
-	public void setBestTrader(Trader trader, String groupId) {
+	public void setBestTrader(Trader trader, long groupId) {
 		Group group = em.find(Group.class, groupId);		
 		group.setBestTrader(trader);		
 	}
@@ -144,12 +145,12 @@ public class GroupDAOImpl implements GroupDAO {
 	}
 
 	// Get the trader based on its traderId
-	public Trader findTrader(String traderId) {
+	public Trader findTrader(long traderId) {
 		return em.find(Trader.class, traderId);
 	}
 
 	@Override
-	public Trader getBestTrader(String groupId) {
+	public Trader getBestTrader(long groupId) {
 		try {
 			return em.createQuery(
 					"SELECT t FROM TRADERS t WHERE t.groupId = :groupId", 
@@ -160,7 +161,7 @@ public class GroupDAOImpl implements GroupDAO {
 	}
 
 	@Override
-	public void removeTrader(String traderId) {
+	public void removeTrader(long traderId) {
 		Trader trader = em.find(Trader.class, traderId);
 		Group group = em.find(Group.class, trader.getGroupId());
 		group.removeBestTrader(trader);
@@ -168,69 +169,69 @@ public class GroupDAOImpl implements GroupDAO {
 	}
 
 	@Override
-	public void addSavedScreen(SavedScreen screen, String traderId) {
+	public void addSavedScreen(SavedScreen screen, long traderId) {
 		Trader trader = em.find(Trader.class, traderId);
 		trader.addScreen(screen);
 	}
 
 	@Override
-	public void addSymbol(String symbol, String traderId) {
+	public void addSymbol(String symbol, long traderId) {
 		Trader trader = em.find(Trader.class, traderId);
 		trader.addSymbol(symbol);
 	}
 
 	@Override
-	public void addSavedAlert(SavedAlert alert, String traderId) {
+	public void addSavedAlert(SavedAlert alert, long traderId) {
 		Trader trader = em.find(Trader.class, traderId);
 		trader.addAlert(alert);
 	}
 
 	@Override
-	public void addTradeInstruction(TradeInstruction instruction,
-			String traderId) {
+	public void addTradeParamter(TradeParameter instruction,
+			long traderId) {
 		Trader trader = em.find(Trader.class, traderId);
 		trader.addTradeInstruction(instruction);
 	}
 
 	@Override
-	public List<SavedScreen> findScreensForTrader(String traderId) {
+	public List<SavedScreen> findScreensForTrader(long traderId) {
 		return em.createQuery(
 				"SELECT s FROM SAVED_SCREENS s WHERE s.traderId = :traderId", 
 				SavedScreen.class).setParameter("traderId", traderId).getResultList();
 	}
 
 	@Override
-	public List<String> findSymbolsForTrader(String traderId) {
+	public List<String> findSymbolsForTrader(long traderId) {
 		Trader trader = em.find(Trader.class, traderId);
 		return trader.getSymbols();
 	}
 
 	@Override
-	public List<SavedAlert> findAlertsForTrader(String traderId) {
+	public List<SavedAlert> findAlertsForTrader(long traderId) {
 		return em.createQuery(
 				"SELECT a FROM SAVED_ALERTS a WHERE a.traderId = :traderId", 
 				SavedAlert.class).setParameter("traderId", traderId).getResultList();
 	}
 
 	@Override
-	public List<TradeInstruction> findInstructionsForTrader(String traderId) {
+	public List<TradeParameter> findParametersForTrader(long traderId) {
 		return em.createQuery(
 				"SELECT t FROM TRADE_INSTRUCTIONS t WHERE t.traderId = :traderId", 
-				TradeInstruction.class).setParameter("traderId", traderId).getResultList();
+				TradeParameter.class).setParameter("traderId", traderId).getResultList();
 	}
 
 	@Override
-	public SavedScreen findScreen(String savedScreenId) {
+	public SavedScreen findScreen(long savedScreenId) {
 		return em.find(SavedScreen.class, savedScreenId);
 	}
 
 	@Override
-	public SavedAlert findAlert(String savedAlertId) {
+	public SavedAlert findAlert(long savedAlertId) {
 		return em.find(SavedAlert.class, savedAlertId);
 	}
 
 	@Override
-	public TradeInstruction findTradeInstruction(String tradeInstructionId) {
-		return em.find(TradeInstruction.class, tradeInstructionId);
+	public TradeParameter findTradeParameter(long tradeParameterId) {
+		return em.find(TradeParameter.class, tradeParameterId);
 	}
 }

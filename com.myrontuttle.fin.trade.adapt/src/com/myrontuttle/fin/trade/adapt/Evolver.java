@@ -15,7 +15,6 @@ import org.joda.time.Minutes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.myrontuttle.fin.trade.adapt.express.SATExpression;
 import com.myrontuttle.sci.evolve.api.*;
 import com.myrontuttle.sci.evolve.engines.GenerationalEvolutionEngine;
 import com.myrontuttle.sci.evolve.factories.IntArrayFactory;
@@ -36,11 +35,11 @@ public class Evolver implements EvolveService {
 	final String EVOLVE_HOUR = "evolve_hour";
 	final String EVOLVE_MINUTE = "evolve_minute";
 	
-	private GroupDAO groupDAO;
+	private AdaptDAO adaptDAO;
 	private Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
 	
-	public void setGroupDAO(GroupDAO groupDAO) {
-		this.groupDAO = groupDAO;
+	public void setAdaptDAO(AdaptDAO adaptDAO) {
+		this.adaptDAO = adaptDAO;
 	}
 	
 	private final TerminationCondition[] terminationConditions = new TerminationCondition[]{
@@ -52,25 +51,25 @@ public class Evolver implements EvolveService {
 	private final EvolutionObserver<int[]> dbObserver = new EvolutionObserver<int[]>() {
 		public void populationUpdate(PopulationStats<? extends int[]> data) {
 
-			Group group = groupDAO.findGroup(data.getPopulationId());
+			Group group = adaptDAO.findGroup(data.getPopulationId());
 			
 			// Find the best candidate from the group
 			Candidate bestCandidate = null;
 			Trader trader = null;
 			try {
-				bestCandidate = groupDAO.findCandidateByGenome(data.getBestCandidate());
+				bestCandidate = adaptDAO.findCandidateByGenome(data.getBestCandidate());
 				
 				// Remove the previous best trader (if one exists)
 				Trader existingBest = group.getBestTrader();
 				if (existingBest != null) {
-					groupDAO.removeTrader(existingBest.getTraderId());
+					adaptDAO.removeTrader(existingBest.getTraderId());
 				}
 				
 				// Save the best trader
 				trader = new Trader();
 				trader.setGroupId(group.getGroupId());
 				trader.setGenomeString(bestCandidate.getGenomeString());
-				groupDAO.setBestTrader(trader, group.getGroupId());
+				adaptDAO.setBestTrader(trader, group.getGroupId());
 				
 			} catch (Exception e1) {
 				logger.warn("Can't find best candidate with genome: {}.", 
@@ -91,14 +90,14 @@ public class Evolver implements EvolveService {
 				}
 				
 				// Remove candidates so as not to create duplicates
-				List<Candidate> oldCandidates = groupDAO.findCandidatesInGroup(data.getPopulationId());
+				List<Candidate> oldCandidates = adaptDAO.findCandidatesInGroup(data.getPopulationId());
 				for (Candidate c : oldCandidates) {
 					expression.destroy(c.getGenome(), data.getPopulationId());
 				}
 			}
 
 			// Use data to update group
-			groupDAO.updateGroupStats(data);
+			adaptDAO.updateGroupStats(data);
 
 		}
 	};
@@ -167,25 +166,19 @@ public class Evolver implements EvolveService {
 		return engine;
 	}
 	
-	protected static ExpressionStrategy<int[]> getExpressionStrategy(Group group) {
-		if (group.getExpressionStrategy().equals(Group.SAT_EXPRESSION)) {
-			return new SATExpression<int[]>();
-		}
-		
-		return null;
-	}
-	
 	/**
 	 * Creates the first candidates for this group
 	 * @param groupId
 	 */
-	public void createInitialCandidates(String groupId) {
+	public void setupGroup(GroupSettings settings) {
 
-		Group group = groupDAO.findGroup(groupId);
+    	settings.setLongValue("StartTime", System.currentTimeMillis());
+		Group group = new Group();
+    	adaptDAO.saveGroup(group);
 		
-		int size = group.getSize();
+		long groupId = group.getGroupId();
 
-		ExpressionStrategy<int[]> expressionStrategy = getExpressionStrategy(group);
+		ExpressionStrategy<int[]> expressionStrategy = new SATExpression<int[]>();
 		int genomeLength = expressionStrategy.getGenomeLength(groupId);
 		
 		ExpressedFitnessEvaluator<int[]> evaluator = new PortfolioEvaluator();
@@ -195,15 +188,15 @@ public class Evolver implements EvolveService {
 														group.getMutationFactor(),
 														expressionStrategy, evaluator);
 		
-		engine.expressInitialPopulation(groupId, size);
+		engine.expressInitialPopulation(groupId, settings.getIntegerValue("Size"));
 	}
 	
 	/*
 	 * Evolve one group right now
 	 */
-	public void evolveNow(String groupId) {
+	public void evolveNow(long groupId) {
 		
-		List<Candidate> tradeCandidates = groupDAO.findCandidatesInGroup(groupId);
+		List<Candidate> tradeCandidates = adaptDAO.findCandidatesInGroup(groupId);
 		List<ExpressedCandidate<int[]>> candidates = new ArrayList<ExpressedCandidate<int[]>>(tradeCandidates.size());
 		
 		for (Candidate c : tradeCandidates) {
@@ -211,12 +204,12 @@ public class Evolver implements EvolveService {
 			candidates.add(c);
 		}
 		
-		Group group = groupDAO.findGroup(groupId);
+		Group group = adaptDAO.findGroup(groupId);
 		
 		int size = group.getSize();
 		int eliteCount = group.getEliteCount();
 
-		ExpressionStrategy<int[]> expressionStrategy = getExpressionStrategy(group);
+		ExpressionStrategy<int[]> expressionStrategy = new SATExpression<int[]>();
 		int genomeLength = expressionStrategy.getGenomeLength(groupId);
 		
 		ExpressedFitnessEvaluator<int[]> evaluator = new PortfolioEvaluator();
@@ -226,15 +219,15 @@ public class Evolver implements EvolveService {
 														group.getMutationFactor(),
 														expressionStrategy, evaluator);
 		
-		engine.evolveToExpression(candidates, groupId, size, group.getGeneration(), eliteCount, 
-				terminationConditions);
+		engine.evolveToExpression(candidates, groupId, size, 
+				group.getGeneration(), eliteCount, terminationConditions);
 	}
 	
 	/*
 	 * Evolve all groups in database now
 	 */
 	public void evolveAllNow() {
-		List<Group> groups = groupDAO.findGroups();
+		List<Group> groups = adaptDAO.findGroups();
 		for (Group group : groups) {
 			evolveNow(group.getGroupId());
 		}
@@ -258,7 +251,7 @@ public class Evolver implements EvolveService {
 			@Override
 			public void run() {
 				try {
-					List<Group> groups = groupDAO.findGroups();
+					List<Group> groups = adaptDAO.findGroups();
 					for (Group group : groups) {
 						if (group.isActive()) {
 							DateTime now = new DateTime();
@@ -311,8 +304,8 @@ public class Evolver implements EvolveService {
 	}
 
 	@Override
-	public void deleteCandidateExpression(String groupId, int[] candidateGenome) {
-		Group group = groupDAO.findGroup(groupId);
+	public void deleteCandidateExpression(long groupId, int[] candidateGenome) {
+		Group group = adaptDAO.findGroup(groupId);
 		
 		if (group.getExpressionStrategy().equals(Group.SAT_EXPRESSION)) {
 			SATExpression<int[]> expression = new SATExpression<int[]>();
@@ -321,16 +314,16 @@ public class Evolver implements EvolveService {
 	}
 
 	@Override
-	public void deleteGroupExpression(String groupId) {
+	public void deleteGroupExpression(long groupId) {
 
-		Group group = groupDAO.findGroup(groupId);
+		Group group = adaptDAO.findGroup(groupId);
 		
 		if (group.getExpressionStrategy().equals(Group.SAT_EXPRESSION)) {
 			SATExpression<int[]> expression = new SATExpression<int[]>();
 			
 			SATExpression.getAlertReceiverService().removeReceiver(group.getAlertReceiverId());
 			
-			List<Candidate> oldCandidates = groupDAO.findCandidatesInGroup(groupId);
+			List<Candidate> oldCandidates = adaptDAO.findCandidatesInGroup(groupId);
 			for (Candidate c : oldCandidates) {
 				expression.destroy(c.getGenome(), groupId);
 			}

@@ -2,31 +2,31 @@ package com.myrontuttle.fin.trade.web.models;
 
 import org.apache.wicket.model.LoadableDetachableModel;
 
-import com.myrontuttle.fin.trade.adapt.TradeInstruction;
-import com.myrontuttle.fin.trade.web.data.DBAccess;
+import com.myrontuttle.fin.trade.adapt.TradeParameter;
+import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
 /**
  * detachable model for an instance of SavedScreen
  * 
  */
-public class DetachableInstructionModel extends LoadableDetachableModel<TradeInstruction> {
+public class DetachableTradeParameterModel extends LoadableDetachableModel<TradeParameter> {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private final String id;
+	private final long id;
 
 	/**
 	 * @param s
 	 */
-	public DetachableInstructionModel(TradeInstruction t) {
+	public DetachableTradeParameterModel(TradeParameter t) {
 		this(t.getTradeInstructionId());
 	}
 
 	/**
 	 * @param id
 	 */
-	public DetachableInstructionModel(String id) {
-		if (id == null) {
+	public DetachableTradeParameterModel(long id) {
+		if (id == 0) {
 			throw new IllegalArgumentException();
 		}
 		this.id = id;
@@ -52,8 +52,8 @@ public class DetachableInstructionModel extends LoadableDetachableModel<TradeIns
 			return true;
 		} else if (obj == null) {
 			return false;
-		} else if (obj instanceof DetachableInstructionModel) {
-			DetachableInstructionModel other = (DetachableInstructionModel)obj;
+		} else if (obj instanceof DetachableTradeParameterModel) {
+			DetachableTradeParameterModel other = (DetachableTradeParameterModel)obj;
 			return other.id == id;
 		}
 		return false;
@@ -63,8 +63,8 @@ public class DetachableInstructionModel extends LoadableDetachableModel<TradeIns
 	 * @see org.apache.wicket.model.LoadableDetachableModel#load()
 	 */
 	@Override
-	protected TradeInstruction load() {
+	protected TradeParameter load() {
 		// loads group from the database
-		return DBAccess.getDAO().findTradeInstruction(id);
+		return AdaptAccess.getDAO().findTradeParameter(id);
 	}
 }

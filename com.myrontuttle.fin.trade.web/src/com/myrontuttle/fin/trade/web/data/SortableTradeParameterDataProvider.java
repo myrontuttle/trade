@@ -22,24 +22,25 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.IModel;
 
-import com.myrontuttle.fin.trade.adapt.GroupDAO;
-import com.myrontuttle.fin.trade.adapt.TradeInstruction;
-import com.myrontuttle.fin.trade.web.models.DetachableInstructionModel;
+import com.myrontuttle.fin.trade.adapt.AdaptDAO;
+import com.myrontuttle.fin.trade.adapt.TradeParameter;
+import com.myrontuttle.fin.trade.web.models.DetachableTradeParameterModel;
+import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
 
 /**
  * implementation of IDataProvider for groups that keeps track of sort information
  */
-public class SortableInstructionDataProvider extends SortableDataProvider<TradeInstruction, String> {
+public class SortableTradeParameterDataProvider extends SortableDataProvider<TradeParameter, String> {
 
 	private static final long serialVersionUID = 1L;
 	
-	String traderId;
+	long traderId;
 
 	/**
 	 * constructor
 	 */
-	public SortableInstructionDataProvider(String traderId) {
+	public SortableTradeParameterDataProvider(long traderId) {
 		
 		this.traderId = traderId;
 		
@@ -47,32 +48,32 @@ public class SortableInstructionDataProvider extends SortableDataProvider<TradeI
 		setSort("tradeInstructionId", SortOrder.ASCENDING);
 	}
 
-	protected GroupDAO getDAO() {
-		return DBAccess.getDAO();
+	protected AdaptDAO getDAO() {
+		return AdaptAccess.getDAO();
 	}
 
 	/**
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#iterator(int, int)
 	 */
-	public Iterator<TradeInstruction> iterator(long first, long count) {
+	public Iterator<TradeParameter> iterator(long first, long count) {
 		// Consider finding a subset of all groups to StrategyDAO:
 		// return getDAO().findGroups(first, count, new SortParam("groupId", true)).iterator();
-		return getDAO().findInstructionsForTrader(traderId).iterator();
+		return getDAO().findParametersForTrader(traderId).iterator();
 	}
 
 	/**
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#size()
 	 */
 	public long size() {
-		return getDAO().findInstructionsForTrader(traderId).size();
+		return getDAO().findParametersForTrader(traderId).size();
 	}
 
 	/**
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#model(java.lang.Object)
 	 */
-	public IModel<TradeInstruction> model(TradeInstruction object)
+	public IModel<TradeParameter> model(TradeParameter object)
 	{
-		return new DetachableInstructionModel(object);
+		return new DetachableTradeParameterModel(object);
 	}
 
 }

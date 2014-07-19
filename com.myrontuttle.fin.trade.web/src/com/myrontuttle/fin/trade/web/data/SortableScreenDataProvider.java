@@ -22,9 +22,10 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.IModel;
 
-import com.myrontuttle.fin.trade.adapt.GroupDAO;
+import com.myrontuttle.fin.trade.adapt.AdaptDAO;
 import com.myrontuttle.fin.trade.adapt.SavedScreen;
 import com.myrontuttle.fin.trade.web.models.DetachableScreenModel;
+import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
 
 /**
@@ -34,12 +35,12 @@ public class SortableScreenDataProvider extends SortableDataProvider<SavedScreen
 
 	private static final long serialVersionUID = 1L;
 	
-	String traderId;
+	long traderId;
 
 	/**
 	 * constructor
 	 */
-	public SortableScreenDataProvider(String traderId) {
+	public SortableScreenDataProvider(long traderId) {
 		
 		this.traderId = traderId;
 		
@@ -47,8 +48,8 @@ public class SortableScreenDataProvider extends SortableDataProvider<SavedScreen
 		setSort("savedScreenId", SortOrder.ASCENDING);
 	}
 
-	protected GroupDAO getDAO() {
-		return DBAccess.getDAO();
+	protected AdaptDAO getDAO() {
+		return AdaptAccess.getDAO();
 	}
 
 	/**

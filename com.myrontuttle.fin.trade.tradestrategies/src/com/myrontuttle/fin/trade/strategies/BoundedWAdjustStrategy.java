@@ -57,7 +57,7 @@ public class BoundedWAdjustStrategy extends BoundedStrategy {
 			return new String[0];
 		}
 
-		String userId = trade.getUserId();
+		long userId = trade.getUserId();
 		String openOrderType = portfolioService.
 									openOrderTypesAvailable(userId)[parameters.get(OPEN_ORDER)];
 		String closeOrderType = portfolioService.
@@ -97,7 +97,7 @@ public class BoundedWAdjustStrategy extends BoundedStrategy {
 			AlertService alertService,
 			TradeStrategyService tradeStrategyService) throws Exception {
 		
-		String userId = trade.getUserId();
+		long userId = trade.getUserId();
 		String portfolioId = trade.getPortfolioId();
 		if (portfolioService.openOrderTypesAvailable(userId).length != 
 				portfolioService.closeOrderTypesAvailable(userId).length) {
@@ -153,7 +153,7 @@ public class BoundedWAdjustStrategy extends BoundedStrategy {
 		if (!tradeStrategyService.tradeExists(trade.getTradeId())) {
 			throw new Exception("Trade isn't open. Can't make adjustment");
 		}
-		String userId = trade.getUserId();
+		long userId = trade.getUserId();
 		String symbol = trade.getSymbol();
 		
 		Map<String, Integer> tradeParams = trade.getParameters();
@@ -186,7 +186,7 @@ public class BoundedWAdjustStrategy extends BoundedStrategy {
 								AlertService alertService, TradeStrategyService tradeStrategyService) 
 													throws Exception {
 
-		String alertUserId = trade.getAlertUserId();
+		long alertUserId = trade.getAlertUserId();
 		AvailableAlert alertWhen = (priceRiseGood) ? alertService.getPriceAboveAlert(alertUserId) :
 										alertService.getPriceBelowAlert(alertUserId);
 		String alertType = (priceRiseGood) ? PERCENT_BELOW : PERCENT_ABOVE;
@@ -194,7 +194,7 @@ public class BoundedWAdjustStrategy extends BoundedStrategy {
 		double adjustmentPrice = currentPrice + 
 					(trade.getParameters().get(alertType) / 100) * currentPrice;
 		String alertId = alertService.setupAlert(alertUserId, 
-				alertWhen.getId(),
+				alertWhen.getType(),
 				alertWhen.getCondition(),
 				trade.getSymbol(),
 				adjustmentPrice);

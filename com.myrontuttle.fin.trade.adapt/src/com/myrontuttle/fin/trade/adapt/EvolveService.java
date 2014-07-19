@@ -8,9 +8,9 @@ import org.joda.time.DateTime;
  */
 public interface EvolveService {
 	
-	public void createInitialCandidates(String groupId);
+	public void setupGroup(GroupSettings settings);
 	
-	public void evolveNow(String groupId);
+	public void evolveNow(long groupId);
 	
 	public void evolveAllNow();
 	
@@ -20,7 +20,7 @@ public interface EvolveService {
 	
 	public boolean stopEvolving();
 	
-	public void deleteCandidateExpression(String groupId, int[] candidateGenome);
+	public void deleteCandidateExpression(long groupId, int[] candidateGenome);
 
-	public void deleteGroupExpression(String groupId);
+	public void deleteGroupExpression(long groupId);
 }

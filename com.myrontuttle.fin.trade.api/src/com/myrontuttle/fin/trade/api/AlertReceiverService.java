@@ -27,20 +27,20 @@ public interface AlertReceiverService {
 	 * @param receiverType One of the types returned from {@link #availableReceiverTypes() availableReceiverTypes}
 	 * @return String Id of the receiver added
 	 */
-	public String addReceiver(String userId, String receiverType);
+	public long addReceiver(long userId, String receiverType);
 
 	/**
 	 * Lists the receivers assigned to this user
 	 * @param userId Identifies user that receives the alerts
 	 */
-	public List<String> getReceivers(String userId);
+	public List<Long> getReceivers(long userId);
 	
 	/**
 	 * Removes an alert receiver and all its associated parameters for a user
 	 * @param userId Identifies user that receives the alerts
 	 * @param receiverId Id of the receiver to remove
 	 */
-	public void removeReceiver(String receiverId);
+	public void removeReceiver(long receiverId);
 	
 	/**
 	 * Sets parameters required for a receiver to connect to an alert source
@@ -48,50 +48,50 @@ public interface AlertReceiverService {
 	 * @param name Parameter name
 	 * @param value Parameter value
 	 */
-	public void setReceiverParameter(String receiverId, String name, String value);
+	public void setReceiverParameter(long receiverId, String name, String value);
 	
 	/**
 	 * Lists the parameters that are set for a specific receiver
 	 * @param receiverId Id of receiver to get parameters for
 	 * @return Map of parameter names to values
 	 */
-	public Map<String, String> getReceiverParameters(String receiverId);
+	public Map<String, String> getReceiverParameters(long receiverId);
 	
 	/**
 	 * Indicates whether all of the required parameters for an alert receiver are set
 	 * @param receiverId Allows multiple receivers with different id's
 	 * @return True if all the parameters for this user and receiver are set
 	 */
-	public boolean parametersAreSet(String receiverId);
+	public boolean parametersAreSet(long receiverId);
 	
 	/**
 	 * Toggles whether this receiver should be actively receiving
 	 * @param receiverId Receiver to set
 	 * @param isActive
 	 */
-	public void setReceiverActive(String receiverId, boolean isActive);
+	public void setReceiverActive(long receiverId, boolean isActive);
 	
 	/**
 	 * Starts receiving alerts for a user from a specific receiver
 	 * @param receiverId Id of the receiver to start
 	 */
-	public void startReceiving(String receiverId);
+	public void startReceiving(long receiverId);
 
 	/**
 	 * Starts receiving alerts for a user from all associated receivers
 	 * @param userId Id of the receiver to start
 	 */
-	public void startReceivingAll(String userId);
+	public void startReceivingAll(long userId);
 	
 	/**
 	 * Stop receiving alerts for a user from a specific receiver
 	 * @param receiverId Id of receiver to stop
 	 */
-	public void stopReceiving(String receiverId);
+	public void stopReceiving(long receiverId);
 
 	/**
 	 * Stops receiving alerts for a user from all associated receivers
 	 * @param userId Id of the receiver to start
 	 */
-	public void stopReceivingAll(String userId);
+	public void stopReceivingAll(long userId);
 }

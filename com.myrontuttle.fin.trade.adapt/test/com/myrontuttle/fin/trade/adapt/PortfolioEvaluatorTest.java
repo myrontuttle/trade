@@ -16,30 +16,30 @@ import com.myrontuttle.sci.evolve.api.ExpressedCandidate;
 
 public class PortfolioEvaluatorTest {
 	
-	private final static String CA = "candidateA";
-	private final static String CB = "candidateB";
-	private final static String CC = "candidateC";
+	private final static long C1 = 1;
+	private final static long C2 = 2;
+	private final static long C3 = 3;
 	private final static String PA = "portfolioA";
 	private final static String PB = "portfolioB";
 	private final static String PC = "portfolioC";
-	private final static String G1 = "group1";
+	private final static long G1 = 100;
 	
 	private final static String ANALYSIS = "UnrealizedGain";
 
 	private PortfolioService portfolioService;
-	private GroupDAO groupDAO;
+	private AdaptDAO groupDAO;
 	
 	private PortfolioEvaluator evaluator;
 	
-	private ExpressedCandidate<int[]> candidateA = new Candidate(CA, 
+	private ExpressedCandidate<int[]> candidateA = new Candidate(C1, 
 													G1, 
 													new int[]{1,2}, 
 													PA);
-	private ExpressedCandidate<int[]> candidateB = new Candidate(CB, 
+	private ExpressedCandidate<int[]> candidateB = new Candidate(C2, 
 													G1, 
 													new int[]{1,2}, 
 													PB);
-	private ExpressedCandidate<int[]> candidateC = new Candidate(CC, 
+	private ExpressedCandidate<int[]> candidateC = new Candidate(C3, 
 													G1, 
 													new int[]{1,2}, 
 													PC);
@@ -60,14 +60,14 @@ public class PortfolioEvaluatorTest {
 		
 	    // Arrange mocks
 		portfolioService = mock(PortfolioService.class);
-		when(portfolioService.analyze(CA, PA, ANALYSIS)).
+		when(portfolioService.analyze(C1, PA, ANALYSIS)).
 				thenReturn(10000.00);
-		when(portfolioService.analyze(CB, PB, ANALYSIS)).
+		when(portfolioService.analyze(C2, PB, ANALYSIS)).
 				thenReturn(5000.00);
-		when(portfolioService.analyze(CC, PC, ANALYSIS)).
+		when(portfolioService.analyze(C3, PC, ANALYSIS)).
 				thenReturn(0.00);
 		
-		groupDAO = mock(GroupDAO.class);
+		groupDAO = mock(AdaptDAO.class);
 		when(groupDAO.findGroup(G1)).thenReturn(group1);
 
 		evaluator = new PortfolioEvaluator();

@@ -14,13 +14,13 @@ public class SortableTransactionDataProvider extends SortableDataProvider<Transa
 
 	private static final long serialVersionUID = 1L;
 	
-	String userId;
+	long userId;
 	String portfolioId;
 
 	/**
 	 * constructor
 	 */
-	public SortableTransactionDataProvider(String userId, String portfolioId) {
+	public SortableTransactionDataProvider(long userId, String portfolioId) {
 		
 		this.userId = userId;
 		this.portfolioId = portfolioId;

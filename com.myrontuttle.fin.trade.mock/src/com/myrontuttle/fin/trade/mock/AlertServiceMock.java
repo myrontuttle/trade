@@ -35,22 +35,22 @@ public class AlertServiceMock implements AlertService {
 	};
 	
 	@Override
-	public AvailableAlert[] getAvailableAlerts(String userId) throws Exception {
+	public AvailableAlert[] getAvailableAlerts(long userId) throws Exception {
 		return availableAlerts;
 	}
 
 	@Override
-	public AvailableAlert getAlert(String userId, int id) throws Exception {
+	public AvailableAlert getAlert(long userId, int id) throws Exception {
 		return priceBelowAlert;
 	}
 
 	@Override
-	public AvailableAlert getPriceBelowAlert(String userId) throws Exception {
+	public AvailableAlert getPriceBelowAlert(long userId) throws Exception {
 		return priceBelowAlert;
 	}
 
 	@Override
-	public AvailableAlert getPriceAboveAlert(String userId) throws Exception {
+	public AvailableAlert getPriceAboveAlert(long userId) throws Exception {
 		return priceAboveAlert;
 	}
 
@@ -61,52 +61,52 @@ public class AlertServiceMock implements AlertService {
 	}
 
 	@Override
-	public double getLowerDouble(String userId, int id, String symbol,
+	public double getLowerDouble(long userId, int id, String symbol,
 			int criteriaIndex) {
 		return alertLower;
 	}
 
 	@Override
-	public double getUpperDouble(String userId, int id, String symbol,
+	public double getUpperDouble(long userId, int id, String symbol,
 			int criteriaIndex) {
 		return alertUpper;
 	}
 
 	@Override
-	public int getListLength(String userId, int id, int criteriaIndex) {
+	public int getListLength(long userId, int id, int criteriaIndex) {
 		return alertListLength;
 	}
 
 	@Override
-	public boolean addAlertDestination(String userId, String alertAddress,
+	public boolean addAlertDestination(long userId, String alertAddress,
 			String alertType) throws Exception {
 		return false;
 	}
 
 	@Override
-	public String[] setupAlerts(String userId, SelectedAlert... alerts)
+	public String[] setupAlerts(long userId, SelectedAlert... alerts)
 			throws Exception {
 		return setupAlerts;
 	}
 
 	@Override
-	public SelectedAlert[] getActiveAlerts(String userId) throws Exception {
+	public SelectedAlert[] getActiveAlerts(long userId) throws Exception {
 		return selectedAlerts;
 	}
 
 	@Override
-	public boolean removeAlert(String userId, String alertId)
+	public boolean removeAlert(long userId, String alertId)
 			throws Exception {
 		return true;
 	}
 
 	@Override
-	public boolean removeAllAlerts(String userId) throws Exception {
+	public boolean removeAllAlerts(long userId) throws Exception {
 		return false;
 	}
 
 	@Override
-	public String setupAlert(String userId, int alertId, String condition,
+	public String setupAlert(long userId, int alertId, String condition,
 			String symbol, double... params) {
 		return setupAlerts[0];
 	}
@@ -117,7 +117,7 @@ class ActiveAlert implements SelectedAlert {
 	double[] params = new double[]{400};
 	
 	@Override
-	public int getAlertId() {
+	public int getAlertType() {
 		return 1;
 	}
 

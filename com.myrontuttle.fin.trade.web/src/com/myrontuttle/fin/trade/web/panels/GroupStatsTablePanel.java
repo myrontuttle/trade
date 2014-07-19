@@ -18,7 +18,7 @@ public class GroupStatsTablePanel extends Panel {
 	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public GroupStatsTablePanel(String id, String groupId) {
+	public GroupStatsTablePanel(String id, long groupId) {
 		super(id);
 
 		List<IColumn<GroupStats, String>> columns = new ArrayList<IColumn<GroupStats, String>>();

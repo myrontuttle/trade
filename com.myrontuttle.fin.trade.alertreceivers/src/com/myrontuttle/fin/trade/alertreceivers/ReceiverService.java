@@ -25,7 +25,7 @@ public class ReceiverService implements AlertReceiverService {
 	private static ReceiverDAO receiverDAO;
 
 	private final ScheduledExecutorService ses;
-	private final HashMap<String, ScheduledFuture<?>> receiverThreads = new HashMap<String, ScheduledFuture<?>>();
+	private final HashMap<Long, ScheduledFuture<?>> receiverThreads = new HashMap<Long, ScheduledFuture<?>>();
 
 	private static TradeStrategyService tradeStrategyService;
 	
@@ -88,16 +88,16 @@ public class ReceiverService implements AlertReceiverService {
 	}
 
 	@Override
-	public String addReceiver(String userId, String receiverType) {
+	public long addReceiver(long userId, String receiverType) {
 		AlertReceiver r = new AlertReceiver(userId, receiverType);
 		receiverDAO.saveReceiver(r);
 		return r.getReceiverId();
 	}
 
 	@Override
-	public List<String> getReceivers(String userId) {
+	public List<Long> getReceivers(long userId) {
 		List<AlertReceiver> rs = receiverDAO.findReceivers(userId);
-		List<String> receiverIds = new ArrayList<String>(rs.size());
+		List<Long> receiverIds = new ArrayList<Long>(rs.size());
 		for (AlertReceiver r : rs) {
 			receiverIds.add(r.getReceiverId());
 		}
@@ -105,25 +105,25 @@ public class ReceiverService implements AlertReceiverService {
 	}
 
 	@Override
-	public void removeReceiver(String receiverId) {
+	public void removeReceiver(long receiverId) {
 		stopReceiving(receiverId);
 		receiverDAO.removeReceiver(receiverId);
 	}
 
 	@Override
-	public void setReceiverParameter(String receiverId, String name, String value) {
-		if (receiverId != null && name != null && value != null) {
+	public void setReceiverParameter(long receiverId, String name, String value) {
+		if (receiverId != 0 && name != null && value != null) {
 			receiverDAO.addReceiverParameter(receiverId, name, value);
 		}
 	}
 
 	@Override
-	public Map<String, String> getReceiverParameters(String receiverId) {
+	public Map<String, String> getReceiverParameters(long receiverId) {
 		return receiverDAO.getReceiverParameters(receiverId);
 	}
 
 	@Override
-	public boolean parametersAreSet(String receiverId) {
+	public boolean parametersAreSet(long receiverId) {
 		AlertReceiver r = receiverDAO.findReceiver(receiverId);
 		if (r.getReceiverType().equals(EmailAlertReceiver.NAME)) {
 			EmailAlertReceiver.validateParameters(receiverDAO, r);
@@ -141,12 +141,12 @@ public class ReceiverService implements AlertReceiverService {
 	}
 
 	@Override
-	public void setReceiverActive(String receiverId, boolean isActive) {
+	public void setReceiverActive(long receiverId, boolean isActive) {
 		receiverDAO.setReceiverActive(receiverId, isActive);
 	}
 
 	@Override
-	public void startReceiving(String receiverId) {
+	public void startReceiving(long receiverId) {
 		if (!parametersAreSet(receiverId)) {
 			logger.warn("Missing parameters for receiver: {}");
 			return;
@@ -177,7 +177,7 @@ public class ReceiverService implements AlertReceiverService {
 	}
 
 	@Override
-	public void startReceivingAll(String userId) {
+	public void startReceivingAll(long userId) {
 		List<AlertReceiver> receivers = receiverDAO.findReceivers(userId);
 		for (AlertReceiver r : receivers) {
 			startReceiving(r);
@@ -185,7 +185,7 @@ public class ReceiverService implements AlertReceiverService {
 	}
 
 	@Override
-	public void stopReceiving(String receiverId) {
+	public void stopReceiving(long receiverId) {
 		if (receiverThreads.containsKey(receiverId)) {
 			receiverThreads.get(receiverId).cancel(true);
 			receiverThreads.remove(receiverId);
@@ -193,7 +193,7 @@ public class ReceiverService implements AlertReceiverService {
 	}
 
 	@Override
-	public void stopReceivingAll(String userId) {
+	public void stopReceivingAll(long userId) {
 		List<AlertReceiver> receivers = receiverDAO.findReceivers(userId);
 		for (AlertReceiver r : receivers) {
 			stopReceiving(r.getReceiverId());

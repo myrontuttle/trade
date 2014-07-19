@@ -22,17 +22,17 @@ public class SavedAlert implements Serializable, SelectedAlert {
 	@Id
 	@Column(name = "SAVED_ALERT_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
-	private String savedAlertId;
+	private long savedAlertId;
 
 	@Column(name = "TRADER_ID")
-	private String traderId;
+	private long traderId;
 	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "TRADER_ID", referencedColumnName = "TRADER_ID")
 	private Trader trader;
 
-	@Column(name = "ALERT_ID")
-	private int alertId;
+	@Column(name = "ALERT_TYPE")
+	private int alertType;
 	
 	@Column(name = "CONDITION")
 	private String condition;
@@ -46,11 +46,14 @@ public class SavedAlert implements Serializable, SelectedAlert {
 	@Transient
 	private double[] params;
 	
+	@Column(name = "ALERT_ID")
+	private String alertId;
+	
 	public SavedAlert() {}
 
-	public SavedAlert(String traderId, int alertId, String condition, String symbol, double... params) {
+	public SavedAlert(long traderId, int alertType, String condition, String symbol, double... params) {
 		this.traderId = traderId;
-		this.alertId = alertId;
+		this.alertType = alertType;
 		this.condition = condition;
 		this.symbol = symbol;
 		this.params = params;
@@ -80,19 +83,19 @@ public class SavedAlert implements Serializable, SelectedAlert {
 		return array;
 	}
 
-	public String getSavedAlertId() {
+	public long getSavedAlertId() {
 		return savedAlertId;
 	}
 
-	public void setSavedAlertId(String savedAlertId) {
+	public void setSavedAlertId(long savedAlertId) {
 		this.savedAlertId = savedAlertId;
 	}
 
-	public String getTraderId() {
+	public long getTraderId() {
 		return traderId;
 	}
 
-	public void setTraderId(String traderId) {
+	public void setTraderId(long traderId) {
 		this.traderId = traderId;
 	}
 
@@ -104,12 +107,12 @@ public class SavedAlert implements Serializable, SelectedAlert {
 		this.trader = trader;
 	}
 
-	public int getAlertId() {
-		return alertId;
+	public int getAlertType() {
+		return alertType;
 	}
 
-	public void setAlertId(int alertId) {
-		this.alertId = alertId;
+	public void setAlertType(int alertType) {
+		this.alertType = alertType;
 	}
 
 	public String getCondition() {
@@ -146,5 +149,13 @@ public class SavedAlert implements Serializable, SelectedAlert {
 
 	public void setParams(double[] params) {
 		this.params = params;
+	}
+
+	public String getAlertId() {
+		return alertId;
+	}
+
+	public void setAlertId(String alertId) {
+		this.alertId = alertId;
 	}
 }

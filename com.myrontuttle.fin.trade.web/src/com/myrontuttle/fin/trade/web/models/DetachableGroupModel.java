@@ -19,7 +19,7 @@ package com.myrontuttle.fin.trade.web.models;
 import org.apache.wicket.model.LoadableDetachableModel;
 
 import com.myrontuttle.fin.trade.adapt.Group;
-import com.myrontuttle.fin.trade.web.data.DBAccess;
+import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
 /**
  * detachable model for an instance of group
@@ -29,7 +29,7 @@ public class DetachableGroupModel extends LoadableDetachableModel<Group> {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private final String id;
+	private final long id;
 
 	/**
 	 * @param c
@@ -41,8 +41,8 @@ public class DetachableGroupModel extends LoadableDetachableModel<Group> {
 	/**
 	 * @param id
 	 */
-	public DetachableGroupModel(String id) {
-		if (id == null) {
+	public DetachableGroupModel(long id) {
+		if (id == 0) {
 			throw new IllegalArgumentException();
 		}
 		this.id = id;
@@ -81,6 +81,6 @@ public class DetachableGroupModel extends LoadableDetachableModel<Group> {
 	@Override
 	protected Group load() {
 		// loads group from the database
-		return DBAccess.getDAO().findGroup(id);
+		return AdaptAccess.getDAO().findGroup(id);
 	}
 }

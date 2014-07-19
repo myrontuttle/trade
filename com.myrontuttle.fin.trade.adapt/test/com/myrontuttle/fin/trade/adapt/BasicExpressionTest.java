@@ -1,10 +1,11 @@
-package com.myrontuttle.fin.trade.adapt.express;
+package com.myrontuttle.fin.trade.adapt;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,19 +14,19 @@ import org.mockito.stubbing.Answer;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.Group;
-import com.myrontuttle.fin.trade.adapt.GroupDAO;
+import com.myrontuttle.fin.trade.adapt.AdaptDAO;
+import com.myrontuttle.fin.trade.adapt.SATExpression;
 import com.myrontuttle.fin.trade.adapt.SavedAlert;
 import com.myrontuttle.fin.trade.adapt.SavedScreen;
-import com.myrontuttle.fin.trade.adapt.TradeInstruction;
-import com.myrontuttle.fin.trade.adapt.express.SATExpression;
+import com.myrontuttle.fin.trade.adapt.TradeParameter;
 import com.myrontuttle.fin.trade.api.*;
 
 public class BasicExpressionTest {
 
-	private final static String CID = "candidateID";
+	private final static long CID = 1334;
 	private final static String WID = "watchlistID";
 	private final static String PID = "portfolioID";
-	private final static String GID = "groupID";
+	private final static long GID = 1;
 	private final static String LID = "LotID";
 	private final static String EMAIL = "test@test.com";
 	private final double STARTING_CASH = 10000.00;
@@ -47,7 +48,7 @@ public class BasicExpressionTest {
 	private QuoteService quoteService;
 	private TradeStrategyService strategyService;
 	private AlertReceiverService alertReceiverService;
-	private GroupDAO groupDAO;
+	private AdaptDAO groupDAO;
 	
 	private SATExpression<int[]> expression;
 	
@@ -107,7 +108,7 @@ public class BasicExpressionTest {
 	private AvailableAlert[] availableAlerts = new AvailableAlert[]{
 			priceBelowAlert
 	};
-	private SelectedAlert[] selectedAlerts = new SelectedAlert[]{
+	private SavedAlert[] selectedAlerts = new SavedAlert[]{
 			new SavedAlert(CID, alertId, condition, screenSymbols[0], new double[]{300}),
 			new SavedAlert(CID, alertId, condition, screenSymbols[1], new double[]{200}),
 			new SavedAlert(CID, alertId, condition, screenSymbols[2], new double[]{100}),
@@ -165,17 +166,17 @@ public class BasicExpressionTest {
 		group1.setExpressionStrategy("BasicExpression");
 		group1.setTradeStrategy(BOUNDED_STRAT);
 
-		params1.add(new TradeInstruction(CID, trade1, "openOrderType", 0));
-		params1.add(new TradeInstruction(CID, trade1, "tradeAllocation", 37));
-		params1.add(new TradeInstruction(CID, trade1, "percentBelow", 24));
-		params1.add(new TradeInstruction(CID, trade1, "timeLimit", 60));
-		params1.add(new TradeInstruction(CID, trade1, "percentAbove", 88));
+		params1.add(new TradeParameter(CID, trade1, "openOrderType", 0));
+		params1.add(new TradeParameter(CID, trade1, "tradeAllocation", 37));
+		params1.add(new TradeParameter(CID, trade1, "percentBelow", 24));
+		params1.add(new TradeParameter(CID, trade1, "timeLimit", 60));
+		params1.add(new TradeParameter(CID, trade1, "percentAbove", 88));
 		
-		params2.add(new TradeInstruction(CID, trade2, "openOrderType", 1));
-		params2.add(new TradeInstruction(CID, trade2, "tradeAllocation", 25));
-		params2.add(new TradeInstruction(CID, trade2, "percentBelow", 66));
-		params2.add(new TradeInstruction(CID, trade2, "timeLimit", 86400));
-		params2.add(new TradeInstruction(CID, trade2, "percentAbove", 75));
+		params2.add(new TradeParameter(CID, trade2, "openOrderType", 1));
+		params2.add(new TradeParameter(CID, trade2, "tradeAllocation", 25));
+		params2.add(new TradeParameter(CID, trade2, "percentBelow", 66));
+		params2.add(new TradeParameter(CID, trade2, "timeLimit", 86400));
+		params2.add(new TradeParameter(CID, trade2, "percentAbove", 75));
 		
 	    // Create mocks
 		screenerService = mock(ScreenerService.class);
@@ -185,7 +186,7 @@ public class BasicExpressionTest {
 		quoteService = mock(QuoteService.class);
 		strategyService = mock(TradeStrategyService.class);
 		alertReceiverService = mock(AlertReceiverService.class);
-		groupDAO = mock(GroupDAO.class);
+		groupDAO = mock(AdaptDAO.class);
 		
 		// Describe Mocks
 		when(screenerService.getAvailableCriteria(GID)).thenReturn(availableScreenCriteria);
@@ -282,10 +283,14 @@ public class BasicExpressionTest {
 	
 	@Test
 	public void testExpressTradeGenes() throws Exception {
-		ArrayList<TradeInstruction> params = expression.expressTradeGenes(
+		HashMap<String, ArrayList<TradeParameter>> trades = expression.expressTradeGenes(
 														candidateA, group1, screenSymbols);
-		for (int i=0; i<params.size(); i++) {
-			assertTrue(params.get(i).equals(params1.get(i)));
+		for (String key : trades.keySet()) {
+			ArrayList<TradeParameter> params = trades.get(key);
+
+			for (int i=0; i<params.size(); i++) {
+				assertTrue(params.get(i).equals(params1.get(i)));
+			}
 		}
 	}
 	

@@ -7,7 +7,7 @@ import com.myrontuttle.fin.trade.api.Transaction;
 
 public class PortfolioMock implements PortfolioService {
 
-	private final static String UID = "UserID";
+	private final static long UID = 1334;
 	private final static String PID = "PortfolioID";
 	private final static String LID = "LotID";
 	private final static double STARTING_CASH = 10000.00;
@@ -24,41 +24,41 @@ public class PortfolioMock implements PortfolioService {
 	private ArrayList<Transaction> transactions = new ArrayList<Transaction>(2);
 	
 	@Override
-	public String create(String userId, String name) throws Exception {
+	public String create(long userId, String name) throws Exception {
 		return name;
 	}
 
 	@Override
-	public boolean delete(String userId, String portfolioId) throws Exception {
+	public boolean delete(long userId, String portfolioId) throws Exception {
 		return false;
 	}
 
 	@Override
-	public boolean rename(String userId, String portfolioId, String newName)
+	public boolean rename(long userId, String portfolioId, String newName)
 			throws Exception {
 		return false;
 	}
 
 	@Override
-	public boolean addCashTransaction(String userId, String portfolioId,
+	public boolean addCashTransaction(long userId, String portfolioId,
 			double quantity, boolean credit, boolean open) throws Exception {
 		return false;
 	}
 
 	@Override
-	public double getAvailableBalance(String userId, String portfolioId)
+	public double getAvailableBalance(long userId, String portfolioId)
 			throws Exception {
 		return STARTING_CASH;
 	}
 
 	@Override
-	public Transaction getTransaction(String userId, String portfolioId, 
+	public Transaction getTransaction(long userId, String portfolioId, 
 			String transactionId) throws Exception {
 		return new TransactionMock(UID, PID, "01", "2014-06-25 09:30", BUY, "AAPL", 20, 134.23);
 	}
 	
 	@Override
-	public ArrayList<Transaction> getTransactions(String userId, String portfolioId)
+	public ArrayList<Transaction> getTransactions(long userId, String portfolioId)
 			throws Exception {
 
 		transactions.add(new TransactionMock(UID, PID, "01", "2014-06-25 09:30", BUY, "AAPL", 20, 134.23));
@@ -67,7 +67,7 @@ public class PortfolioMock implements PortfolioService {
 	}
 
 	@Override
-	public String[] openOrderTypesAvailable(String userId) {
+	public String[] openOrderTypesAvailable(long userId) {
 		return openOrderTypes;
 	}
 
@@ -81,26 +81,26 @@ public class PortfolioMock implements PortfolioService {
 
 
 	@Override
-	public String openPosition(String userId, String portfolioId, String symbol, double quantity,
+	public String openPosition(long userId, String portfolioId, String symbol, double quantity,
 			String orderType)
 			throws Exception {
 		return LID;
 	}
 
 	@Override
-	public String[] closeOrderTypesAvailable(String userId) {
+	public String[] closeOrderTypesAvailable(long userId) {
 		return closeOrderTypes;
 	}
 
 	@Override
-	public boolean closePosition(String userId, String portfolioId, String symbol, double quantity,
+	public boolean closePosition(long userId, String portfolioId, String symbol, double quantity,
 			String orderType)
 			throws Exception {
 		return false;
 	}
 
 	@Override
-	public double closeAllPositions(String userId, String portfolioId)
+	public double closeAllPositions(long userId, String portfolioId)
 			throws Exception {
 		return STARTING_CASH + (Math.random() - 0.5) * 100;
 	}
@@ -111,7 +111,7 @@ public class PortfolioMock implements PortfolioService {
 	}
 
 	@Override
-	public double analyze(String userId, String portfolioId, String analysisType)
+	public double analyze(long userId, String portfolioId, String analysisType)
 			throws Exception {
 		return GAIN;
 	}

@@ -6,7 +6,6 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 
 import com.myrontuttle.fin.trade.adapt.Group;
-import com.myrontuttle.fin.trade.web.data.DBAccess;
 import com.myrontuttle.fin.trade.web.panels.BestTraderPanel;
 import com.myrontuttle.fin.trade.web.panels.CandidateTablePanel;
 import com.myrontuttle.fin.trade.web.panels.EvolveGroupPanel;
@@ -14,6 +13,7 @@ import com.myrontuttle.fin.trade.web.panels.GroupStatsTablePanel;
 import com.myrontuttle.fin.trade.web.panels.HeaderPanel;
 import com.myrontuttle.fin.trade.web.panels.UpdateGroupPanel;
 import com.myrontuttle.fin.trade.web.panels.UploadCandidatePanel;
+import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
 public class GroupPage extends WebPage {
 
@@ -21,10 +21,10 @@ public class GroupPage extends WebPage {
 
 	Group group;
 	
-	public GroupPage(String groupId) {
+	public GroupPage(long groupId) {
 
-		if (groupId != null) {
-			group = DBAccess.getDAO().findGroup(groupId);
+		if (groupId != 0) {
+			group = AdaptAccess.getDAO().findGroup(groupId);
 		}
 		if (group == null) {
 			group = new Group();

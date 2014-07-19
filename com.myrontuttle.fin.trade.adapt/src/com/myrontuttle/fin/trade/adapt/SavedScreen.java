@@ -20,10 +20,10 @@ public class SavedScreen implements Serializable, SelectedScreenCriteria {
 	@Id
 	@Column(name = "SAVED_SCREEN_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
-	private String savedScreenId;
+	private long savedScreenId;
 
 	@Column(name = "TRADER_ID")
-	private String traderId;
+	private long traderId;
 	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "TRADER_ID", referencedColumnName = "TRADER_ID")
@@ -40,26 +40,26 @@ public class SavedScreen implements Serializable, SelectedScreenCriteria {
 	
 	public SavedScreen() {}
 	
-	public SavedScreen(String traderId, String name, String value, String argsOperator) {
+	public SavedScreen(long traderId, String name, String value, String argsOperator) {
 		this.traderId = traderId;
 		this.name = name;
 		this.value = value;
 		this.argsOperator = argsOperator;
 	}
 
-	public String getSavedScreenId() {
+	public long getSavedScreenId() {
 		return savedScreenId;
 	}
 
-	public void setSavedScreenId(String savedScreenId) {
+	public void setSavedScreenId(long savedScreenId) {
 		this.savedScreenId = savedScreenId;
 	}
 
-	public String getTraderId() {
+	public long getTraderId() {
 		return traderId;
 	}
 
-	public void setTraderId(String traderId) {
+	public void setTraderId(long traderId) {
 		this.traderId = traderId;
 	}
 

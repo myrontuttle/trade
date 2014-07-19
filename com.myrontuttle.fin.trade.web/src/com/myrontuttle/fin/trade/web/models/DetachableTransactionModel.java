@@ -10,7 +10,7 @@ public class DetachableTransactionModel extends
 	
 	private static final long serialVersionUID = 1L;
 
-	private final String userId;
+	private final long userId;
 	private final String portfolioId;
 	private final String transactionId;
 
@@ -24,8 +24,8 @@ public class DetachableTransactionModel extends
 	/**
 	 * @param id
 	 */
-	public DetachableTransactionModel(String userId, String portfolioId, String transactionId) {
-		if (userId == null || portfolioId == null || transactionId == null) {
+	public DetachableTransactionModel(long userId, String portfolioId, String transactionId) {
+		if (userId == 0 || portfolioId == null || transactionId == null) {
 			throw new IllegalArgumentException();
 		}
 		this.userId = userId;

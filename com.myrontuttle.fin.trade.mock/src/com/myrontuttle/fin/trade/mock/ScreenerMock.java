@@ -36,13 +36,13 @@ public class ScreenerMock implements ScreenerService {
 	private String[] screenSymbols = new String[]{"AAPL", "MSFT", "CSCO", "GM", "A"};
 	
 	@Override
-	public AvailableScreenCriteria[] getAvailableCriteria(String userId)
+	public AvailableScreenCriteria[] getAvailableCriteria(long userId)
 			throws Exception {
 		return availableScreenCriteria;
 	}
 
 	@Override
-	public String[] screen(String userId,
+	public String[] screen(long userId,
 			SelectedScreenCriteria[] selectedCriteria, String sortBy,
 			int maxSymbols) throws Exception {
 		return screenSymbols;

@@ -67,7 +67,7 @@ public class FixedCriteriaPanel extends Panel {
         	for (String criteria : criteriaLines) {
         		String[] details = criteria.split(SEPARATOR);
         		if (details.length >= 3) {
-            		screenCriteria.add(new SavedScreen("fixed", details[0], details[1], details[2]));
+            		screenCriteria.add(new SavedScreen(0, details[0], details[1], details[2]));
         		}
         	}
         	return screenCriteria.toArray(new SelectedScreenCriteria[screenCriteria.size()]);

@@ -21,11 +21,11 @@ public class TradeDAO {
 	}
 
 	// Get the trade based on a tradeId
-	public Trade findTrade(String tradeId) {
+	public Trade findTrade(long tradeId) {
 		return em.find(Trade.class, tradeId);
 	}
 	
-	public boolean tradeExists(String tradeId) {
+	public boolean tradeExists(long tradeId) {
 		return em.createQuery(
 				"SELECT t FROM TRADES t WHERE t.tradeId = :tradeId", 
 				Trade.class).setParameter("tradeId", tradeId).getResultList().size() == 1;
@@ -37,17 +37,17 @@ public class TradeDAO {
 				Trade.class).setParameter("symbol", symbol).getResultList();
 	}
 
-	public List<Trade> findTradesForUser(String userId) {
+	public List<Trade> findTradesForUser(long userId) {
 		return em.createQuery(
 				"SELECT t FROM TRADES t WHERE t.userId = :userId", 
 				Trade.class).setParameter("userId", userId).getResultList();
 	}
 
-	public void removeTrade(String tradeId) {
+	public void removeTrade(long tradeId) {
 		em.remove(em.find(Trade.class, tradeId));
 	}
 	
-	public void addEvent(String tradeId, Event e) {
+	public void addEvent(long tradeId, Event e) {
 		Trade trade = em.find(Trade.class, tradeId);
 		trade.addEvent(e);
 	}
@@ -74,7 +74,7 @@ public class TradeDAO {
 		}
 	}
 	
-	public void removeAllTradeEvents(String tradeId) {
+	public void removeAllTradeEvents(long tradeId) {
 		Trade trade = em.find(Trade.class, tradeId);
 		for (Event e : trade.getEvents()) {
 			em.remove(e);
@@ -82,7 +82,7 @@ public class TradeDAO {
 		trade.getEvents().clear();
 	}
 
-	public void addParameter(String tradeId, String name, int value) {
+	public void addParameter(long tradeId, String name, int value) {
 		Trade trade = em.find(Trade.class, tradeId);
 		trade.addParameter(name, value);
 	}

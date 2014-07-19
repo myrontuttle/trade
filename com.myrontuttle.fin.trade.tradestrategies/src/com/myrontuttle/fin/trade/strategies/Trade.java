@@ -30,19 +30,19 @@ public class Trade implements Serializable {
 	@Id
 	@Column(name = "TRADE_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
-	private String tradeId;
+	private long tradeId;
 	
 	@Column(name = "TRADE_STRATEGY")
 	private String tradeStrategy;
 
 	@Column(name = "USER_ID")
-	private String userId;
+	private long userId;
 
 	@Column(name = "PORTFOLIO_ID")
 	private String portfolioId;
 	
 	@Column(name = "ALERT_USER_ID")
-	private String alertUserId;
+	private long alertUserId;
 	
 	@Column(name = "SYMBOL")
 	private String symbol;
@@ -61,7 +61,7 @@ public class Trade implements Serializable {
 	
 	public Trade() {}
 	
-	public Trade(String tradeStrategy, String userId, String portfolioId, String alertUserId, String symbol) {
+	public Trade(String tradeStrategy, long userId, String portfolioId, long alertUserId, String symbol) {
 		this.tradeStrategy = tradeStrategy;
 		this.userId = userId;
 		this.portfolioId = portfolioId;
@@ -81,11 +81,11 @@ public class Trade implements Serializable {
 		parameters.remove(name);
 	}
 	
-	public String getTradeId() {
+	public long getTradeId() {
 		return tradeId;
 	}
 
-	public void setTradeId(String tradeId) {
+	public void setTradeId(long tradeId) {
 		this.tradeId = tradeId;
 	}
 
@@ -97,11 +97,11 @@ public class Trade implements Serializable {
 		this.tradeStrategy = tradeStrategy;
 	}
 
-	public String getUserId() {
+	public long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(String userId) {
+	public void setUserId(long userId) {
 		this.userId = userId;
 	}
 
@@ -113,11 +113,11 @@ public class Trade implements Serializable {
 		this.portfolioId = portfolioId;
 	}
 
-	public String getAlertUserId() {
+	public long getAlertUserId() {
 		return alertUserId;
 	}
 
-	public void setAlertUserId(String alertUserId) {
+	public void setAlertUserId(long alertUserId) {
 		this.alertUserId = alertUserId;
 	}
 

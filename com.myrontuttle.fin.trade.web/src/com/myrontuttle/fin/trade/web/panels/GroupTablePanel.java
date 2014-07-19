@@ -18,9 +18,9 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
 import com.myrontuttle.fin.trade.adapt.Group;
-import com.myrontuttle.fin.trade.web.data.DBAccess;
 import com.myrontuttle.fin.trade.web.data.SortableGroupDataProvider;
 import com.myrontuttle.fin.trade.web.pages.GroupPage;
+import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 import com.myrontuttle.fin.trade.web.service.EvolveAccess;
 
 public class GroupTablePanel extends Panel {
@@ -89,7 +89,7 @@ public class GroupTablePanel extends Panel {
 			add(new Link("details") {
 				@Override
 				public void onClick() {
-					String groupId = ((Group)getParent().getDefaultModelObject()).getGroupId();
+					long groupId = ((Group)getParent().getDefaultModelObject()).getGroupId();
 					GroupPage gp = new GroupPage(groupId);
 					setResponsePage(gp);
 				}
@@ -110,7 +110,7 @@ public class GroupTablePanel extends Panel {
 				public void onSubmit() {
 					Group group = ((Group)getParent().getDefaultModelObject());
 					EvolveAccess.getEvolveService().deleteGroupExpression(group.getGroupId());
-					DBAccess.getDAO().removeGroup(group.getGroupId());
+					AdaptAccess.getDAO().removeGroup(group.getGroupId());
 				}
 			});
 			add(form);

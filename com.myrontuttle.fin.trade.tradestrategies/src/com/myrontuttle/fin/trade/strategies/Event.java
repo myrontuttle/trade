@@ -22,10 +22,10 @@ public class Event implements Serializable {
 	@Id
 	@Column(name = "EVENT_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
-	private String eventId;
+	private long eventId;
 
 	@Column(name = "TRADE_ID")
-	private String tradeId;
+	private long tradeId;
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "TRADE_ID", referencedColumnName = "TRADE_ID")
@@ -49,19 +49,19 @@ public class Event implements Serializable {
 		this.trigger = trigger;
 	}
 
-	public String getEventId() {
+	public long getEventId() {
 		return eventId;
 	}
 
-	public void setEventId(String eventId) {
+	public void setEventId(long eventId) {
 		this.eventId = eventId;
 	}
 
-	public String getTradeId() {
+	public long getTradeId() {
 		return tradeId;
 	}
 
-	public void setTradeId(String tradeId) {
+	public void setTradeId(long tradeId) {
 		this.tradeId = tradeId;
 	}
 

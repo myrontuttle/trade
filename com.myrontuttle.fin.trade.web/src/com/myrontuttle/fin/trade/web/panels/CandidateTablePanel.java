@@ -28,9 +28,9 @@ import org.apache.wicket.util.io.ByteArrayOutputStream;
 import org.apache.wicket.util.resource.AbstractResourceStreamWriter;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
-import com.myrontuttle.fin.trade.web.data.DBAccess;
 import com.myrontuttle.fin.trade.web.data.SortableCandidateDataProvider;
 import com.myrontuttle.fin.trade.web.pages.CandidatePage;
+import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 import com.myrontuttle.fin.trade.web.service.EvolveAccess;
 import com.myrontuttle.fin.trade.web.service.PortfolioAccess;
 import com.myrontuttle.fin.trade.web.service.WatchlistAccess;
@@ -42,7 +42,7 @@ public class CandidateTablePanel extends Panel {
 	private static final DecimalFormat df = new DecimalFormat("#,##0.00"); 
 
 	@SuppressWarnings({ "rawtypes" })
-	public CandidateTablePanel(String id, String groupId) {
+	public CandidateTablePanel(String id, long groupId) {
 		super(id);
 
 		List<IColumn<Candidate, String>> columns = new ArrayList<IColumn<Candidate, String>>();
@@ -149,7 +149,7 @@ public class CandidateTablePanel extends Panel {
 			add(new Link("details") {
 				@Override
 				public void onClick() {
-					String candidateId = ((Candidate)getParent().getDefaultModelObject()).getCandidateId();
+					long candidateId = ((Candidate)getParent().getDefaultModelObject()).getCandidateId();
 					CandidatePage cp = new CandidatePage(candidateId);
 					setResponsePage(cp);
 				}
@@ -211,7 +211,7 @@ public class CandidateTablePanel extends Panel {
 					Candidate candidate = ((Candidate)getParent().getDefaultModelObject());
 					EvolveAccess.getEvolveService().deleteCandidateExpression(
 							candidate.getGroupId(), candidate.getGenome());
-					DBAccess.getDAO().removeCandidate(candidate.getCandidateId());
+					AdaptAccess.getDAO().removeCandidate(candidate.getCandidateId());
 				}
 			});
 			add(form);

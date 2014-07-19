@@ -21,10 +21,10 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	@Id
 	@Column(name = "CANDIDATE_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
-	private String candidateId;
+	private long candidateId;
 
 	@Column(name = "GROUP_ID")
-	private String groupId;
+	private long groupId;
 	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "GROUP_ID", referencedColumnName = "GROUP_ID")
@@ -45,7 +45,7 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	
 	public Candidate(){ }
 	
-	public Candidate(String candidateId, String groupId, int[] genome, 
+	public Candidate(long candidateId, long groupId, int[] genome, 
 			String portfolioId) {
 		this.candidateId = candidateId;
 		this.groupId = groupId;
@@ -54,17 +54,17 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 		this.portfolioId = portfolioId;
 	}
 
-	public String getCandidateId() {
+	public long getCandidateId() {
 		return candidateId;
 	}
-	public void setCandidateId(String candidateId) {
+	public void setCandidateId(long candidateId) {
 		this.candidateId = candidateId;
 	}
 	
-	public String getGroupId() {
+	public long getGroupId() {
 		return groupId;
 	}	
-	public void setGroupId(String groupId) {
+	public void setGroupId(long groupId) {
 		this.groupId = groupId;
 	}
 
@@ -162,53 +162,6 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 			}
 			return 0;
 		}
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((candidateId == null) ? 0 : candidateId.hashCode());
-		result = prime * result
-				+ ((genomeString == null) ? 0 : genomeString.hashCode());
-		result = prime * result
-				+ ((portfolioId == null) ? 0 : portfolioId.hashCode());
-		result = prime * result
-				+ ((watchlistId == null) ? 0 : watchlistId.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Candidate other = (Candidate) obj;
-		if (candidateId == null) {
-			if (other.candidateId != null)
-				return false;
-		} else if (!candidateId.equals(other.candidateId))
-			return false;
-		if (genomeString == null) {
-			if (other.genomeString != null)
-				return false;
-		} else if (!genomeString.equals(other.genomeString))
-			return false;
-		if (portfolioId == null) {
-			if (other.portfolioId != null)
-				return false;
-		} else if (!portfolioId.equals(other.portfolioId))
-			return false;
-		if (watchlistId == null) {
-			if (other.watchlistId != null)
-				return false;
-		} else if (!watchlistId.equals(other.watchlistId))
-			return false;
-		return true;
 	}
 	
 }

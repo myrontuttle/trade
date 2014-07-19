@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" >
 
-	<reference id="GroupDAO" interface="com.myrontuttle.fin.trade.adapt.GroupDAO" />
+	<reference id="AdaptDAO" interface="com.myrontuttle.fin.trade.adapt.AdaptDAO" />
   
-	<bean id="DBAccess" class="com.myrontuttle.fin.trade.web.data.DBAccess">
-		<property name="groupDAO" ref="GroupDAO" />
+	<bean id="AdaptAccess" class="com.myrontuttle.fin.trade.web.service.AdaptAccess">
+		<property name="adaptDAO" ref="AdaptDAO" />
 	</bean>
 	
 	<reference id="EvolveService" interface="com.myrontuttle.fin.trade.adapt.EvolveService" />

@@ -23,8 +23,9 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvid
 import org.apache.wicket.model.IModel;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
-import com.myrontuttle.fin.trade.adapt.GroupDAO;
+import com.myrontuttle.fin.trade.adapt.AdaptDAO;
 import com.myrontuttle.fin.trade.web.models.DetachableCandidateModel;
+import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
 /**
  * implementation of IDataProvider for group stas that keeps track of sort information
@@ -33,12 +34,12 @@ public class SortableCandidateDataProvider extends SortableDataProvider<Candidat
 	
 	private static final long serialVersionUID = 1L;
 	
-	String groupId;
+	long groupId;
 	
 	/**
 	 * constructor
 	 */
-	public SortableCandidateDataProvider(String groupId) {
+	public SortableCandidateDataProvider(long groupId) {
 		
 		this.groupId = groupId;
 		
@@ -46,8 +47,8 @@ public class SortableCandidateDataProvider extends SortableDataProvider<Candidat
 		setSort("candidateId", SortOrder.ASCENDING);
 	}
 
-	protected GroupDAO getDAO() {
-		return DBAccess.getDAO();
+	protected AdaptDAO getDAO() {
+		return AdaptAccess.getDAO();
 	}
 
 	/**

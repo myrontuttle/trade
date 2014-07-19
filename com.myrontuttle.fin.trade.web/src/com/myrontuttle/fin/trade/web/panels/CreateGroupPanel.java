@@ -1,7 +1,6 @@
 package com.myrontuttle.fin.trade.web.panels;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
@@ -16,9 +15,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 
 import com.myrontuttle.fin.trade.adapt.Group;
-import com.myrontuttle.fin.trade.api.AlertReceiverService;
-import com.myrontuttle.fin.trade.web.data.DBAccess;
-import com.myrontuttle.fin.trade.web.service.AlertReceiverAccess;
+import com.myrontuttle.fin.trade.adapt.GroupSettings;
 import com.myrontuttle.fin.trade.web.service.EvolveAccess;
 import com.myrontuttle.fin.trade.web.service.PortfolioAccess;
 import com.myrontuttle.fin.trade.web.service.StrategyAccess;
@@ -29,8 +26,8 @@ public class CreateGroupPanel extends Panel {
 	
 	public CreateGroupPanel(String id) {
 		super(id);
-		final IModel<Group> compound = new CompoundPropertyModel<Group>(new Group());
-		final Form<Group> form = new Form<Group>("newGroupForm", compound);
+		final IModel<GroupSettings> compound = new CompoundPropertyModel<GroupSettings>(new GroupSettings());
+		final Form<GroupSettings> form = new Form<GroupSettings>("newGroupForm", compound);
 /*
 		List<String> alertReceiverTypes = Arrays.
 					asList(AlertReceiverAccess.getAlertReceiverService().availableReceiverTypes());
@@ -40,7 +37,7 @@ public class CreateGroupPanel extends Panel {
 						.setRequired(true)
 						.add(new AttributeModifier("value", "imap.gmail.com")));
 */	
-		form.add(new TextField<String>("alertUser")
+		form.add(new TextField<String>("stringSettings[Alert.User]")
 					.add(EmailAddressValidator.getInstance()));
 		
 		form.add(new TextField<String>("alertPassword")
@@ -102,21 +99,10 @@ public class CreateGroupPanel extends Panel {
 		
 		form.add(new Button("create") {
             public void onSubmit() {
-            	Group group = (Group)compound.getObject();
-            	group.setStartTime(new Date());
-            	group.setAlertReceiverType("EmailAlert");
-            	
-            	AlertReceiverService ars = AlertReceiverAccess.getAlertReceiverService();
-            	String receiverId = ars.addReceiver(group.getGroupId(), group.getAlertReceiverType());
-            	//ars.setReceiverParameter(receiverId, "Host", group.getAlertHost());
-            	ars.setReceiverParameter(receiverId, "User", group.getAlertUser());
-            	ars.setReceiverParameter(receiverId, "Password", group.getAlertPassword());
-            	ars.setReceiverActive(receiverId, group.isActive());
-            	group.setAlertReceiverId(receiverId);
-            	
-            	DBAccess.getDAO().saveGroup(group);
-            	
-            	EvolveAccess.getEvolveService().createInitialCandidates(group.getGroupId());
+            	GroupSettings settings = (GroupSettings)compound.getObject();
+         	    settings.setStringValue("Alert.ReceiverType", "EmailAlert");
+         	    settings.setStringValue("Alert.Host", "imap.gmail.com");
+            	EvolveAccess.getEvolveService().setupGroup(settings);
             }
         });
         

@@ -11,16 +11,16 @@
 	<reference id="TradeStrategyService" interface="com.myrontuttle.fin.trade.api.TradeStrategyService" />
 	<reference id="AlertReceiverService" interface="com.myrontuttle.fin.trade.api.AlertReceiverService" />
 	
-	<bean id="GroupDAOImpl" class="com.myrontuttle.fin.trade.adapt.GroupDAOImpl" scope="singleton">
+	<bean id="AdaptDAOImpl" class="com.myrontuttle.fin.trade.adapt.AdaptDAOImpl" scope="singleton">
 		<jpa:context unitname="AdaptPU" property="entityManager" />
       	<tx:transaction method="*" value="Required"/>
 	</bean>
 	
 	<bean id="Evolver" class="com.myrontuttle.fin.trade.adapt.Evolver" scope="singleton">
-		<property name="groupDAO" ref="GroupDAOImpl" />
+		<property name="adaptDAO" ref="AdaptDAOImpl" />
 	</bean>
 	
-	<service ref="GroupDAOImpl" interface="com.myrontuttle.fin.trade.adapt.GroupDAO" />
+	<service ref="AdaptDAOImpl" interface="com.myrontuttle.fin.trade.adapt.AdaptDAO" />
 	
 	<service ref="Evolver" interface="com.myrontuttle.fin.trade.adapt.EvolveService" />
 	

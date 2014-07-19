@@ -26,7 +26,7 @@ public class BoundedStrategyTest {
 	private QuoteService quoteService;
 	private AlertService alertService;
 	
-	private final String userId = "testuser";
+	private final long userId = 1L;
 	private final String richPortfolio = "rich";
 	private final String poorPortfolio = "poor";
 	private final String avgSymbol = "MSFT.O";

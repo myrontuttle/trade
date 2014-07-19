@@ -17,7 +17,7 @@ public interface ScreenerService {
 	 * @param userId
      * @return A list of available screener options.
      */
-	public AvailableScreenCriteria[] getAvailableCriteria(String userId) throws Exception;
+	public AvailableScreenCriteria[] getAvailableCriteria(long userId) throws Exception;
 	
 	/**
 	 * Gets the list of criteria names which are used for screening
@@ -70,6 +70,6 @@ public interface ScreenerService {
 	 * @param maxSymbols The maximum number of symbols to return
 	 * @return A list of financial instruments
 	 */
-	public String[] screen(String userId, SelectedScreenCriteria[] selectedCriteria, String sortBy, int maxSymbols) 
+	public String[] screen(long userId, SelectedScreenCriteria[] selectedCriteria, String sortBy, int maxSymbols) 
 			throws Exception;
 }

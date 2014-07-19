@@ -12,5 +12,5 @@ public interface QuoteService {
 	 * @param symbol Of security to get price for
 	 * @return Last price of the symbol
 	 */
-	public double getLast(String userId, String symbol) throws Exception;
+	public double getLast(long userId, String symbol) throws Exception;
 }

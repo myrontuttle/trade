@@ -23,8 +23,9 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvid
 import org.apache.wicket.model.IModel;
 
 import com.myrontuttle.fin.trade.adapt.Group;
-import com.myrontuttle.fin.trade.adapt.GroupDAO;
+import com.myrontuttle.fin.trade.adapt.AdaptDAO;
 import com.myrontuttle.fin.trade.web.models.DetachableGroupModel;
+import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
 
 /**
@@ -42,8 +43,8 @@ public class SortableGroupDataProvider extends SortableDataProvider<Group, Strin
 		setSort("groupId", SortOrder.ASCENDING);
 	}
 
-	protected GroupDAO getDAO() {
-		return DBAccess.getDAO();
+	protected AdaptDAO getDAO() {
+		return AdaptAccess.getDAO();
 	}
 
 	/**

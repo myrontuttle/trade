@@ -2,7 +2,7 @@ package com.myrontuttle.fin.trade.api;
 
 public interface Transaction {
 	
-	public String getUserId();
+	public long getUserId();
 	
 	public String getPortfolioId();
 	

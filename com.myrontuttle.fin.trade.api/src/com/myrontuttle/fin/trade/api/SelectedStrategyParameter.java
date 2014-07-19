@@ -6,7 +6,7 @@ package com.myrontuttle.fin.trade.api;
  */
 public interface SelectedStrategyParameter {
 	
-	public String getTradeId();
+	public long getTradeId();
 	
 	public String getName();
 	

@@ -108,20 +108,20 @@ public class StrategyService implements TradeStrategyService {
 	}
 
 	@Override
-	public String addTrade(String tradeStrategy, String userId,
-			String portfolioId, String alertUserId, String symbol) {
+	public long addTrade(String tradeStrategy, long userId,
+			String portfolioId, long alertUserId, String symbol) {
 		Trade t = new Trade(tradeStrategy, userId, portfolioId, alertUserId, symbol);
 		tradeDAO.saveTrade(t);
 		return t.getTradeId();
 	}
 
 	@Override
-	public boolean tradeExists(String tradeId) {
+	public boolean tradeExists(long tradeId) {
 		return tradeDAO.tradeExists(tradeId);
 	}
 
 	@Override
-	public String[] describeTrade(String tradeId) {
+	public String[] describeTrade(long tradeId) {
 		Trade t = tradeDAO.findTrade(tradeId);
 		try {
 			if (t.getTradeStrategy().equals(BoundedStrategy.NAME)) {
@@ -135,12 +135,12 @@ public class StrategyService implements TradeStrategyService {
 		return null;
 	}
 	@Override
-	public void removeTrade(String tradeId) {
+	public void removeTrade(long tradeId) {
 		tradeDAO.removeTrade(tradeId);
 	}
 
 	@Override
-	public void removeAllTrades(String userId) {
+	public void removeAllTrades(long userId) {
 		List<Trade> trades = tradeDAO.findTradesForUser(userId);
 		for (Trade t : trades) {
 			tradeDAO.removeTrade(t.getTradeId());
@@ -160,12 +160,12 @@ public class StrategyService implements TradeStrategyService {
 	}
 
 	@Override
-	public void setTradeParameter(String tradeId, String name, int value) {
+	public void setTradeParameter(long tradeId, String name, int value) {
 		tradeDAO.addParameter(tradeId, name, value);
 	}
 
 	@Override
-	public int getTradeParameter(String tradeId, String name) {
+	public int getTradeParameter(long tradeId, String name) {
 		Trade t = tradeDAO.findTrade(tradeId);
 		return t.getParameter(name);
 	}
@@ -182,7 +182,7 @@ public class StrategyService implements TradeStrategyService {
 	}
 
 	@Override
-	public void setTradeEvent(String tradeId, String event, String actionType, String trigger) {
+	public void setTradeEvent(long tradeId, String event, String actionType, String trigger) {
 		Event e = new Event(event, actionType, trigger);
 		tradeDAO.addEvent(tradeId, e);
 		
@@ -205,7 +205,7 @@ public class StrategyService implements TradeStrategyService {
 	}
 
 	@Override
-	public void removeAllTradeEvents(String tradeId) {
+	public void removeAllTradeEvents(long tradeId) {
 		Trade t = tradeDAO.findTrade(tradeId);
 		for(Event event : t.getEvents()) {
 			if (event.getTrigger().equals(MOMENT_PASSED) && eventFutures.containsKey(event.getEvent())) {

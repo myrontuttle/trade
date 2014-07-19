@@ -18,7 +18,7 @@ public class TraderScreensTablePanel extends Panel {
 	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public TraderScreensTablePanel(String id, String traderId) {
+	public TraderScreensTablePanel(String id, long traderId) {
 		super(id);
 
 		List<IColumn<SavedScreen, String>> columns = new ArrayList<IColumn<SavedScreen, String>>();

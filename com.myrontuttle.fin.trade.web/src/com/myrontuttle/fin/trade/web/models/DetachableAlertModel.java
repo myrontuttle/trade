@@ -3,7 +3,7 @@ package com.myrontuttle.fin.trade.web.models;
 import org.apache.wicket.model.LoadableDetachableModel;
 
 import com.myrontuttle.fin.trade.adapt.SavedAlert;
-import com.myrontuttle.fin.trade.web.data.DBAccess;
+import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
 /**
  * detachable model for an instance of SavedAlert
@@ -13,7 +13,7 @@ public class DetachableAlertModel extends LoadableDetachableModel<SavedAlert> {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private final String id;
+	private final long id;
 
 	/**
 	 * @param s
@@ -25,8 +25,8 @@ public class DetachableAlertModel extends LoadableDetachableModel<SavedAlert> {
 	/**
 	 * @param id
 	 */
-	public DetachableAlertModel(String id) {
-		if (id == null) {
+	public DetachableAlertModel(long id) {
+		if (id == 0) {
 			throw new IllegalArgumentException();
 		}
 		this.id = id;
@@ -65,6 +65,6 @@ public class DetachableAlertModel extends LoadableDetachableModel<SavedAlert> {
 	@Override
 	protected SavedAlert load() {
 		// loads group from the database
-		return DBAccess.getDAO().findAlert(id);
+		return AdaptAccess.getDAO().findAlert(id);
 	}
 }

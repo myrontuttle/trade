@@ -5,9 +5,9 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
-import com.myrontuttle.fin.trade.web.data.DBAccess;
 import com.myrontuttle.fin.trade.web.panels.HeaderPanel;
 import com.myrontuttle.fin.trade.web.panels.TransactionsTablePanel;
+import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
 public class CandidatePage extends WebPage {
 
@@ -15,10 +15,10 @@ public class CandidatePage extends WebPage {
 	
 	Candidate candidate;
 	
-	public CandidatePage(String candidateId) {
+	public CandidatePage(long candidateId) {
 
-		if (candidateId != null) {
-			candidate = DBAccess.getDAO().findCandidate(candidateId);
+		if (candidateId != 0) {
+			candidate = AdaptAccess.getDAO().findCandidate(candidateId);
 		}
 		if (candidate == null) {
 			candidate = new Candidate();

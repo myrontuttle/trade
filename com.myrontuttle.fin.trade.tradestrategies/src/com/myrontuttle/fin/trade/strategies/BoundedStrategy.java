@@ -142,7 +142,7 @@ public class BoundedStrategy {
 			return new String[0];
 		}
 
-		String userId = trade.getUserId();
+		long userId = trade.getUserId();
 		String[] desc = new String[4];
 		desc[0] = "If an alert fires for " + trade.getSymbol() + " then " + portfolioService.
 				openOrderTypesAvailable(userId)[parameters.get(OPEN_ORDER)] + " it with " +
@@ -249,7 +249,7 @@ public class BoundedStrategy {
 	protected static void createStopTrade(Trade trade, double currentPrice, boolean priceRiseGood,
 					AlertService alertService, TradeStrategyService tradeStrategyService) throws Exception {
 		logger.trace("Creating stopTrade for {}", trade.getTradeId());
-		String alertUserId = trade.getAlertUserId();
+		long alertUserId = trade.getAlertUserId();
 		
 		AvailableAlert alertWhen = (priceRiseGood) ? alertService.getPriceBelowAlert(alertUserId) :
 										alertService.getPriceAboveAlert(alertUserId);
@@ -257,7 +257,7 @@ public class BoundedStrategy {
 		
 		double priceDiff = currentPrice - (trade.getParameters().get(alertParam) / 100.0) * currentPrice;
 		String alertId = alertService.setupAlert(alertUserId, 
-				alertWhen.getId(),
+				alertWhen.getType(),
 				alertWhen.getCondition(),
 				trade.getSymbol(), 
 				priceDiff);

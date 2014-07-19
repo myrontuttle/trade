@@ -12,13 +12,13 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.util.lang.Bytes;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
-import com.myrontuttle.fin.trade.web.data.DBAccess;
+import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
 public class UploadCandidatePanel extends Panel {
 
 	private FileUploadField fileUploadField;
 	
-	public UploadCandidatePanel(String id, final String groupId) {
+	public UploadCandidatePanel(String id, final long groupId) {
 		super(id);
 		fileUploadField = new FileUploadField("fileUploadField");
 
@@ -40,7 +40,7 @@ public class UploadCandidatePanel extends Panel {
 					Candidate c = (Candidate) ois.readObject();
 					ois.close();
 					
-					DBAccess.getDAO().addCandidate(c, groupId);
+					AdaptAccess.getDAO().addCandidate(c, groupId);
 					
 				} catch (Exception e) {
 					e.printStackTrace();

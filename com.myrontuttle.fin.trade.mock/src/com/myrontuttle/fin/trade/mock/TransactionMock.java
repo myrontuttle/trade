@@ -4,7 +4,7 @@ import com.myrontuttle.fin.trade.api.Transaction;
 
 public class TransactionMock implements Transaction {
 	
-	private String userId;
+	private long userId;
 	private String portfolioId;
 	private String transactionId;
 	private String dateTime;
@@ -13,7 +13,7 @@ public class TransactionMock implements Transaction {
 	private double quantity;
 	private double value;
 	
-	public TransactionMock(String userId, String portfolioId, String transactionId, 
+	public TransactionMock(long userId, String portfolioId, String transactionId, 
 			String dateTime, String orderType,
 			String symbol, double quantity, double value) {
 		this.userId = userId;
@@ -57,7 +57,7 @@ public class TransactionMock implements Transaction {
 	}
 
 	@Override
-	public String getUserId() {
+	public long getUserId() {
 		return userId;
 	}
 

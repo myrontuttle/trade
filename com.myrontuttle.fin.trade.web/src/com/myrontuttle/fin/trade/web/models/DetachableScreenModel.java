@@ -3,7 +3,7 @@ package com.myrontuttle.fin.trade.web.models;
 import org.apache.wicket.model.LoadableDetachableModel;
 
 import com.myrontuttle.fin.trade.adapt.SavedScreen;
-import com.myrontuttle.fin.trade.web.data.DBAccess;
+import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
 /**
  * detachable model for an instance of SavedScreen
@@ -13,7 +13,7 @@ public class DetachableScreenModel extends LoadableDetachableModel<SavedScreen> 
 	
 	private static final long serialVersionUID = 1L;
 	
-	private final String id;
+	private final long id;
 
 	/**
 	 * @param s
@@ -25,8 +25,8 @@ public class DetachableScreenModel extends LoadableDetachableModel<SavedScreen> 
 	/**
 	 * @param id
 	 */
-	public DetachableScreenModel(String id) {
-		if (id == null) {
+	public DetachableScreenModel(long id) {
+		if (id == 0) {
 			throw new IllegalArgumentException();
 		}
 		this.id = id;
@@ -65,6 +65,6 @@ public class DetachableScreenModel extends LoadableDetachableModel<SavedScreen> 
 	@Override
 	protected SavedScreen load() {
 		// loads group from the database
-		return DBAccess.getDAO().findScreen(id);
+		return AdaptAccess.getDAO().findScreen(id);
 	}
 }

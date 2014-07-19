@@ -20,14 +20,14 @@ public class GroupStats implements Serializable {
 	@Id
 	@Column(name = "STATS_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
-	private String statsId;
+	private long statsId;
 	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "GROUP_ID", referencedColumnName = "GROUP_ID")
 	private Group group;
 	
 	@Column(name = "GROUP_ID")
-	private String groupId;
+	private long groupId;
 	
 	@Column(name = "BEST_CANDIDATE_FITNESS")
 	private double bestCandidateFitness;
@@ -50,7 +50,7 @@ public class GroupStats implements Serializable {
 	
 	public GroupStats() {}
 
-	public GroupStats(String groupId, double bestCandidateFitness,
+	public GroupStats(long groupId, double bestCandidateFitness,
 			double meanFitness, double fitnessStandardDeviation,
 			int generationNumber, double variability) {
 		super();
@@ -62,11 +62,11 @@ public class GroupStats implements Serializable {
 		this.variability = variability;
 	}
 
-	public String getStatsId() {
+	public long getStatsId() {
 		return statsId;
 	}
 
-	public void setStatsId(String statsId) {
+	public void setStatsId(long statsId) {
 		this.statsId = statsId;
 	}
 
@@ -78,11 +78,11 @@ public class GroupStats implements Serializable {
 		this.group = group;
 	}
 
-	public String getGroupId() {
+	public long getGroupId() {
 		return groupId;
 	}
 
-	public void setGroupId(String groupId) {
+	public void setGroupId(long groupId) {
 		this.groupId = groupId;
 	}
 

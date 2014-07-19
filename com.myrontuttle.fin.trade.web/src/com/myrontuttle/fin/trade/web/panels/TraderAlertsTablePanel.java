@@ -18,7 +18,7 @@ public class TraderAlertsTablePanel extends Panel {
 	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public TraderAlertsTablePanel(String id, String traderId) {
+	public TraderAlertsTablePanel(String id, long traderId) {
 		super(id);
 
 		List<IColumn<SavedAlert, String>> columns = new ArrayList<IColumn<SavedAlert, String>>();

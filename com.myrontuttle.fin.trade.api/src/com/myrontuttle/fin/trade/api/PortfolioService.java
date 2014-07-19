@@ -15,7 +15,7 @@ public interface PortfolioService {
 	 * @throws Exception 
 	 * @return Id of the created portfolio
 	 */
-	public String create(String userId, String name) throws Exception;
+	public String create(long userId, String name) throws Exception;
 	
 	/**
 	 * Delete a portfolio
@@ -23,7 +23,7 @@ public interface PortfolioService {
 	 * @param portfolioId ID of the portfolio
 	 * @return Indicates whether the deletion was successful
 	 */
-	public boolean delete(String userId, String portfolioId) throws Exception;
+	public boolean delete(long userId, String portfolioId) throws Exception;
 
 	/**
 	 * Rename a portfolio
@@ -32,7 +32,7 @@ public interface PortfolioService {
 	 * @param newName New name for the portfolio
 	 * @return Indicates whether the renaming was successful
 	 */
-	public boolean rename(String userId, String portfolioId, String newName) throws Exception;
+	public boolean rename(long userId, String portfolioId, String newName) throws Exception;
 
 	/**
 	 * Add a cash transaction (either credit or debit)
@@ -43,7 +43,7 @@ public interface PortfolioService {
 	 * @param open Whether this is to open the portfolio
 	 * @return Indicates whether the transaction was successful
 	 */
-	public boolean addCashTransaction(String userId, String portfolioId, double quantity, 
+	public boolean addCashTransaction(long userId, String portfolioId, double quantity, 
 										boolean credit, boolean open) throws Exception;
 
 	/**
@@ -52,7 +52,7 @@ public interface PortfolioService {
 	 * @param portfolioId Id of the portfolio we want to know cash balance
 	 * @return Available cash
 	 */
-	public double getAvailableBalance(String userId, String portfolioId) throws Exception;
+	public double getAvailableBalance(long userId, String portfolioId) throws Exception;
 	
 	/**
 	 * Provides all of the transactions that have occurred for this user's portfolio
@@ -61,7 +61,7 @@ public interface PortfolioService {
 	 * @return Array of transactions
 	 * @throws Exception
 	 */
-	public ArrayList<Transaction> getTransactions(String userId, String portfolioId) throws Exception;
+	public ArrayList<Transaction> getTransactions(long userId, String portfolioId) throws Exception;
 	
 	/**
 	 * Provides a single transaction with the provided transactionId
@@ -71,14 +71,14 @@ public interface PortfolioService {
 	 * @return
 	 * @throws Exception
 	 */
-	public Transaction getTransaction(String userId, String portfolioId, String transactionId) throws Exception;
+	public Transaction getTransaction(long userId, String portfolioId, String transactionId) throws Exception;
 	
 	/**
 	 * The order types available to open a position
 	 * @param userId
 	 * @return An array of order types available from this portfolio for opening a position
 	 */
-	public String[] openOrderTypesAvailable(String userId) throws Exception ;
+	public String[] openOrderTypesAvailable(long userId) throws Exception ;
 	
 	/**
 	 * Indicates whether an order type would benefit from a price increase
@@ -97,7 +97,7 @@ public interface PortfolioService {
 	 * @param orderType From openOrderTypesAvailable
 	 * @return Transaction/Lot id
 	 */
-	public String openPosition(String userId, String portfolioId, String symbol, double quantity,
+	public String openPosition(long userId, String portfolioId, String symbol, double quantity,
 			String orderType) throws Exception;
 
 	/**
@@ -105,7 +105,7 @@ public interface PortfolioService {
 	 * @param userId
 	 * @return An array of order types available from this portfolio for closing a position
 	 */
-	public String[] closeOrderTypesAvailable(String userId) throws Exception ;
+	public String[] closeOrderTypesAvailable(long userId) throws Exception ;
 	
 	/**
 	 * Close a position with a particular order type
@@ -117,7 +117,7 @@ public interface PortfolioService {
 	 * @param orderType From closeOrderTypesAvailable
 	 * @return Indicates whether the sale was successful
 	 */
-	public boolean closePosition(String userId, String portfolioId, String symbol, double quantity,
+	public boolean closePosition(long userId, String portfolioId, String symbol, double quantity,
 			String orderType) throws Exception;
 	
 	/**
@@ -126,7 +126,7 @@ public interface PortfolioService {
 	 * @param portfolioId Id of the portfolio to close positions for
 	 * @return Available cash after closing all positions
 	 */
-	public double closeAllPositions(String userId, String portfolioId) throws Exception;
+	public double closeAllPositions(long userId, String portfolioId) throws Exception;
 	
 	/**
 	 * Provides list of analysis techniques the Portfolio Service can provide
@@ -143,5 +143,5 @@ public interface PortfolioService {
 	 * @return Value of the analysis
 	 * @throws Exception
 	 */
-	public double analyze(String userId, String portfolioId, String analysisType) throws Exception;
+	public double analyze(long userId, String portfolioId, String analysisType) throws Exception;
 }

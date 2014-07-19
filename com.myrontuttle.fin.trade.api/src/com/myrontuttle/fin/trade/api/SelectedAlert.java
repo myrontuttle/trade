@@ -6,7 +6,7 @@ package com.myrontuttle.fin.trade.api;
  */
 public interface SelectedAlert {
 	
-	public int getAlertId();
+	public int getAlertType();
 
 	public String getCondition();
 

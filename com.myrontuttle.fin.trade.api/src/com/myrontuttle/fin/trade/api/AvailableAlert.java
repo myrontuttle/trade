@@ -11,7 +11,7 @@ public class AvailableAlert {
 	public static final String DOUBLE = "DOUBLE";
 	public static final String LIST = "LIST";
 	
-	private final int id;
+	private final int type;
 	private final String condition;
 	private final String[] criteriaTypes;
 	private final String[] criteriaNames;
@@ -21,7 +21,7 @@ public class AvailableAlert {
 
 	public AvailableAlert(int id, String condition, String[] criteriaTypes, String[] criteriaNames,
 							String[] lowerBounds, String[] upperBounds, String[][] listCriteriaOptions) {
-		this.id = id;
+		this.type = id;
 		this.condition = condition;
 		this.criteriaTypes = criteriaTypes;
 		this.criteriaNames = criteriaNames;
@@ -30,8 +30,8 @@ public class AvailableAlert {
 		this.listCriteriaOptions = listCriteriaOptions;
 	}
 
-	public int getId() {
-		return id;
+	public int getType() {
+		return type;
 	}
 
 	public String getCondition() {
@@ -77,7 +77,7 @@ public class AvailableAlert {
 				+ ((condition == null) ? 0 : condition.hashCode());
 		result = prime * result + Arrays.hashCode(criteriaNames);
 		result = prime * result + Arrays.hashCode(criteriaTypes);
-		result = prime * result + id;
+		result = prime * result + type;
 		result = prime * result + Arrays.hashCode(listCriteriaOptions);
 		result = prime * result + Arrays.hashCode(lowerBounds);
 		result = prime * result + Arrays.hashCode(upperBounds);
@@ -105,7 +105,7 @@ public class AvailableAlert {
 			return false;
 		if (!Arrays.equals(criteriaTypes, other.criteriaTypes))
 			return false;
-		if (id != other.id)
+		if (type != other.type)
 			return false;
 		if (!Arrays.deepEquals(listCriteriaOptions, other.listCriteriaOptions))
 			return false;

@@ -110,7 +110,7 @@ public interface AlertService {
 	 * @param params Parameters that define when the alert is triggered
 	 * @return Id of the setup alert
 	 */
-	public String setupAlert(long userId, int alertId, String condition, String symbol, double... params);
+	public String setupAlert(long userId, int alertId, String condition, String symbol, double... params) throws Exception;
 	
 	/**
 	 * Returns the alerts that have been setup

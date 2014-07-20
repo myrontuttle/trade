@@ -70,7 +70,7 @@ public class ReceiverService implements AlertReceiverService {
 	
 	// Add the name of any additional receiver types here
 	public static String[] alertReceiverTypes = new String[]{
-		EmailAlertReceiver.NAME
+		EmailAlertReceiver.DELIVERY_TYPE
 	};
 	
 	@Override
@@ -81,7 +81,7 @@ public class ReceiverService implements AlertReceiverService {
 	@Override
 	public Map<String, String> getAvailableParameters(String receiverType) {
 		// Make sure additional receiver types are handled here
-		if (receiverType.equals(EmailAlertReceiver.NAME)) {
+		if (receiverType.equals(EmailAlertReceiver.DELIVERY_TYPE)) {
 			return EmailAlertReceiver.getAvailableParameters();
 		}
 		return null;
@@ -125,7 +125,7 @@ public class ReceiverService implements AlertReceiverService {
 	@Override
 	public boolean parametersAreSet(long receiverId) {
 		AlertReceiver r = receiverDAO.findReceiver(receiverId);
-		if (r.getReceiverType().equals(EmailAlertReceiver.NAME)) {
+		if (r.getReceiverType().equals(EmailAlertReceiver.DELIVERY_TYPE)) {
 			EmailAlertReceiver.validateParameters(receiverDAO, r);
 		}
 		Map<String, String> availableParameters = getAvailableParameters(r.getReceiverType());
@@ -160,7 +160,7 @@ public class ReceiverService implements AlertReceiverService {
 	private void startReceiving(AlertReceiver r) {
 
 		logger.info("Starting receiving alerts for receiver: {}.", r.getReceiverId());
-		if (r.getReceiverType().equals(EmailAlertReceiver.NAME)) {	
+		if (r.getReceiverType().equals(EmailAlertReceiver.DELIVERY_TYPE)) {	
 			if (!EmailAlertReceiver.validateParameters(receiverDAO, r)) {
 				logger.warn("Invalid email parameters for receiver: {}", r.getReceiverId());
 				return;

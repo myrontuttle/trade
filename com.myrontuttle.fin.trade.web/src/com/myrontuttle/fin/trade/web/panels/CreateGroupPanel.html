@@ -20,51 +20,47 @@
         			</td>
     				<td>Alert Host<br /><input type="text" wicket:id="alertHost"/></td>
         			-->
-    				<td>Alert User<br /><input type="text" wicket:id="alertUser"/></td>
-    				<td>Alert Password<br /><input type="text" wicket:id="alertPassword"/></td>
+    				<td>Alert User<br /><input type="text" wicket:id="stringSettings[Alert.User]"/></td>
+    				<td>Alert Password<br /><input type="text" wicket:id="stringSettings[Alert.Password]"/></td>
     				<td>&nbsp;</td>
     				<td>&nbsp;</td>
     				<td>&nbsp;</td>
     			</tr>
     			<tr>
-    				<td>Frequency of Evaluation<br /> 
-    					<select wicket:id="frequency">
+    				<td>Evolution Frequency<br /> 
+    					<select wicket:id="stringSettings[Evolve.Frequency]">
         					<option>Frequency Option</option>
         				</select>
         			</td>
-    				<td>Expression Strategy<br /> 
-    					<select wicket:id="expressionStrategy">
-        					<option>Strategy Option</option>
-        				</select>
-        			</td>
+    				<td>&nbsp;</td>
         			<td>Evaluation Strategy<br /> 
-        				<select wicket:id="evaluationStrategy">
+        				<select wicket:id="stringSettings[Eval.Strategy]">
         					<option>Strategy Option</option>
         				</select>
         			</td>
         			<td>Trade Strategy<br /> 
-        				<select wicket:id="tradeStrategy">
+        				<select wicket:id="stringSettings[Trade.Strategy]">
         					<option>Strategy Option</option>
         				</select>
         			</td>
     				<td>&nbsp;</td>
     			</tr>
     			<tr>
-    				<td>Group Size<br /><input type="text" wicket:id="size"/></td>
-    				<td>Number of Elites<br /><input type="text" wicket:id="eliteCount"/></td>
-    				<td>Upper Value of Genes<br /><input type="text" wicket:id="geneUpperValue"/></td>
-    				<td>Mutation Factor<br /><input type="text" wicket:id="mutationFactor"/></td>   
+    				<td>Group Size<br /><input type="text" wicket:id="integerSettings[Evolve.Size]"/></td>
+    				<td>Number of Elites<br /><input type="text" wicket:id="integerSettings[Evolve.EliteCount]"/></td>
+    				<td>Upper Value of Genes<br /><input type="text" wicket:id="integerSettings[Evolve.GeneUpperValue]"/></td>
+    				<td>Mutation Factor<br /><input type="text" wicket:id="doubleSettings[Evolve.MutationFactor]"/></td>   
     				<td>Allow Short Sells (When Available)<br />
-						<input type="checkbox" wicket:id="allowShorting" />
+						<input type="checkbox" wicket:id="booleanSettings[Trade.AllowShorting]" />
 					</td>
     			</tr>
     			<tr>
-    				<td>Number of Screens<br /><input type="text" wicket:id="numberOfScreens"/></td>
-    				<td>Max Symbols Per Screen<br /><input type="text" wicket:id="maxSymbolsPerScreen"/></td>
-    				<td>Alerts Per Symbol<br /><input type="text" wicket:id="alertsPerSymbol"/></td>
-    				<td>Starting Cash<br /><input type="text" wicket:id="startingCash"/></td>
+    				<td>Number of Screens<br /><input type="text" wicket:id="integerSettings[Express.NumberOfScreens]"/></td>
+    				<td>Max Symbols Per Screen<br /><input type="text" wicket:id="integerSettings[Express.MaxSymbolsPerScreen]"/></td>
+    				<td>Alerts Per Symbol<br /><input type="text" wicket:id="integerSettings[Express.AlertsPerSymbol]"/></td>
+    				<td>Starting Cash<br /><input type="text" wicket:id="doubleSettings[Express.StartingCash]"/></td>
         			<td>Activate<br />
-						<input type="checkbox" wicket:id="active" />
+						<input type="checkbox" wicket:id="booleanSettings[Evolve.Active]" />
 					</td>
 				</tr>
 				<tr>

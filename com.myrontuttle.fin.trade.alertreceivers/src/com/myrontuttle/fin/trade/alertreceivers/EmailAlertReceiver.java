@@ -20,7 +20,7 @@ public class EmailAlertReceiver {
 
 	private static final Logger logger = LoggerFactory.getLogger( EmailAlertReceiver.class );
 
-	public final static String NAME = "EmailAlert";
+	public final static String DELIVERY_TYPE = "EMAIL";
 	public final static String HOST = "Host";
 	public final static String PORT = "Port";
 	public final static String PROTOCOL = "Protocol";
@@ -62,7 +62,7 @@ public class EmailAlertReceiver {
 	}
 
 	public static String getName() {
-		return NAME;
+		return DELIVERY_TYPE;
 	}
 	
 	public static Map<String, String> getAvailableParameters() {

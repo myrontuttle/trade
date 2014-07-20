@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.*;
 
@@ -15,12 +17,6 @@ import javax.persistence.*;
 public class Group implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	
-	public static final String HOURLY = "HOURLY";
-	public static final String DAILY = "DAILY";
-	public static final String WEEKLY = "WEEKLY";
-
-	public static final String SAT_EXPRESSION = "SATExpression";
 
 	@Id
 	@Column(name = "GROUP_ID", nullable = false)
@@ -36,16 +32,51 @@ public class Group implements Serializable {
 			cascade = CascadeType.ALL)
 	private Trader bestTrader;
 
-	@OneToOne(mappedBy = "group", targetEntity = GroupSettings.class,
-			optional = false, fetch = FetchType.EAGER, 
-			cascade = CascadeType.ALL)
-	private GroupSettings settings;
-
 	@OneToMany(mappedBy = "group", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private ArrayList<GroupStats> stats;
+
+	@ElementCollection(fetch=FetchType.EAGER)
+    @MapKeyColumn(name="NAME")
+    @Column(name="VALUE")
+    @CollectionTable(
+    		name="BOOLEAN_SETTINGS", 
+    		joinColumns=@JoinColumn(name="SETTINGS_ID"))
+    private Map<String, Boolean> booleanSettings = new HashMap<String, Boolean>();
+
+	@ElementCollection(fetch=FetchType.EAGER)
+    @MapKeyColumn(name="NAME")
+    @Column(name="VALUE")
+    @CollectionTable(
+    		name="INTEGER_SETTINGS", 
+    		joinColumns=@JoinColumn(name="SETTINGS_ID"))
+    private Map<String, Integer> integerSettings = new HashMap<String, Integer>();
+
+	@ElementCollection(fetch=FetchType.EAGER)
+    @MapKeyColumn(name="NAME")
+    @Column(name="VALUE")
+    @CollectionTable(
+    		name="STRING_SETTINGS", 
+    		joinColumns=@JoinColumn(name="SETTINGS_ID"))
+    private Map<String, Long> longSettings = new HashMap<String, Long>();
+
+	@ElementCollection(fetch=FetchType.EAGER)
+    @MapKeyColumn(name="NAME")
+    @Column(name="VALUE")
+    @CollectionTable(
+    		name="DOUBLE_SETTINGS", 
+    		joinColumns=@JoinColumn(name="SETTINGS_ID"))
+    private Map<String, Double> doubleSettings = new HashMap<String, Double>();
+
+	@ElementCollection(fetch=FetchType.EAGER)
+    @MapKeyColumn(name="NAME")
+    @Column(name="VALUE")
+    @CollectionTable(
+    		name="STRING_SETTINGS", 
+    		joinColumns=@JoinColumn(name="SETTINGS_ID"))
+    private Map<String, String> stringSettings = new HashMap<String, String>();
 	
 	
-	
+	/*
 	// Alert Receiver
 	@Column(name = "ALERT_RECEIVER_TYPE")
 	private String alertReceiverType;
@@ -72,9 +103,6 @@ public class Group implements Serializable {
 	
 	@Column(name = "GENE_UPPER_VALUE")
 	private int geneUpperValue;
-	
-	@Column(name = "EXPRESSION_STRATEGY")
-	private String expressionStrategy;
 	
 	@Column(name = "EVALUATION_STRATEGY")
 	private String evaluationStrategy;
@@ -122,7 +150,7 @@ public class Group implements Serializable {
 	
 	@Column(name = "STARTING_CASH")
 	private double startingCash;
-	
+	*/
 	
 	
 	public Group() {}
@@ -171,14 +199,6 @@ public class Group implements Serializable {
 		trader.setGroup(null);
 	}
 
-	public GroupSettings getSettings() {
-		return settings;
-	}
-
-	public void setSettings(GroupSettings settings) {
-		this.settings = settings;
-	}
-
 	public ArrayList<GroupStats> getStats() {
 		return stats;
 	}
@@ -201,14 +221,107 @@ public class Group implements Serializable {
 		}
 	}
 
-	public String getAlertReceiverType() {
-		return alertReceiverType;
+	public Map<String, Boolean> getBooleanSettings() {
+		return booleanSettings;
 	}
 
-	public void setAlertReceiverType(String alertReceiverType) {
-		this.alertReceiverType = alertReceiverType;
+	public void setBooleanSettings(Map<String, Boolean> booleanSettings) {
+		this.booleanSettings = booleanSettings;
+	}
+	
+	public boolean getBoolean(String key) {
+		return booleanSettings.get(key);
+	}
+	
+	public void setBoolean(String key, boolean value) {
+		booleanSettings.put(key, value);
+	}
+	
+	public void removeBoolean(String key) {
+		booleanSettings.remove(key);
 	}
 
+	public Map<String, Integer> getIntegerSettings() {
+		return integerSettings;
+	}
+
+	public void setIntegerSettings(Map<String, Integer> integerSettings) {
+		this.integerSettings = integerSettings;
+	}
+
+	public int getInteger(String key) {
+		return integerSettings.get(key);
+	}
+	
+	public void setInteger(String key, int value) {
+		integerSettings.put(key, value);
+	}
+	
+	public void removeInteger(String key) {
+		integerSettings.remove(key);
+	}
+
+	public Map<String, Long> getLongSettings() {
+		return longSettings;
+	}
+
+	public void setLongSettings(Map<String, Long> longSettings) {
+		this.longSettings = longSettings;
+	}
+
+	public long getLong(String key) {
+		return longSettings.get(key);
+	}
+	
+	public void setLong(String key, long value) {
+		longSettings.put(key, value);
+	}
+	
+	public void removeLong(String key) {
+		longSettings.remove(key);
+	}
+
+	public Map<String, Double> getDoubleSettings() {
+		return doubleSettings;
+	}
+
+	public void setDoubleSettings(Map<String, Double> doubleSettings) {
+		this.doubleSettings = doubleSettings;
+	}
+
+	public double getDouble(String key) {
+		return doubleSettings.get(key);
+	}
+	
+	public void setDouble(String key, double value) {
+		doubleSettings.put(key, value);
+	}
+	
+	public void removeDouble(String key) {
+		doubleSettings.remove(key);
+	}
+
+	public Map<String, String> getStringSettings() {
+		return stringSettings;
+	}
+
+	public void setStringSettings(Map<String, String> stringSettings) {
+		this.stringSettings = stringSettings;
+	}
+	
+	public String getString(String key) {
+		return stringSettings.get(key);
+	}
+	
+	public void setString(String key, String value) {
+		stringSettings.put(key, value);
+	}
+	
+	public void removeString(String key) {
+		stringSettings.remove(key);
+	}
+
+	/*
 	public long getAlertReceiverId() {
 		return alertReceiverId;
 	}
@@ -263,14 +376,6 @@ public class Group implements Serializable {
 
 	public void setGeneUpperValue(int geneUpperValue) {
 		this.geneUpperValue = geneUpperValue;
-	}
-
-	public String getExpressionStrategy() {
-		return expressionStrategy;
-	}
-
-	public void setExpressionStrategy(String expressionStrategy) {
-		this.expressionStrategy = expressionStrategy;
 	}
 
 	public String getEvaluationStrategy() {
@@ -384,5 +489,5 @@ public class Group implements Serializable {
 	public void setUpdatedTime(Date updatedTime) {
 		this.updatedTime = updatedTime;
 	}
-
+*/
 }

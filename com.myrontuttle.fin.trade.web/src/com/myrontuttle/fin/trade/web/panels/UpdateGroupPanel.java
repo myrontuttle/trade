@@ -41,31 +41,30 @@ public class UpdateGroupPanel extends Panel {
 						.setRequired(true)
 						.add(new AttributeModifier("value", "imap.gmail.com")));
 */
-		form.add(new TextField<String>("alertUser")
+		form.add(new TextField<String>("stringSettings[Alert.User]")
 					.add(EmailAddressValidator.getInstance()));
-		form.add(new TextField<String>("alertPassword")
+		form.add(new TextField<String>("stringSettings[Alert.Password]")
 						.setRequired(true));
 		
-		form.add(new Label("frequency"));
-		form.add(new Label("expressionStrategy"));
-		form.add(new Label("evaluationStrategy"));
-		form.add(new Label("tradeStrategy"));
+		form.add(new Label("stringSettings[Evolve.Frequency]"));
+		form.add(new Label("stringSettings[Eval.Strategy]"));
+		form.add(new Label("stringSettings[Trade.Strategy]"));
 		
-		form.add(new TextField<String>("size")
+		form.add(new TextField<String>("integerSettings[Evolve.Size]")
 						.setRequired(true));
-		form.add(new TextField<Integer>("eliteCount")
+		form.add(new TextField<Integer>("integerSettings[Evolve.EliteCount]")
 						.setRequired(true));
-		form.add(new Label("geneUpperValue"));
-		form.add(new Label("mutationFactor"));
-		form.add(new CheckBox("allowShorting"));
+		form.add(new Label("integerSettings[Evolve.GeneUpperValue]"));
+		form.add(new Label("doubleSettings[Evolve.MutationFactor]"));
+		form.add(new CheckBox("booleanSettings[Trade.AllowShorting]"));
 
-		form.add(new Label("numberOfScreens"));
-		form.add(new Label("maxSymbolsPerScreen"));
-		form.add(new Label("alertsPerSymbol"));
+		form.add(new Label("integerSettings[Express.NumberOfScreens]"));
+		form.add(new Label("integerSettings[Express.MaxSymbolsPerScreen]"));
+		form.add(new Label("integerSettings[Express.AlertsPerSymbol]"));
 		
-		form.add(new TextField<Integer>("startingCash")
+		form.add(new TextField<Integer>("doubleSettings[Express.StartingCash]")
 						.setRequired(true));
-		form.add(new CheckBox("active"));
+		form.add(new CheckBox("booleanSettings[Evolve.Active]"));
 
 		form.add(new Button("removeCandidates") {
             public void onSubmit() {
@@ -83,15 +82,7 @@ public class UpdateGroupPanel extends Panel {
             }
         });
 		form.add(new Button("update") {
-            public void onSubmit() {
-
-            	AlertReceiverService ars = AlertReceiverAccess.getAlertReceiverService();
-            	long receiverId = group.getAlertReceiverId();
-            	//ars.setReceiverParameter(receiverId, "Host", group.getAlertHost());
-            	ars.setReceiverParameter(receiverId, "User", group.getAlertUser());
-            	ars.setReceiverParameter(receiverId, "Password", group.getAlertPassword());
-            	ars.setReceiverActive(receiverId, group.isActive());
-            	
+            public void onSubmit() {            	
             	group = AdaptAccess.getDAO().updateGroup((Group)getParent().getDefaultModelObject());
             }
         });

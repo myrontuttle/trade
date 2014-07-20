@@ -50,7 +50,7 @@ public class PortfolioEvaluator implements ExpressedFitnessEvaluator<int[]> {
 		try {
 			double analysis = portfolioService.analyze(
 					tradeCandidate.getCandidateId(), 
-					tradeCandidate.getPortfolioId(), group.getEvaluationStrategy());
+					tradeCandidate.getPortfolioId(), group.getString("Eval.Strategy"));
 			if (analysis > fitness) {
 				fitness = analysis;
 			}

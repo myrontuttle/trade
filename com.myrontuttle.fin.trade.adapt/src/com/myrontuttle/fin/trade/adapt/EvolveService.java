@@ -8,13 +8,15 @@ import org.joda.time.DateTime;
  */
 public interface EvolveService {
 	
-	public void setupGroup(GroupSettings settings);
+	public void setupGroup(long groupId);
 	
 	public void evolveNow(long groupId);
 	
 	public void evolveAllNow();
 	
 	public void evolveActiveAt(DateTime date);
+	
+	public String[] getEvolveFrequencies();
 	
 	public DateTime getNextEvolveDate();
 	

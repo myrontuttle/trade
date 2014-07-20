@@ -111,15 +111,15 @@ public class GroupSettings implements Serializable {
 		this.booleanSettings = booleanSettings;
 	}
 	
-	public boolean getBooleanValue(String key) {
+	public boolean getBoolean(String key) {
 		return booleanSettings.get(key);
 	}
 	
-	public void setBooleanValue(String key, boolean value) {
+	public void setBoolean(String key, boolean value) {
 		booleanSettings.put(key, value);
 	}
 	
-	public void removeBooleanValue(String key) {
+	public void removeBoolean(String key) {
 		booleanSettings.remove(key);
 	}
 
@@ -131,15 +131,15 @@ public class GroupSettings implements Serializable {
 		this.integerSettings = integerSettings;
 	}
 
-	public int getIntegerValue(String key) {
+	public int getInteger(String key) {
 		return integerSettings.get(key);
 	}
 	
-	public void setIntegerValue(String key, int value) {
+	public void setInteger(String key, int value) {
 		integerSettings.put(key, value);
 	}
 	
-	public void removeIntegerValue(String key) {
+	public void removeInteger(String key) {
 		integerSettings.remove(key);
 	}
 
@@ -151,15 +151,15 @@ public class GroupSettings implements Serializable {
 		this.longSettings = longSettings;
 	}
 
-	public long getLongValue(String key) {
+	public long getLong(String key) {
 		return longSettings.get(key);
 	}
 	
-	public void setLongValue(String key, long value) {
+	public void setLong(String key, long value) {
 		longSettings.put(key, value);
 	}
 	
-	public void removeLongValue(String key) {
+	public void removeLong(String key) {
 		longSettings.remove(key);
 	}
 
@@ -171,15 +171,15 @@ public class GroupSettings implements Serializable {
 		this.doubleSettings = doubleSettings;
 	}
 
-	public double getDoubleValue(String key) {
+	public double getDouble(String key) {
 		return doubleSettings.get(key);
 	}
 	
-	public void setDoubleValue(String key, double value) {
+	public void setDouble(String key, double value) {
 		doubleSettings.put(key, value);
 	}
 	
-	public void removeDoubleValue(String key) {
+	public void removeDouble(String key) {
 		doubleSettings.remove(key);
 	}
 
@@ -191,15 +191,15 @@ public class GroupSettings implements Serializable {
 		this.stringSettings = stringSettings;
 	}
 	
-	public String getStringValue(String key) {
+	public String getString(String key) {
 		return stringSettings.get(key);
 	}
 	
-	public void setStringValue(String key, String value) {
+	public void setString(String key, String value) {
 		stringSettings.put(key, value);
 	}
 	
-	public void removeStringValue(String key) {
+	public void removeString(String key) {
 		stringSettings.remove(key);
 	}
 	

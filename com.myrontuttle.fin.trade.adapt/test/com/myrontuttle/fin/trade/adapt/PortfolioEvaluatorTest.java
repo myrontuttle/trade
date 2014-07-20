@@ -56,7 +56,7 @@ public class PortfolioEvaluatorTest {
 		population.add(candidateB);
 		population.add(candidateC);
 		
-		group1.setEvaluationStrategy(ANALYSIS);
+		group1.setString("Eval.Strategy", ANALYSIS);
 		
 	    // Arrange mocks
 		portfolioService = mock(PortfolioService.class);

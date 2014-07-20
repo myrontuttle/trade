@@ -16,6 +16,7 @@ import org.apache.wicket.validation.validator.EmailAddressValidator;
 
 import com.myrontuttle.fin.trade.adapt.Group;
 import com.myrontuttle.fin.trade.adapt.GroupSettings;
+import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 import com.myrontuttle.fin.trade.web.service.EvolveAccess;
 import com.myrontuttle.fin.trade.web.service.PortfolioAccess;
 import com.myrontuttle.fin.trade.web.service.StrategyAccess;
@@ -26,8 +27,8 @@ public class CreateGroupPanel extends Panel {
 	
 	public CreateGroupPanel(String id) {
 		super(id);
-		final IModel<GroupSettings> compound = new CompoundPropertyModel<GroupSettings>(new GroupSettings());
-		final Form<GroupSettings> form = new Form<GroupSettings>("newGroupForm", compound);
+		final IModel<Group> compound = new CompoundPropertyModel<Group>(new Group());
+		final Form<Group> form = new Form<Group>("newGroupForm", compound);
 /*
 		List<String> alertReceiverTypes = Arrays.
 					asList(AlertReceiverAccess.getAlertReceiverService().availableReceiverTypes());
@@ -40,14 +41,11 @@ public class CreateGroupPanel extends Panel {
 		form.add(new TextField<String>("stringSettings[Alert.User]")
 					.add(EmailAddressValidator.getInstance()));
 		
-		form.add(new TextField<String>("alertPassword")
+		form.add(new TextField<String>("stringSettings[Alert.Password]")
 						.setRequired(true));
 		
-		List<String> frequencies = Arrays.asList(Group.HOURLY, Group.DAILY, Group.WEEKLY);
-		form.add(new DropDownChoice<String>("frequency", frequencies));
-
-		List<String> expressions = Arrays.asList(Group.SAT_EXPRESSION);
-		form.add(new DropDownChoice<String>("expressionStrategy", expressions));
+		List<String> frequencies = Arrays.asList(EvolveAccess.getEvolveService().getEvolveFrequencies());
+		form.add(new DropDownChoice<String>("stringSettings[Evolve.Frequency]", frequencies));
 
 		List<String> evaluators;
 		try {
@@ -55,54 +53,55 @@ public class CreateGroupPanel extends Panel {
 		} catch (Exception e) {
 			evaluators = Arrays.asList(new String[0]);
 		}
-		form.add(new DropDownChoice<String>("evaluationStrategy", evaluators));
+		form.add(new DropDownChoice<String>("stringSettings[Eval.Strategy]", evaluators));
 
 		List<String> tradeStrategies = Arrays.
 					asList(StrategyAccess.getTradeStrategyService().availableTradeStrategies());
-		form.add(new DropDownChoice<String>("tradeStrategy", tradeStrategies));
+		form.add(new DropDownChoice<String>("stringSettings[Trade.Strategy]", tradeStrategies));
 
 
-		form.add(new TextField<String>("size")
+		form.add(new TextField<String>("integerSettings[Evolve.Size]")
 						.setRequired(true));
 		
-		form.add(new TextField<Integer>("eliteCount")
+		form.add(new TextField<Integer>("integerSettings[Evolve.EliteCount]")
 						.setRequired(true));
 		
-		form.add(new TextField<Integer>("geneUpperValue")
+		form.add(new TextField<Integer>("integerSettings[Evolve.GeneUpperValue]")
 						.setRequired(true)
 						.add(new AttributeModifier("value", "100")));
 
-		form.add(new TextField<Integer>("mutationFactor")
+		form.add(new TextField<Double>("doubleSettings[Evolve.MutationFactor]")
 						.setRequired(true)
 						.add(new AttributeModifier("value", "0.1")));
 
-		form.add(new CheckBox("allowShorting"));
+		form.add(new CheckBox("booleanSettings[Trade.AllowShorting]"));
 		
 		
-		form.add(new TextField<Integer>("numberOfScreens")
+		form.add(new TextField<Integer>("integerSettings[Express.NumberOfScreens]")
 						.setRequired(true)
 						.add(new AttributeModifier("value", "2")));
 		
-		form.add(new TextField<Integer>("maxSymbolsPerScreen")
+		form.add(new TextField<Integer>("integerSettings[Express.MaxSymbolsPerScreen]")
 						.setRequired(true)
 						.add(new AttributeModifier("value", "10")));
 		
-		form.add(new TextField<Integer>("alertsPerSymbol")
+		form.add(new TextField<Integer>("integerSettings[Express.AlertsPerSymbol]")
 						.setRequired(true)
 						.add(new AttributeModifier("value", "2")));
 		
-		form.add(new TextField<Integer>("startingCash")
+		form.add(new TextField<Double>("doubleSettings[Express.StartingCash]")
 						.setRequired(true)
 						.add(new AttributeModifier("value", "10000.00")));
 
-		form.add(new CheckBox("active"));
+		form.add(new CheckBox("booleanSettings[Evolve.Active]"));
 		
 		form.add(new Button("create") {
             public void onSubmit() {
-            	GroupSettings settings = (GroupSettings)compound.getObject();
-         	    settings.setStringValue("Alert.ReceiverType", "EmailAlert");
-         	    settings.setStringValue("Alert.Host", "imap.gmail.com");
-            	EvolveAccess.getEvolveService().setupGroup(settings);
+            	Group group = (Group)compound.getObject();
+         	    group.setString("Alert.ReceiverType", "EMAIL");
+         	    group.setString("Alert.Host", "imap.gmail.com");
+         	    AdaptAccess.getDAO().saveGroup(group);
+            	EvolveAccess.getEvolveService().setupGroup(group.getGroupId());
             }
         });
         

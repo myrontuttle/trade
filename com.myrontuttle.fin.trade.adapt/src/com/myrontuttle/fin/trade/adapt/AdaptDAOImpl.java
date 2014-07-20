@@ -98,9 +98,9 @@ public class AdaptDAOImpl implements AdaptDAO {
 				data.getPopulationId(), 
 				data.getBestCandidateFitness(), data.getMeanFitness(), 
 				data.getFitnessStandardDeviation(), data.getGenerationNumber(),
-				group.getVariability());
+				group.getDouble("Express.Variability"));
 		
-		group.setGeneration(data.getGenerationNumber());
+		group.setInteger("Evolve.Generation", data.getGenerationNumber());
 
 		group.addGroupStats(stats);
 	}
@@ -132,7 +132,7 @@ public class AdaptDAOImpl implements AdaptDAO {
 		}
 		group.getStats().clear();
 	}
-
+	
 	@Override
 	public void setBestTrader(Trader trader, long groupId) {
 		Group group = em.find(Group.class, groupId);		

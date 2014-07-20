@@ -37,7 +37,7 @@ public class GroupPage extends WebPage {
 		add(new EvolveGroupPanel("evolveGroupPanel", groupModel));
 		add(new GroupStatsTablePanel("groupStatsTablePanel", groupId));
 		add(new BestTraderPanel("bestTraderPanel", groupModel));
-		add(new Label("currentVariability", group.getVariability()));
+		add(new Label("currentVariability", group.getDouble("Express.Variability")));
 		add(new CandidateTablePanel("candidateTablePanel", groupId));
 	}
 

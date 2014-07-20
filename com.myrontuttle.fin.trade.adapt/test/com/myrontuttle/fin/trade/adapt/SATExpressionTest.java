@@ -21,7 +21,7 @@ import com.myrontuttle.fin.trade.adapt.SavedScreen;
 import com.myrontuttle.fin.trade.adapt.TradeParameter;
 import com.myrontuttle.fin.trade.api.*;
 
-public class BasicExpressionTest {
+public class SATExpressionTest {
 
 	private final static long CID = 1334;
 	private final static String WID = "watchlistID";
@@ -155,16 +155,15 @@ public class BasicExpressionTest {
 		
 		group1 = new Group();
 		group1.setGroupId(GID);
-		group1.setNumberOfScreens(SCREEN_GENES);
-		group1.setMaxSymbolsPerScreen(MAX_SYMBOLS_PER_SCREEN);
-		group1.setAlertsPerSymbol(ALERTS_PER_SYMBOL);
-		group1.setGeneUpperValue(100);
-		group1.setActive(true);
-		group1.setStartingCash(STARTING_CASH);
-		group1.setAlertUser(EMAIL);
+		group1.setInteger("Express.NumberOfScreens", SCREEN_GENES);
+		group1.setInteger("MaxSymbolsPerScreen", MAX_SYMBOLS_PER_SCREEN);
+		group1.setInteger("AlertsPerSymbol", ALERTS_PER_SYMBOL);
+		group1.setInteger("GeneUpperValue", 100);
+		group1.setBoolean("Evolve.Active", true);
+		group1.setDouble("Express.StartingCash", STARTING_CASH);
+		group1.setString("Alert.User", EMAIL);
 		group1.setCandidates(candidates);
-		group1.setExpressionStrategy("BasicExpression");
-		group1.setTradeStrategy(BOUNDED_STRAT);
+		group1.setString("Trade.Strategy", BOUNDED_STRAT);
 
 		params1.add(new TradeParameter(CID, trade1, "openOrderType", 0));
 		params1.add(new TradeParameter(CID, trade1, "tradeAllocation", 37));

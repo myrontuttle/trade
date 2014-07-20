@@ -47,7 +47,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 	private static TradeStrategyService tradeStrategyService;
 	private static AlertReceiverService alertReceiverService;
 	
-	private static AdaptDAO groupDAO;
+	private static AdaptDAO adaptDAO;
 	
 	public static QuoteService getQuoteService() {
 		return quoteService;
@@ -106,18 +106,20 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 	}
 
 	public static AdaptDAO getGroupDAO() {
-		return groupDAO;
+		return adaptDAO;
 	}
 
 	public void setGroupDAO(AdaptDAO groupDAO) {
-		SATExpression.groupDAO = groupDAO;
+		SATExpression.adaptDAO = groupDAO;
 	}
 
 	public int getGenomeLength(long groupId) {
-		Group group = groupDAO.findGroup(groupId);
-		return 1 + SCREEN_GENE_LENGTH * group.getNumberOfScreens() +
-				group.getMaxSymbolsPerScreen() * ALERT_GENE_LENGTH * group.getAlertsPerSymbol() +
-				group.getMaxSymbolsPerScreen() * group.getAlertsPerSymbol() * TRADE_GENE_LENGTH;
+		Group group = adaptDAO.findGroup(groupId);
+		return 1 + SCREEN_GENE_LENGTH * group.getInteger("Express.NumberOfScreens") +
+				group.getInteger("Express.MaxSymbolsPerScreen") * 
+					ALERT_GENE_LENGTH * group.getInteger("Express.AlertsPerSymbol") +
+				group.getInteger("Express.MaxSymbolsPerScreen") * 
+					group.getInteger("Express.AlertsPerSymbol") * TRADE_GENE_LENGTH;
 	}
 
 	private int getScreenStartPosition() {
@@ -151,8 +153,8 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		// Start at the first screen gene
 		int position = getScreenStartPosition();
 		ArrayList<SavedScreen> selected = new ArrayList<SavedScreen>();
-		int screens = group.getNumberOfScreens();
-		int geneUpperValue = group.getGeneUpperValue();
+		int screens = group.getInteger("Express.NumberOfScreens");
+		int geneUpperValue = group.getInteger("Evolve.GeneUpperValue");
 		for (int i=0; i<screens; i++) {
 
 			int criteriaIndex = transpose(genome[position], geneUpperValue, 
@@ -174,21 +176,21 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		String[] symbols = null;
 		int[] genome = candidate.getGenome();
 
-		int sortGene = transpose(genome[SCREEN_SORT_POSITION], group.getGeneUpperValue(), 
+		int sortGene = transpose(genome[SCREEN_SORT_POSITION], group.getInteger("Evolve.GeneUpperValue"), 
 									0, screenCriteria.length - 1);
 
 		String[] screenSymbols = screenerService.screen(
 										group.getGroupId(),
 										screenCriteria,
 										screenCriteria[sortGene].getName(),
-										group.getMaxSymbolsPerScreen());
+										group.getInteger("Express.MaxSymbolsPerScreen"));
 		
 		if (screenSymbols == null) {
 			throw new Exception("No symbols found for candidate " + candidate.getCandidateId());
 		}
-		if (screenSymbols.length > group.getMaxSymbolsPerScreen()) {
-			symbols = new String[group.getMaxSymbolsPerScreen()];
-			System.arraycopy(screenSymbols, 0, symbols, 0, group.getMaxSymbolsPerScreen());
+		if (screenSymbols.length > group.getInteger("Express.MaxSymbolsPerScreen")) {
+			symbols = new String[group.getInteger("Express.MaxSymbolsPerScreen")];
+			System.arraycopy(screenSymbols, 0, symbols, 0, group.getInteger("Express.MaxSymbolsPerScreen"));
 		} else {
 			symbols = new String[screenSymbols.length];
 			System.arraycopy(screenSymbols, 0, symbols, 0, symbols.length);
@@ -226,14 +228,14 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			throw new Exception("Error creating portfolio: " + name);
 		}
 		portfolioService.addCashTransaction(candidateId, portfolioId, 
-											group.getStartingCash(), 
+											group.getDouble("Express.StartingCash"), 
 											true, true);
 		
 		return portfolioId;
 	}
 	
 	private int getAlertStartPosition(Group group) {
-		return getScreenStartPosition() + SCREEN_GENE_LENGTH * group.getNumberOfScreens();
+		return getScreenStartPosition() + SCREEN_GENE_LENGTH * group.getInteger("Express.NumberOfScreens");
 	}
 	
 	/**
@@ -265,16 +267,16 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			throw new Exception("No available alerts for " + group.getGroupId());
 		}
 		
-		SavedAlert[] selected = new SavedAlert[symbols.length * group.getAlertsPerSymbol()];
+		SavedAlert[] selected = new SavedAlert[symbols.length * group.getInteger("Express.AlertsPerSymbol")];
 		
 		int position = getAlertStartPosition(group);
 		int s = 0;
 		for (int i=0; i<symbols.length; i++) {
-			for (int j=0; j<group.getAlertsPerSymbol(); j++) {
+			for (int j=0; j<group.getInteger("Express.AlertsPerSymbol"); j++) {
 
 				AvailableAlert alert = availableAlerts[transpose(genome[position],  
-																	group.getGeneUpperValue(),
-																	0, availableAlerts.length - 1)];
+															group.getInteger("Evolve.GeneUpperValue"),
+															0, availableAlerts.length - 1)];
 				int alertId = alert.getType();
 				String[] criteriaTypes = alert.getCriteriaTypes();
 				double[] params = new double[criteriaTypes.length];
@@ -282,11 +284,11 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 					if (criteriaTypes[k].equals(AvailableAlert.DOUBLE)) {
 						double upper = alertService.getUpperDouble(group.getGroupId(), alertId, symbols[i], k);
 						double lower = alertService.getLowerDouble(group.getGroupId(), alertId, symbols[i], k);
-						params[k] = transpose(genome[position + 1], group.getGeneUpperValue(),
+						params[k] = transpose(genome[position + 1], group.getInteger("Evolve.GeneUpperValue"),
 												lower, upper);
 					} else if (criteriaTypes[k].equals(AvailableAlert.LIST)) {
 						int upper = alertService.getListLength(group.getGroupId(), alertId, k);
-						params[k] = transpose(genome[position + 1], group.getGeneUpperValue(), 
+						params[k] = transpose(genome[position + 1], group.getInteger("Evolve.GeneUpperValue"), 
 												0, upper);
 					}
 				}
@@ -304,7 +306,9 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 	
 	SavedAlert[] setupAlerts(Group group, SavedAlert[] openAlerts) throws Exception {
 
-		alertService.addAlertDestination(group.getGroupId(), group.getAlertUser(), "EMAIL");
+		alertService.addAlertDestination(group.getGroupId(), 
+										group.getString("Alert.User"), 
+										group.getString("Alert.ReceiverType"));
 
 		for (SavedAlert alert : openAlerts) {
 			alert.setAlertId(
@@ -331,7 +335,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 	public HashMap<String, ArrayList<TradeParameter>> expressTradeGenes(Candidate candidate, Group group, 
 									String[] symbols) throws Exception {
 
-		String tradeStrategy = group.getTradeStrategy();
+		String tradeStrategy = group.getString("Trade.Strategy");
 		int[] genome = candidate.getGenome();
 		long candidateId = candidate.getCandidateId();
 		
@@ -339,7 +343,8 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 																tradeStrategy);
 		
 		int position = getAlertStartPosition(group) + 
-				group.getMaxSymbolsPerScreen() * ALERT_GENE_LENGTH * group.getAlertsPerSymbol();
+				group.getInteger("Express.MaxSymbolsPerScreen") * ALERT_GENE_LENGTH * 
+				group.getInteger("Express.AlertsPerSymbol");
 
 		HashMap<String, ArrayList<TradeParameter>> trades = 
 					new HashMap<String, ArrayList<TradeParameter>>();
@@ -353,7 +358,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 						symbols[i], 
 						availableParameters[j].getName(),
 						transpose(genome[position + j],
-								group.getGeneUpperValue(),
+								group.getInteger("Evolve.GeneUpperValue"),
 								availableParameters[j].getLower(), 
 								availableParameters[j].getUpper())));
 			}
@@ -380,7 +385,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 
 		long candidateId = candidate.getCandidateId();
 		String portfolioId = candidate.getPortfolioId();
-		String tradeStrategy = group.getTradeStrategy();
+		String tradeStrategy = group.getString("Trade.Strategy");
 		String actionType = tradeStrategyService.tradeActionToStart(tradeStrategy);
 
 		long tradeId;
@@ -410,19 +415,19 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 	@Override
 	public void beforeExpression(long populationId) {
 
-		Group group = groupDAO.findGroup(populationId);
-		long receiverId = group.getAlertReceiverId();
+		Group group = adaptDAO.findGroup(populationId);
+		long receiverId = group.getLong("Alert.ReceiverId");
 		
 		// Check if there's already an alert receiver
 		if (receiverId == 0) {
 			// No receiver so set one up
 			
-			receiverId = alertReceiverService.addReceiver(populationId, group.getAlertReceiverType());
-			group.setAlertReceiverId(receiverId);
+			receiverId = alertReceiverService.addReceiver(populationId, group.getString("Alert.ReceiverType"));
+			group.setLong("Alert.ReceiverId", receiverId);
 
-        	alertReceiverService.setReceiverParameter(receiverId, "Host", group.getAlertHost());
-        	alertReceiverService.setReceiverParameter(receiverId, "User", group.getAlertUser());
-        	alertReceiverService.setReceiverParameter(receiverId, "Password", group.getAlertHost());
+        	alertReceiverService.setReceiverParameter(receiverId, "Host", group.getString("Alert.Host"));
+        	alertReceiverService.setReceiverParameter(receiverId, "User", group.getString("Alert.User"));
+        	alertReceiverService.setReceiverParameter(receiverId, "Password", group.getString("Alert.Password"));
         	alertReceiverService.setReceiverActive(receiverId, true);
 		}
 		
@@ -439,10 +444,10 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		candidate.setGenome(genome);
 		candidate.setGroupId(groupId);
 		
-		groupDAO.addCandidate(candidate, groupId);
+		adaptDAO.addCandidate(candidate, groupId);
 		
 		// Find the group
-		Group group = groupDAO.findGroup(groupId);
+		Group group = adaptDAO.findGroup(groupId);
 
 		try {
 			// Get criteria to screen against
@@ -491,7 +496,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		}
 
 		// Save candidate to database, and return
-		groupDAO.updateCandidate(candidate);
+		adaptDAO.updateCandidate(candidate);
 		
 		return candidate;
 	}
@@ -523,9 +528,9 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		
 		double meanHammingDistance = hammingSum / hammingPairings;
 		
-		Group group = groupDAO.findGroup(populationId);
-		group.setVariability(meanHammingDistance);
-		groupDAO.updateGroup(group);
+		Group group = adaptDAO.findGroup(populationId);
+		group.setDouble("Express.Variability", meanHammingDistance);
+		adaptDAO.updateGroup(group);
 		
 	}
 
@@ -533,9 +538,9 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 	public void destroy(int[] genome, long populationId) {
 		
 		try {
-			Candidate c = groupDAO.findCandidateByGenome(genome);
+			Candidate c = adaptDAO.findCandidateByGenome(genome);
 			
-			groupDAO.removeCandidate(c.getCandidateId());
+			adaptDAO.removeCandidate(c.getCandidateId());
 
 			// Remove alert trade mapping
 			tradeStrategyService.removeAllTrades(c.getCandidateId());
@@ -603,7 +608,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			return trader;
 		}
 		for (SavedScreen criteria : screenCriteria) {
-			groupDAO.addSavedScreen(criteria, trader.getTraderId());
+			adaptDAO.addSavedScreen(criteria, trader.getTraderId());
 		}
 		
 		String[] symbols = getScreenSymbols(candidate, group, screenCriteria);
@@ -611,7 +616,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			return trader;
 		}
 		for (String symbol : symbols) {
-			groupDAO.addSymbol(symbol, trader.getTraderId());
+			adaptDAO.addSymbol(symbol, trader.getTraderId());
 		}
 		
 		SavedAlert[] alerts = expressAlertGenes(candidate, group, symbols);
@@ -619,14 +624,14 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			return trader;
 		}
 		for (SavedAlert alert : alerts) {
-			groupDAO.addSavedAlert(alert, trader.getTraderId());
+			adaptDAO.addSavedAlert(alert, trader.getTraderId());
 		}
 
 		HashMap<String, ArrayList<TradeParameter>> trades = expressTradeGenes(candidate, group, symbols);
 		for (String key : trades.keySet()) {
 			ArrayList<TradeParameter> params = trades.get(key);
 			for (TradeParameter p : params) {
-				groupDAO.addTradeParamter(p, trader.getTraderId());
+				adaptDAO.addTradeParamter(p, trader.getTraderId());
 			}
 		}
 		return trader;

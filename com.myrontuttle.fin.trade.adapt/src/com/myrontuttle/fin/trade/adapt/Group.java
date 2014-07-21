@@ -36,43 +36,43 @@ public class Group implements Serializable {
 	private ArrayList<GroupStats> stats;
 
 	@ElementCollection(fetch=FetchType.EAGER)
-    @MapKeyColumn(name="NAME")
-    @Column(name="VALUE")
+    @MapKeyColumn(name="BOOL_NAME")
+    @Column(name="BOOL_VALUE")
     @CollectionTable(
     		name="BOOLEAN_SETTINGS", 
-    		joinColumns=@JoinColumn(name="SETTINGS_ID"))
+    		joinColumns=@JoinColumn(name="GROUP_ID"))
     private Map<String, Boolean> booleanSettings = new HashMap<String, Boolean>();
 
 	@ElementCollection(fetch=FetchType.EAGER)
-    @MapKeyColumn(name="NAME")
-    @Column(name="VALUE")
+    @MapKeyColumn(name="INT_NAME")
+    @Column(name="INT_VALUE")
     @CollectionTable(
     		name="INTEGER_SETTINGS", 
-    		joinColumns=@JoinColumn(name="SETTINGS_ID"))
+    		joinColumns=@JoinColumn(name="GROUP_ID"))
     private Map<String, Integer> integerSettings = new HashMap<String, Integer>();
 
 	@ElementCollection(fetch=FetchType.EAGER)
-    @MapKeyColumn(name="NAME")
-    @Column(name="VALUE")
+    @MapKeyColumn(name="LONG_NAME")
+    @Column(name="LONG_VALUE")
     @CollectionTable(
-    		name="STRING_SETTINGS", 
-    		joinColumns=@JoinColumn(name="SETTINGS_ID"))
+    		name="LONG_SETTINGS", 
+    		joinColumns=@JoinColumn(name="GROUP_ID"))
     private Map<String, Long> longSettings = new HashMap<String, Long>();
 
 	@ElementCollection(fetch=FetchType.EAGER)
-    @MapKeyColumn(name="NAME")
-    @Column(name="VALUE")
+    @MapKeyColumn(name="DOUBLE_NAME")
+    @Column(name="DOUBLE_VALUE")
     @CollectionTable(
     		name="DOUBLE_SETTINGS", 
-    		joinColumns=@JoinColumn(name="SETTINGS_ID"))
+    		joinColumns=@JoinColumn(name="GROUP_ID"))
     private Map<String, Double> doubleSettings = new HashMap<String, Double>();
 
 	@ElementCollection(fetch=FetchType.EAGER)
-    @MapKeyColumn(name="NAME")
-    @Column(name="VALUE")
+    @MapKeyColumn(name="STRING_NAME")
+    @Column(name="STRING_VALUE")
     @CollectionTable(
     		name="STRING_SETTINGS", 
-    		joinColumns=@JoinColumn(name="SETTINGS_ID"))
+    		joinColumns=@JoinColumn(name="GROUP_ID"))
     private Map<String, String> stringSettings = new HashMap<String, String>();
 	
 	

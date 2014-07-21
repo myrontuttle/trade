@@ -26,10 +26,10 @@
 	
 	<bean id="PortfolioEvaluator" class="com.myrontuttle.fin.trade.adapt.PortfolioEvaluator">
 		<property name="portfolioService" ref="PortfolioService" />
-		<property name="groupDAO" ref="GroupDAOImpl" />
+		<property name="adaptDAO" ref="AdaptDAOImpl" />
 	</bean>
 	
-	<bean id="SATExpression" class="com.myrontuttle.fin.trade.adapt.express.SATExpression" >
+	<bean id="SATExpression" class="com.myrontuttle.fin.trade.adapt.SATExpression" >
 		<property name="quoteService" ref="QuoteService" />
 		<property name="screenerService" ref="ScreenerService" />
 		<property name="watchlistService" ref="WatchlistService" />
@@ -37,7 +37,7 @@
 		<property name="portfolioService" ref="PortfolioService" />
 		<property name="tradeStrategyService" ref="TradeStrategyService" />
 		<property name="alertReceiverService" ref="AlertReceiverService" />
-		<property name="groupDAO" ref="GroupDAOImpl" />
+		<property name="adaptDAO" ref="AdaptDAOImpl" />
 	</bean>
 	
 </blueprint>

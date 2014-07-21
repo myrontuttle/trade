@@ -105,12 +105,12 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		SATExpression.alertReceiverService = alertReceiverService;
 	}
 
-	public static AdaptDAO getGroupDAO() {
+	public static AdaptDAO getAdaptDAO() {
 		return adaptDAO;
 	}
 
-	public void setGroupDAO(AdaptDAO groupDAO) {
-		SATExpression.adaptDAO = groupDAO;
+	public void setAdaptDAO(AdaptDAO adaptDAO) {
+		SATExpression.adaptDAO = adaptDAO;
 	}
 
 	public int getGenomeLength(long groupId) {

@@ -48,7 +48,7 @@ public class SATExpressionTest {
 	private QuoteService quoteService;
 	private TradeStrategyService strategyService;
 	private AlertReceiverService alertReceiverService;
-	private AdaptDAO groupDAO;
+	private AdaptDAO adaptDAO;
 	
 	private SATExpression<int[]> expression;
 	
@@ -156,9 +156,9 @@ public class SATExpressionTest {
 		group1 = new Group();
 		group1.setGroupId(GID);
 		group1.setInteger("Express.NumberOfScreens", SCREEN_GENES);
-		group1.setInteger("MaxSymbolsPerScreen", MAX_SYMBOLS_PER_SCREEN);
-		group1.setInteger("AlertsPerSymbol", ALERTS_PER_SYMBOL);
-		group1.setInteger("GeneUpperValue", 100);
+		group1.setInteger("Express.MaxSymbolsPerScreen", MAX_SYMBOLS_PER_SCREEN);
+		group1.setInteger("Express.AlertsPerSymbol", ALERTS_PER_SYMBOL);
+		group1.setInteger("Evolve.GeneUpperValue", 100);
 		group1.setBoolean("Evolve.Active", true);
 		group1.setDouble("Express.StartingCash", STARTING_CASH);
 		group1.setString("Alert.User", EMAIL);
@@ -185,7 +185,7 @@ public class SATExpressionTest {
 		quoteService = mock(QuoteService.class);
 		strategyService = mock(TradeStrategyService.class);
 		alertReceiverService = mock(AlertReceiverService.class);
-		groupDAO = mock(AdaptDAO.class);
+		adaptDAO = mock(AdaptDAO.class);
 		
 		// Describe Mocks
 		when(screenerService.getAvailableCriteria(GID)).thenReturn(availableScreenCriteria);
@@ -213,16 +213,19 @@ public class SATExpressionTest {
 		when(alertService.addAlertDestination(GID, EMAIL, "EMAIL")).thenReturn(true);
 		when(alertService.setupAlerts(GID, selectedAlerts)).thenReturn(setupAlerts);
 		
-		when(groupDAO.findGroup(GID)).thenReturn(group1);
+		when(adaptDAO.findGroup(GID)).thenReturn(group1);
 		doAnswer(new Answer<Candidate>() {
 		      public Candidate answer(InvocationOnMock invocation) {
 		          Candidate candidate = (Candidate)invocation.getArguments()[0];
 		          candidate.setCandidateId(CID);
 		          candidate.setGroupId(GID);
 		          return candidate;
-		      }}).when(groupDAO).addCandidate(any(Candidate.class), eq(GID));
+		      }}).when(adaptDAO).addCandidate(any(Candidate.class), eq(GID));
 		
 		//when(alertReceiver.watchFor(alertTradeBounds));
+		
+		when(strategyService.availableTradeParameters(BOUNDED_STRAT)).thenReturn(availableParameters);
+		
 		
 		// Assign services
 		expression = new SATExpression<int[]>();
@@ -232,7 +235,7 @@ public class SATExpressionTest {
 		expression.setPortfolioService(portfolioService);
 		expression.setWatchlistService(watchlistService);
 		expression.setScreenerService(screenerService);
-		expression.setGroupDAO(groupDAO);
+		expression.setAdaptDAO(adaptDAO);
 	}
 
 	@Test

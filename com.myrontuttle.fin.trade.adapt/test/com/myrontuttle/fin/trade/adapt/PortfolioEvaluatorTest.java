@@ -27,7 +27,7 @@ public class PortfolioEvaluatorTest {
 	private final static String ANALYSIS = "UnrealizedGain";
 
 	private PortfolioService portfolioService;
-	private AdaptDAO groupDAO;
+	private AdaptDAO adaptDAO;
 	
 	private PortfolioEvaluator evaluator;
 	
@@ -67,12 +67,12 @@ public class PortfolioEvaluatorTest {
 		when(portfolioService.analyze(C3, PC, ANALYSIS)).
 				thenReturn(0.00);
 		
-		groupDAO = mock(AdaptDAO.class);
-		when(groupDAO.findGroup(G1)).thenReturn(group1);
+		adaptDAO = mock(AdaptDAO.class);
+		when(adaptDAO.findGroup(G1)).thenReturn(group1);
 
 		evaluator = new PortfolioEvaluator();
 		evaluator.setPortfolioService(portfolioService);
-		evaluator.setGroupDAO(groupDAO);
+		evaluator.setAdaptDAO(adaptDAO);
 	}
 
 	@Test

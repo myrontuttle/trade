@@ -18,34 +18,34 @@ package com.myrontuttle.fin.trade.web.models;
 
 import org.apache.wicket.model.LoadableDetachableModel;
 
-import com.myrontuttle.fin.trade.adapt.GroupStats;
+import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
 /**
- * detachable model for an instance of group
+ * detachable model for an instance of candidate
  * 
  */
-public class DetachableGroupStatsModel extends LoadableDetachableModel<GroupStats> {
+public class LDCandidateModel extends LoadableDetachableModel<Candidate> {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private final long statsId;
+	private final long id;
 
 	/**
 	 * @param c
 	 */
-	public DetachableGroupStatsModel(GroupStats gs) {
-		this(gs.getStatsId());
+	public LDCandidateModel(Candidate c) {
+		this(c.getCandidateId());
 	}
 
 	/**
 	 * @param id
 	 */
-	public DetachableGroupStatsModel(long statsId) {
-		if (statsId == 0) {
+	public LDCandidateModel(long id) {
+		if (id == 0) {
 			throw new IllegalArgumentException();
 		}
-		this.statsId = statsId;
+		this.id = id;
 	}
 
 	/**
@@ -53,7 +53,7 @@ public class DetachableGroupStatsModel extends LoadableDetachableModel<GroupStat
 	 */
 	@Override
 	public int hashCode() {
-		return Long.valueOf(statsId).hashCode();
+		return Long.valueOf(id).hashCode();
 	}
 
 	/**
@@ -68,9 +68,9 @@ public class DetachableGroupStatsModel extends LoadableDetachableModel<GroupStat
 			return true;
 		} else if (obj == null) {
 			return false;
-		} else if (obj instanceof DetachableGroupStatsModel) {
-			DetachableGroupStatsModel other = (DetachableGroupStatsModel)obj;
-			return other.statsId == statsId;
+		} else if (obj instanceof LDCandidateModel) {
+			LDCandidateModel other = (LDCandidateModel)obj;
+			return other.id == id;
 		}
 		return false;
 	}
@@ -79,8 +79,8 @@ public class DetachableGroupStatsModel extends LoadableDetachableModel<GroupStat
 	 * @see org.apache.wicket.model.LoadableDetachableModel#load()
 	 */
 	@Override
-	protected GroupStats load() {
-		// loads group from the database
-		return AdaptAccess.getDAO().findStats(statsId);
+	protected Candidate load() {
+		// loads candidate from the database
+		return AdaptAccess.getDAO().findCandidate(id);
 	}
 }

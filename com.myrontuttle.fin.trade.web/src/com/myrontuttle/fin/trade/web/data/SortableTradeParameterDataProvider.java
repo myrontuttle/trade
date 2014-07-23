@@ -24,7 +24,7 @@ import org.apache.wicket.model.IModel;
 
 import com.myrontuttle.fin.trade.adapt.AdaptDAO;
 import com.myrontuttle.fin.trade.adapt.TradeParameter;
-import com.myrontuttle.fin.trade.web.models.DetachableTradeParameterModel;
+import com.myrontuttle.fin.trade.web.models.LDTradeParameterModel;
 import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
 
@@ -73,7 +73,7 @@ public class SortableTradeParameterDataProvider extends SortableDataProvider<Tra
 	 */
 	public IModel<TradeParameter> model(TradeParameter object)
 	{
-		return new DetachableTradeParameterModel(object);
+		return new LDTradeParameterModel(object);
 	}
 
 }

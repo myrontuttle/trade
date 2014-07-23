@@ -24,7 +24,7 @@ import org.apache.wicket.model.IModel;
 
 import com.myrontuttle.fin.trade.adapt.AdaptDAO;
 import com.myrontuttle.fin.trade.adapt.SavedAlert;
-import com.myrontuttle.fin.trade.web.models.DetachableAlertModel;
+import com.myrontuttle.fin.trade.web.models.LDAlertModel;
 import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
 
@@ -73,7 +73,7 @@ public class SortableAlertDataProvider extends SortableDataProvider<SavedAlert, 
 	 */
 	public IModel<SavedAlert> model(SavedAlert object)
 	{
-		return new DetachableAlertModel(object);
+		return new LDAlertModel(object);
 	}
 
 }

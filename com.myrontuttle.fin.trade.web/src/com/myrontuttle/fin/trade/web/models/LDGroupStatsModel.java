@@ -18,34 +18,34 @@ package com.myrontuttle.fin.trade.web.models;
 
 import org.apache.wicket.model.LoadableDetachableModel;
 
-import com.myrontuttle.fin.trade.adapt.Group;
+import com.myrontuttle.fin.trade.adapt.GroupStats;
 import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
 /**
  * detachable model for an instance of group
  * 
  */
-public class DetachableGroupModel extends LoadableDetachableModel<Group> {
+public class LDGroupStatsModel extends LoadableDetachableModel<GroupStats> {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private final long id;
+	private final long statsId;
 
 	/**
 	 * @param c
 	 */
-	public DetachableGroupModel(Group g) {
-		this(g.getGroupId());
+	public LDGroupStatsModel(GroupStats gs) {
+		this(gs.getStatsId());
 	}
 
 	/**
 	 * @param id
 	 */
-	public DetachableGroupModel(long id) {
-		if (id == 0) {
+	public LDGroupStatsModel(long statsId) {
+		if (statsId == 0) {
 			throw new IllegalArgumentException();
 		}
-		this.id = id;
+		this.statsId = statsId;
 	}
 
 	/**
@@ -53,7 +53,7 @@ public class DetachableGroupModel extends LoadableDetachableModel<Group> {
 	 */
 	@Override
 	public int hashCode() {
-		return Long.valueOf(id).hashCode();
+		return Long.valueOf(statsId).hashCode();
 	}
 
 	/**
@@ -68,9 +68,9 @@ public class DetachableGroupModel extends LoadableDetachableModel<Group> {
 			return true;
 		} else if (obj == null) {
 			return false;
-		} else if (obj instanceof DetachableGroupModel) {
-			DetachableGroupModel other = (DetachableGroupModel)obj;
-			return other.id == id;
+		} else if (obj instanceof LDGroupStatsModel) {
+			LDGroupStatsModel other = (LDGroupStatsModel)obj;
+			return other.statsId == statsId;
 		}
 		return false;
 	}
@@ -79,8 +79,8 @@ public class DetachableGroupModel extends LoadableDetachableModel<Group> {
 	 * @see org.apache.wicket.model.LoadableDetachableModel#load()
 	 */
 	@Override
-	protected Group load() {
+	protected GroupStats load() {
 		// loads group from the database
-		return AdaptAccess.getDAO().findGroup(id);
+		return AdaptAccess.getDAO().findStats(statsId);
 	}
 }

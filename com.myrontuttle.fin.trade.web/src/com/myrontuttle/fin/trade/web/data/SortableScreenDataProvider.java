@@ -24,7 +24,7 @@ import org.apache.wicket.model.IModel;
 
 import com.myrontuttle.fin.trade.adapt.AdaptDAO;
 import com.myrontuttle.fin.trade.adapt.SavedScreen;
-import com.myrontuttle.fin.trade.web.models.DetachableScreenModel;
+import com.myrontuttle.fin.trade.web.models.LDScreenModel;
 import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
 
@@ -73,7 +73,7 @@ public class SortableScreenDataProvider extends SortableDataProvider<SavedScreen
 	 */
 	public IModel<SavedScreen> model(SavedScreen object)
 	{
-		return new DetachableScreenModel(object);
+		return new LDScreenModel(object);
 	}
 
 }

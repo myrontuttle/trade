@@ -5,7 +5,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import com.myrontuttle.fin.trade.api.Transaction;
 import com.myrontuttle.fin.trade.web.service.PortfolioAccess;
 
-public class DetachableTransactionModel extends
+public class LDTransactionModel extends
 		LoadableDetachableModel<Transaction> {
 	
 	private static final long serialVersionUID = 1L;
@@ -17,14 +17,14 @@ public class DetachableTransactionModel extends
 	/**
 	 * @param s
 	 */
-	public DetachableTransactionModel(Transaction t) {
+	public LDTransactionModel(Transaction t) {
 		this(t.getUserId(), t.getPortfolioId(), t.getTransactionId());
 	}
 
 	/**
 	 * @param id
 	 */
-	public DetachableTransactionModel(long userId, String portfolioId, String transactionId) {
+	public LDTransactionModel(long userId, String portfolioId, String transactionId) {
 		if (userId == 0 || portfolioId == null || transactionId == null) {
 			throw new IllegalArgumentException();
 		}
@@ -53,8 +53,8 @@ public class DetachableTransactionModel extends
 			return true;
 		} else if (obj == null) {
 			return false;
-		} else if (obj instanceof DetachableTransactionModel) {
-			DetachableTransactionModel other = (DetachableTransactionModel)obj;
+		} else if (obj instanceof LDTransactionModel) {
+			LDTransactionModel other = (LDTransactionModel)obj;
 			return other.transactionId == transactionId;
 		}
 		return false;

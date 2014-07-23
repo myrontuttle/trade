@@ -7,7 +7,7 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvid
 import org.apache.wicket.model.IModel;
 
 import com.myrontuttle.fin.trade.api.Transaction;
-import com.myrontuttle.fin.trade.web.models.DetachableTransactionModel;
+import com.myrontuttle.fin.trade.web.models.LDTransactionModel;
 import com.myrontuttle.fin.trade.web.service.PortfolioAccess;
 
 public class SortableTransactionDataProvider extends SortableDataProvider<Transaction, String> {
@@ -41,7 +41,7 @@ public class SortableTransactionDataProvider extends SortableDataProvider<Transa
 
 	@Override
 	public IModel<Transaction> model(Transaction t) {
-		return new DetachableTransactionModel(t);
+		return new LDTransactionModel(t);
 	}
 
 	@Override

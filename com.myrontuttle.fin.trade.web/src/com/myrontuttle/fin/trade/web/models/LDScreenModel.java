@@ -9,7 +9,7 @@ import com.myrontuttle.fin.trade.web.service.AdaptAccess;
  * detachable model for an instance of SavedScreen
  * 
  */
-public class DetachableScreenModel extends LoadableDetachableModel<SavedScreen> {
+public class LDScreenModel extends LoadableDetachableModel<SavedScreen> {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -18,14 +18,14 @@ public class DetachableScreenModel extends LoadableDetachableModel<SavedScreen> 
 	/**
 	 * @param s
 	 */
-	public DetachableScreenModel(SavedScreen s) {
+	public LDScreenModel(SavedScreen s) {
 		this(s.getSavedScreenId());
 	}
 
 	/**
 	 * @param id
 	 */
-	public DetachableScreenModel(long id) {
+	public LDScreenModel(long id) {
 		if (id == 0) {
 			throw new IllegalArgumentException();
 		}
@@ -52,8 +52,8 @@ public class DetachableScreenModel extends LoadableDetachableModel<SavedScreen> 
 			return true;
 		} else if (obj == null) {
 			return false;
-		} else if (obj instanceof DetachableScreenModel) {
-			DetachableScreenModel other = (DetachableScreenModel)obj;
+		} else if (obj instanceof LDScreenModel) {
+			LDScreenModel other = (LDScreenModel)obj;
 			return other.id == id;
 		}
 		return false;

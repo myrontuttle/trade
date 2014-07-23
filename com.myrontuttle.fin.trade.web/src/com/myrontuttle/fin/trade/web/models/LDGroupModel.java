@@ -18,14 +18,14 @@ package com.myrontuttle.fin.trade.web.models;
 
 import org.apache.wicket.model.LoadableDetachableModel;
 
-import com.myrontuttle.fin.trade.adapt.Candidate;
+import com.myrontuttle.fin.trade.adapt.Group;
 import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
 /**
- * detachable model for an instance of candidate
+ * detachable model for an instance of group
  * 
  */
-public class DetachableCandidateModel extends LoadableDetachableModel<Candidate> {
+public class LDGroupModel extends LoadableDetachableModel<Group> {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -34,14 +34,14 @@ public class DetachableCandidateModel extends LoadableDetachableModel<Candidate>
 	/**
 	 * @param c
 	 */
-	public DetachableCandidateModel(Candidate c) {
-		this(c.getCandidateId());
+	public LDGroupModel(Group g) {
+		this(g.getGroupId());
 	}
 
 	/**
 	 * @param id
 	 */
-	public DetachableCandidateModel(long id) {
+	public LDGroupModel(long id) {
 		if (id == 0) {
 			throw new IllegalArgumentException();
 		}
@@ -68,8 +68,8 @@ public class DetachableCandidateModel extends LoadableDetachableModel<Candidate>
 			return true;
 		} else if (obj == null) {
 			return false;
-		} else if (obj instanceof DetachableCandidateModel) {
-			DetachableCandidateModel other = (DetachableCandidateModel)obj;
+		} else if (obj instanceof LDGroupModel) {
+			LDGroupModel other = (LDGroupModel)obj;
 			return other.id == id;
 		}
 		return false;
@@ -79,8 +79,8 @@ public class DetachableCandidateModel extends LoadableDetachableModel<Candidate>
 	 * @see org.apache.wicket.model.LoadableDetachableModel#load()
 	 */
 	@Override
-	protected Candidate load() {
-		// loads candidate from the database
-		return AdaptAccess.getDAO().findCandidate(id);
+	protected Group load() {
+		// loads group from the database
+		return AdaptAccess.getDAO().findGroup(id);
 	}
 }

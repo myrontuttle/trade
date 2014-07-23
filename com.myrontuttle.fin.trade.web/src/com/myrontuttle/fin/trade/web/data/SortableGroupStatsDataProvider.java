@@ -24,7 +24,7 @@ import org.apache.wicket.model.IModel;
 
 import com.myrontuttle.fin.trade.adapt.GroupStats;
 import com.myrontuttle.fin.trade.adapt.AdaptDAO;
-import com.myrontuttle.fin.trade.web.models.DetachableGroupStatsModel;
+import com.myrontuttle.fin.trade.web.models.LDGroupStatsModel;
 import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
 
@@ -73,7 +73,7 @@ public class SortableGroupStatsDataProvider extends SortableDataProvider<GroupSt
 	 */
 	public IModel<GroupStats> model(GroupStats object)
 	{
-		return new DetachableGroupStatsModel(object);
+		return new LDGroupStatsModel(object);
 	}
 
 }

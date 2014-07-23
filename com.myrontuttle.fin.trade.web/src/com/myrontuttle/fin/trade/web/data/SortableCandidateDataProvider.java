@@ -24,7 +24,7 @@ import org.apache.wicket.model.IModel;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.AdaptDAO;
-import com.myrontuttle.fin.trade.web.models.DetachableCandidateModel;
+import com.myrontuttle.fin.trade.web.models.LDCandidateModel;
 import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
 /**
@@ -70,7 +70,7 @@ public class SortableCandidateDataProvider extends SortableDataProvider<Candidat
 	 */
 	public IModel<Candidate> model(Candidate object)
 	{
-		return new DetachableCandidateModel(object);
+		return new LDCandidateModel(object);
 	}
 
 }

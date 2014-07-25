@@ -176,7 +176,7 @@ public class Evolver implements EvolveService {
 	public void setupGroup(long groupId) {
 
     	Group group = adaptDAO.findGroup(groupId);
-    	group.setLong("StartTime", System.currentTimeMillis());
+    	group.setLong("Evolve.StartTime", System.currentTimeMillis());
 
 		ExpressionStrategy<int[]> expressionStrategy = new SATExpression<int[]>();
 		int genomeLength = expressionStrategy.getGenomeLength(groupId);

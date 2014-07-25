@@ -1,6 +1,8 @@
 package com.myrontuttle.fin.trade.web.panels;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
@@ -9,6 +11,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
@@ -26,6 +29,8 @@ import com.myrontuttle.fin.trade.web.service.EvolveAccess;
 public class GroupTablePanel extends Panel {
 	
 	private static final long serialVersionUID = 1L;
+	
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public GroupTablePanel(String id) {
@@ -34,42 +39,148 @@ public class GroupTablePanel extends Panel {
 		List<IColumn<Group, String>> columns = new ArrayList<IColumn<Group, String>>();
 		
 		columns.add(new PropertyColumn<Group, String>(new Model<String>("ID"), "groupId", "groupId"));
-		columns.add(new PropertyColumn(new Model<String>("Alert User"), "alertUser"));
-		//columns.add(new PropertyColumn(new Model<String>("Alert Host"), "alertHost"));
-		columns.add(new PropertyColumn(new Model<String>("Frequency"), "frequency"));
-		columns.add(new PropertyColumn(new Model<String>("Active"), "active"));
-		columns.add(new PropertyColumn(new Model<String>("Size"), "size"));
-		columns.add(new PropertyColumn(new Model<String>("Elites"), "eliteCount"));
-		columns.add(new PropertyColumn(new Model<String>("Created On"), "startTime"));
-		columns.add(new PropertyColumn(new Model<String>("Generation"), "generation"));
-		columns.add(new PropertyColumn(new Model<String>("Last Updated"), "updatedTime"));
-		columns.add(new PropertyColumn(new Model<String>("Variability"), "variability"));
+		columns.add(new AbstractColumn<Group, String>(new Model<String>("Alert User")) {
+			@Override
+			public void populateItem(Item<ICellPopulator<Group>> cellItem,
+					String componentId, IModel<Group> groupModel) {
+				if (groupModel.getObject().getStringSettings().containsKey("Alert.User")) {
+					cellItem.add(
+						new Label(componentId, groupModel.getObject().getString("Alert.User")));
+				} else {
+					cellItem.add(new Label(componentId, ""));
+				}
+			}
+		});
+		columns.add(new AbstractColumn<Group, String>(new Model<String>("Frequency")) {
+			@Override
+			public void populateItem(Item<ICellPopulator<Group>> cellItem,
+					String componentId, IModel<Group> groupModel) {
+				if (groupModel.getObject().getStringSettings().containsKey("Evolve.Frequency")) {
+					cellItem.add(
+						new Label(componentId, groupModel.getObject().getString("Evolve.Frequency")));
+				} else {
+					cellItem.add(new Label(componentId, ""));
+				}
+			}
+		});
+		columns.add(new AbstractColumn<Group, String>(new Model<String>("Active")) {
+			@Override
+			public void populateItem(Item<ICellPopulator<Group>> cellItem,
+					String componentId, IModel<Group> groupModel) {
+				if (groupModel.getObject().getBooleanSettings().containsKey("Evolve.Active")) {
+					cellItem.add(
+						new Label(componentId, groupModel.getObject().getString("Evolve.Active")));
+				} else {
+					cellItem.add(new Label(componentId, ""));
+				}
+			}
+		});
+		columns.add(new AbstractColumn<Group, String>(new Model<String>("Size"), "size") {
+			@Override
+			public void populateItem(Item<ICellPopulator<Group>> cellItem,
+					String componentId, IModel<Group> groupModel) {
+				if (groupModel.getObject().getIntegerSettings().containsKey("Evolve.Size")) {
+					cellItem.add(
+						new Label(componentId,
+							String.valueOf(
+								groupModel.getObject().getInteger("Evolve.Size"))));
+				} else {
+					cellItem.add(new Label(componentId, ""));
+				}
+			}
+		});
+		columns.add(new AbstractColumn<Group, String>(new Model<String>("Elites"), "eliteCount") {
+			@Override
+			public void populateItem(Item<ICellPopulator<Group>> cellItem,
+					String componentId, IModel<Group> groupModel) {
+				if (groupModel.getObject().getIntegerSettings().containsKey("Evolve.EliteCount")) {
+					cellItem.add(
+							new Label(componentId,
+								String.valueOf(
+									groupModel.getObject().getInteger("Evolve.EliteCount"))));
+				} else {
+					cellItem.add(new Label(componentId, ""));
+				}
+			}
+		});
+		columns.add(new AbstractColumn<Group, String>(new Model<String>("Created On"), "startTime") {
+			@Override
+			public void populateItem(Item<ICellPopulator<Group>> cellItem,
+					String componentId, IModel<Group> groupModel) {
+				if (groupModel.getObject().getLongSettings().containsKey("Evolve.StartTime")) {
+					Date date = new Date(groupModel.getObject().getLong("Evolve.StartTime"));
+					cellItem.add(new Label(componentId, sdf.format(date)));
+				} else {
+					cellItem.add(new Label(componentId, ""));
+				}
+			}
+		});
+		columns.add(new AbstractColumn<Group, String>(new Model<String>("Generation"), "generation") {
+			@Override
+			public void populateItem(Item<ICellPopulator<Group>> cellItem,
+					String componentId, IModel<Group> groupModel) {
+				if (groupModel.getObject().getIntegerSettings().containsKey("Evolve.Generation")) {
+					cellItem.add(
+							new Label(componentId, 
+								String.valueOf(
+									groupModel.getObject().getInteger("Evolve.Generation"))));
+				} else {
+					cellItem.add(new Label(componentId, ""));
+				}
+			}
+		});
+		columns.add(new AbstractColumn<Group, String>(new Model<String>("Last Updated"), "updatedTime") {
+			@Override
+			public void populateItem(Item<ICellPopulator<Group>> cellItem,
+					String componentId, IModel<Group> groupModel) {
+				if (groupModel.getObject().getLongSettings().containsKey("Evolve.UpdatedTime")) {
+					Date date = new Date(groupModel.getObject().getLong("Evolve.UpdatedTime"));
+					cellItem.add(new Label(componentId, sdf.format(date)));
+				} else {
+					cellItem.add(new Label(componentId, ""));
+				}
+			}
+		});
+		columns.add(new AbstractColumn<Group, String>(new Model<String>("Variability"), "variability") {
+			@Override
+			public void populateItem(Item<ICellPopulator<Group>> cellItem,
+					String componentId, IModel<Group> groupModel) {
+				if (groupModel.getObject().getDoubleSettings().containsKey("Evolve.Variability")) {
+					cellItem.add(
+							new Label(componentId, 
+								String.valueOf(
+									groupModel.getObject().getDouble("Express.Variability"))));
+				} else {
+					cellItem.add(new Label(componentId, ""));
+				}
+			}
+		});
 
 		columns.add(new AbstractColumn<Group, String>(new Model<String>("Details")) {
 			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
 				IModel<Group> model) {
-				cellItem.add(new DetailPanel(componentId, model));
+				cellItem.add(new DetailPanel(componentId, model.getObject().getGroupId()));
 			}
 		});
 
 		columns.add(new AbstractColumn<Group, String>(new Model<String>("Evolve")) {
 			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
 				IModel<Group> model) {
-				cellItem.add(new EvolveGroupPanel(componentId, model));
+				cellItem.add(new EvolveGroupPanel(componentId, model.getObject().getGroupId()));
 			}
 		});
 
 		columns.add(new AbstractColumn<Group, String>(new Model<String>("Best Trader")) {
 			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
 				IModel<Group> model) {
-				cellItem.add(new BestTraderPanel(componentId, model));
+				cellItem.add(new BestTraderPanel(componentId, model.getObject().getGroupId()));
 			}
 		});
 
 		columns.add(new AbstractColumn<Group, String>(new Model<String>("Delete Group")) {
 			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
 				IModel<Group> model) {
-				cellItem.add(new DeleteGroupPanel(componentId, model));
+				cellItem.add(new DeleteGroupPanel(componentId, model.getObject().getGroupId()));
 			}
 		});
 		
@@ -84,12 +195,11 @@ public class GroupTablePanel extends Panel {
 		 * @param id component id
 		 * @param model model for contact
 		 */
-		public DetailPanel(String id, IModel<Group> model) {
-			super(id, model);
+		public DetailPanel(String id, final long groupId) {
+			super(id);
 			add(new Link("details") {
 				@Override
 				public void onClick() {
-					long groupId = ((Group)getParent().getDefaultModelObject()).getGroupId();
 					GroupPage gp = new GroupPage(groupId);
 					setResponsePage(gp);
 				}
@@ -102,15 +212,14 @@ public class GroupTablePanel extends Panel {
 		 * @param id component id
 		 * @param model model for contact
 		 */
-		public DeleteGroupPanel(String id, IModel<Group> model) {
-			super(id, model);
+		public DeleteGroupPanel(String id, final long groupId) {
+			super(id);
 
-			final Form<Group> form = new Form<Group>("deleteGroupForm", model);
+			final Form<Group> form = new Form<Group>("deleteGroupForm");
 			form.add(new Button("delete") {
 				public void onSubmit() {
-					Group group = ((Group)getParent().getDefaultModelObject());
-					EvolveAccess.getEvolveService().deleteGroupExpression(group.getGroupId());
-					AdaptAccess.getDAO().removeGroup(group.getGroupId());
+					EvolveAccess.getEvolveService().deleteGroupExpression(groupId);
+					AdaptAccess.getDAO().removeGroup(groupId);
 				}
 			});
 			add(form);

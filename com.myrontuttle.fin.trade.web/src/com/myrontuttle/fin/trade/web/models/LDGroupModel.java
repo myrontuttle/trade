@@ -30,6 +30,10 @@ public class LDGroupModel extends LoadableDetachableModel<Group> {
 	private static final long serialVersionUID = 1L;
 	
 	private final long id;
+	
+	public LDGroupModel() {
+		id = 0;
+	}
 
 	/**
 	 * @param c
@@ -42,9 +46,6 @@ public class LDGroupModel extends LoadableDetachableModel<Group> {
 	 * @param id
 	 */
 	public LDGroupModel(long id) {
-		if (id == 0) {
-			throw new IllegalArgumentException();
-		}
 		this.id = id;
 	}
 
@@ -80,6 +81,9 @@ public class LDGroupModel extends LoadableDetachableModel<Group> {
 	 */
 	@Override
 	protected Group load() {
+		if (id == 0) {
+			return new Group();
+		}
 		// loads group from the database
 		return AdaptAccess.getDAO().findGroup(id);
 	}

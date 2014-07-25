@@ -30,6 +30,10 @@ public class LDCandidateModel extends LoadableDetachableModel<Candidate> {
 	private static final long serialVersionUID = 1L;
 	
 	private final long id;
+	
+	public LDCandidateModel() {
+		id = 0;
+	}
 
 	/**
 	 * @param c
@@ -42,9 +46,6 @@ public class LDCandidateModel extends LoadableDetachableModel<Candidate> {
 	 * @param id
 	 */
 	public LDCandidateModel(long id) {
-		if (id == 0) {
-			throw new IllegalArgumentException();
-		}
 		this.id = id;
 	}
 
@@ -80,6 +81,9 @@ public class LDCandidateModel extends LoadableDetachableModel<Candidate> {
 	 */
 	@Override
 	protected Candidate load() {
+		if (id == 0) {
+			return new Candidate();
+		}
 		// loads candidate from the database
 		return AdaptAccess.getDAO().findCandidate(id);
 	}

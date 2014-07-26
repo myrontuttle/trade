@@ -428,6 +428,8 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
         	alertReceiverService.setReceiverParameter(receiverId, "Host", group.getString("Alert.Host"));
         	alertReceiverService.setReceiverParameter(receiverId, "User", group.getString("Alert.User"));
         	alertReceiverService.setReceiverParameter(receiverId, "Password", group.getString("Alert.Password"));
+        	alertReceiverService.setReceiverParameter(receiverId, "Period", group.getString("Alert.Period"));
+        	alertReceiverService.setReceiverParameter(receiverId, "Initial Delay", group.getString("Alert.Delay"));
         	alertReceiverService.setReceiverActive(receiverId, true);
 		}
 		

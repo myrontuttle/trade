@@ -48,6 +48,14 @@ public class CreateGroupPanel extends Panel {
 		form.add(new TextField<String>("Alert.Password", 
 				new StringGroupSettingsModel(ldGroupModel, "Alert.Password"))
 						.setRequired(true));
+
+		form.add(new TextField<String>("Alert.Period", 
+				new StringGroupSettingsModel(ldGroupModel, "Alert.Period"))
+						.setRequired(true));
+
+		form.add(new TextField<String>("Alert.Delay", 
+				new StringGroupSettingsModel(ldGroupModel, "Alert.Delay"))
+						.setRequired(true));
 		
 		List<String> frequencies = Arrays.asList(EvolveAccess.getEvolveService().getEvolveFrequencies());
 		form.add(new DropDownChoice<String>("Evolve.Frequency", 

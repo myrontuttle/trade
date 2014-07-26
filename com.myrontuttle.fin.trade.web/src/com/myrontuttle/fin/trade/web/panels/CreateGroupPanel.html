@@ -22,7 +22,9 @@
         			-->
     				<td>Alert User<br /><input type="text" wicket:id="Alert.User"/></td>
     				<td>Alert Password<br /><input type="text" wicket:id="Alert.Password"/></td>
-    				<td>&nbsp;</td>
+    				<td>Alert Period (in Minutes)<br /><input type="text" wicket:id="Alert.Period"/></td>
+    				<td>Alert Initial Delay (in Minutes)<br />
+    					<input type="text" wicket:id="Alert.Delay"/></td>
     				<td>&nbsp;</td>
     				<td>&nbsp;</td>
     			</tr>
@@ -32,7 +34,6 @@
         					<option>Frequency Option</option>
         				</select>
         			</td>
-    				<td>&nbsp;</td>
         			<td>Evaluation Strategy<br /> 
         				<select wicket:id="Eval.Strategy">
         					<option>Strategy Option</option>
@@ -43,6 +44,7 @@
         					<option>Strategy Option</option>
         				</select>
         			</td>
+    				<td>&nbsp;</td>
     				<td>&nbsp;</td>
     			</tr>
     			<tr>

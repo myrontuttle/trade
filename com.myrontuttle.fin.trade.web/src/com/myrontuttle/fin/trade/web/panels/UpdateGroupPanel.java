@@ -50,6 +50,12 @@ public class UpdateGroupPanel extends Panel {
 		form.add(new TextField<String>("Alert.Password", 
 				new StringGroupSettingsModel(ldGroupModel, "Alert.Password"))
 						.setRequired(true));
+		form.add(new TextField<String>("Alert.Period", 
+				new StringGroupSettingsModel(ldGroupModel, "Alert.Period"))
+						.setRequired(true));
+		form.add(new TextField<String>("Alert.Delay", 
+				new StringGroupSettingsModel(ldGroupModel, "Alert.Delay"))
+						.setRequired(true));
 		
 		form.add(new Label("Evolve.Frequency", 
 				new StringGroupSettingsModel(ldGroupModel, "Evolve.Frequency")));

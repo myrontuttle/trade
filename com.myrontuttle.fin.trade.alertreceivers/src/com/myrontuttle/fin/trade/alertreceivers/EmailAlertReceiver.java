@@ -27,6 +27,7 @@ public class EmailAlertReceiver {
 	public final static String USER = "User";
 	public final static String PASS = "Password";
 	public final static String PERIOD = "Period";
+	public final static String INITIAL_DELAY = "Initial Delay";
 	public final static String TIME_UNIT = "Time Unit";
 
 	public final static String IMAPS = "imaps";
@@ -37,9 +38,9 @@ public class EmailAlertReceiver {
 	private final static String IMAP_PORT = "143";
 	private final static String POP_PORT = "110";
 	
-	private final static int DEFAULT_DELAY = 0;
-	private final static String DEFAULT_PERIOD = "60";
-	private final static String DEFAULT_TIME_UNIT = "SECONDS";
+	private final static String DEFAULT_DELAY = "0";
+	private final static String DEFAULT_PERIOD = "1";
+	private final static String DEFAULT_TIME_UNIT = "MINUTES";
 	private final static String DEFAULT_HOST = "imap.gmail.com";
 	private final static String DEFAULT_PORT = IMAPS_PORT;
 	private final static String DEFAULT_PROTOCOL = IMAPS;
@@ -53,8 +54,12 @@ public class EmailAlertReceiver {
         ap.put(PROTOCOL, "Email protocol (e.g. " + IMAPS + ", " + IMAP + ", or " + POP + ")");
         ap.put(USER, "Email address");
         ap.put(PASS, "Email account password");
-        ap.put(PERIOD, "How often to check for emailed alerts (default = " + DEFAULT_PERIOD + ")");
-        ap.put(TIME_UNIT, "Time unit for period (default = " + DEFAULT_TIME_UNIT + ")");
+        ap.put(INITIAL_DELAY, "How long to wait until checking for emailed alerts " +
+        		"(default = " + DEFAULT_DELAY + ")");
+        ap.put(PERIOD, "How often to check for emailed alerts (default = " + 
+        		DEFAULT_PERIOD + ")");
+        ap.put(TIME_UNIT, "Time unit for period and initial delay (default = " + 
+        		DEFAULT_TIME_UNIT + ")");
         availableParameters = Collections.unmodifiableMap(ap);
     }
 
@@ -113,6 +118,22 @@ public class EmailAlertReceiver {
 					return false;
 				}
 				break;
+			case INITIAL_DELAY:
+				try {
+					int delay = Integer.parseInt(value);
+					if (delay < 0) {
+						logger.warn("{} is not a valid email retrieval delay for user {}. " +
+								"Setting to default = {}.", 
+								new Object[]{value, r.getUserId(), DEFAULT_DELAY});
+						r.addParameter(INITIAL_DELAY, String.valueOf(DEFAULT_DELAY));
+					}
+				} catch (NumberFormatException nfe) {
+					logger.warn("{} is not a valid email retrieval delay for user {}. " +
+							"Setting to default = {}.", 
+							new Object[]{value, r.getUserId(), DEFAULT_DELAY});
+					r.addParameter(INITIAL_DELAY, String.valueOf(DEFAULT_DELAY));
+				}
+				break;
 			case PERIOD:
 				try {
 					int period = Integer.parseInt(value);
@@ -153,7 +174,7 @@ public class EmailAlertReceiver {
 						tss, r.getParameter(HOST), r.getParameter(PROTOCOL), 
 						Integer.valueOf(r.getParameter(PORT)), 
 						r.getParameter(USER), r.getParameter(PASS)), 
-				DEFAULT_DELAY, 
+				Integer.valueOf(r.getParameter(INITIAL_DELAY)), 
 				Integer.valueOf(r.getParameter(PERIOD)), 
 				TimeUnit.valueOf(r.getParameter(TIME_UNIT)));
 	}

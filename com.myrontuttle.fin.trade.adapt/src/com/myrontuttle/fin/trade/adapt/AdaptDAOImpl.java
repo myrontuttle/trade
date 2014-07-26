@@ -99,8 +99,6 @@ public class AdaptDAOImpl implements AdaptDAO {
 				data.getBestCandidateFitness(), data.getMeanFitness(), 
 				data.getFitnessStandardDeviation(), data.getGenerationNumber(),
 				group.getDouble("Express.Variability"));
-		
-		group.setInteger("Evolve.Generation", data.getGenerationNumber());
 
 		group.addGroupStats(stats);
 	}

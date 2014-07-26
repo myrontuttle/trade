@@ -441,15 +441,26 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		
 		if (genome == null || genome.length == 0) {
 			logger.debug("No genome to express for group: {}.", groupId);
+			return null;
 		}
-		Candidate candidate = new Candidate();
-		candidate.setGenome(genome);
-		candidate.setGroupId(groupId);
-		
-		adaptDAO.addCandidate(candidate, groupId);
-		
+
 		// Find the group
 		Group group = adaptDAO.findGroup(groupId);
+		
+		Candidate candidate;
+		try {
+			candidate = adaptDAO.findCandidateByGenome(genome);
+		} catch (Exception e1) {
+			logger.trace("Candidate not in database. Must be new.", e1);
+			candidate = new Candidate();
+			candidate.setGenome(genome);
+			candidate.setGroupId(groupId);
+			candidate.setBornInGen(group.getInteger("Evolve.Generation"));
+			
+			adaptDAO.addCandidate(candidate, groupId);
+		}
+		candidate.setLastExpressedGen(group.getInteger("Evolve.Generation"));
+		
 
 		try {
 			// Get criteria to screen against
@@ -507,7 +518,18 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 	public void candidatesExpressed(
 			List<ExpressedCandidate<int[]>> expressedCandidates, long populationId) {
 		
-		// Determine average Hamming distance
+		Group group = adaptDAO.findGroup(populationId);
+		int currentGeneration = group.getInteger("Evolve.Generation");
+		
+		// Remove old candidates
+		List<Candidate> oldCandidates = adaptDAO.findCandidatesInGroup(populationId);
+		for (Candidate c : oldCandidates) {
+			if (c.getLastExpressedGen() < currentGeneration) {
+				destroy(c.getGenome(), populationId);
+			}
+		}
+		
+		// Determine average Hamming distance of existing candidates
 		int[] genomeA;
 		int[] genomeB;
 		int distance;
@@ -530,7 +552,6 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		
 		double meanHammingDistance = hammingSum / hammingPairings;
 		
-		Group group = adaptDAO.findGroup(populationId);
 		group.setDouble("Express.Variability", meanHammingDistance);
 		adaptDAO.updateGroup(group);
 		

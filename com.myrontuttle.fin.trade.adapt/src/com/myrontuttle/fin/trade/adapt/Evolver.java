@@ -92,13 +92,10 @@ public class Evolver implements EvolveService {
 							bestCandidate.getCandidateId(), e);
 				}
 			}
-			
-			// Remove candidates so as not to create duplicates
-			List<Candidate> oldCandidates = adaptDAO.findCandidatesInGroup(data.getPopulationId());
-			for (Candidate c : oldCandidates) {
-				expression.destroy(c.getGenome(), data.getPopulationId());
-			}
 
+			// Increment generation
+			group.setInteger("Evolve.Generation", data.getGenerationNumber());
+			
 			// Use data to update group
 			adaptDAO.updateGroupStats(data);
 
@@ -206,7 +203,7 @@ public class Evolver implements EvolveService {
 		
 		Group group = adaptDAO.findGroup(groupId);
 		
-		int size = group.getInteger("Evovle.Size");
+		int size = group.getInteger("Evolve.Size");
 		int eliteCount = group.getInteger("Evolve.EliteCount");
 
 		ExpressionStrategy<int[]> expressionStrategy = new SATExpression<int[]>();

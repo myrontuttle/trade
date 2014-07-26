@@ -43,6 +43,12 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	@Column(name = "PORTFOLIO_ID")
 	private String portfolioId;
 	
+	@Column(name = "BORN_IN_GEN")
+	private int bornInGen;
+	
+	@Column(name = "LAST_EXRESSED_GEN")
+	private int lastExpressedGen;
+	
 	public Candidate(){ }
 	
 	public Candidate(long candidateId, long groupId, int[] genome, 
@@ -115,6 +121,22 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	public void setPortfolioId(String portfolioId) {
 		this.portfolioId = portfolioId;
 	}
+
+	public int getBornInGen() {
+		return bornInGen;
+	}
+
+	public void setBornInGen(int bornInGen) {
+		this.bornInGen = bornInGen;
+	}
+
+	public int getLastExpressedGen() {
+		return lastExpressedGen;
+	}
+
+	public void setLastExpressedGen(int lastExpressedGen) {
+		this.lastExpressedGen = lastExpressedGen;
+	}
 	
 	public static int[] parseGenomeString(String genomeString) {
 		String[] asStrings = genomeString.split(GENE_SEPARATOR);
@@ -162,6 +184,5 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 			}
 			return 0;
 		}
-	}
-	
+	}	
 }

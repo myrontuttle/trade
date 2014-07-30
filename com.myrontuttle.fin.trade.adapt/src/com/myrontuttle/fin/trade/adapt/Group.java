@@ -3,7 +3,6 @@ package com.myrontuttle.fin.trade.adapt;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -230,6 +229,9 @@ public class Group implements Serializable {
 	}
 	
 	public boolean getBoolean(String key) {
+		if (booleanSettings == null || !booleanSettings.containsKey(key)) {
+			return false;
+		}
 		return booleanSettings.get(key);
 	}
 	
@@ -250,6 +252,9 @@ public class Group implements Serializable {
 	}
 
 	public int getInteger(String key) {
+		if (integerSettings == null || !integerSettings.containsKey(key)) {
+			return 0;
+		}
 		return integerSettings.get(key);
 	}
 	
@@ -270,6 +275,9 @@ public class Group implements Serializable {
 	}
 
 	public long getLong(String key) {
+		if (longSettings == null || !longSettings.containsKey(key)) {
+			return 0L;
+		}
 		return longSettings.get(key);
 	}
 	
@@ -290,6 +298,9 @@ public class Group implements Serializable {
 	}
 
 	public double getDouble(String key) {
+		if (doubleSettings == null || !doubleSettings.containsKey(key)) {
+			return 0.0;
+		}
 		return doubleSettings.get(key);
 	}
 	
@@ -310,6 +321,9 @@ public class Group implements Serializable {
 	}
 	
 	public String getString(String key) {
+		if (stringSettings == null || !stringSettings.containsKey(key)) {
+			return "";
+		}
 		return stringSettings.get(key);
 	}
 	

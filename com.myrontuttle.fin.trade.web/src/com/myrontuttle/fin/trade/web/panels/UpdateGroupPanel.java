@@ -66,10 +66,12 @@ public class UpdateGroupPanel extends Panel {
 		
 		form.add(new TextField<Integer>("Evolve.Size", 
 				new IntegerGroupSettingsModel(ldGroupModel, "Evolve.Size"))
-						.setRequired(true));
+					.setType(Integer.class)
+					.setRequired(true));
 		form.add(new TextField<Integer>("Evolve.EliteCount", 
 				new IntegerGroupSettingsModel(ldGroupModel, "Evolve.EliteCount"))
-						.setRequired(true));
+					.setType(Integer.class)
+					.setRequired(true));
 		form.add(new Label("Evolve.GeneUpperValue", 
 				new IntegerGroupSettingsModel(ldGroupModel, "Evolve.GeneUpperValue")));
 		form.add(new Label("Evolve.MutationFactor", 
@@ -86,7 +88,8 @@ public class UpdateGroupPanel extends Panel {
 		
 		form.add(new TextField<Double>("Express.StartingCash", 
 				new DoubleGroupSettingsModel(ldGroupModel, "Express.StartingCash"))
-						.setRequired(true));
+					.setType(Double.class)
+					.setRequired(true));
 		form.add(new CheckBox("Evolve.Active", 
 				new BooleanGroupSettingsModel(ldGroupModel, "Evolve.Active")));
 

@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 
 import com.myrontuttle.fin.trade.adapt.Group;
@@ -30,8 +31,8 @@ public class CreateGroupPanel extends Panel {
 	public CreateGroupPanel(String id) {
 		super(id);
 		
-		final LDGroupModel ldGroupModel = new LDGroupModel();
-		final Form<Group> form = new Form<Group>("newGroupForm");
+		final Model<Group> groupModel = new Model<Group>(new Group());
+		final Form<Group> form = new Form<Group>("newGroupForm", groupModel);
 /*
 		List<String> alertReceiverTypes = Arrays.
 					asList(AlertReceiverAccess.getAlertReceiverService().availableReceiverTypes());
@@ -42,24 +43,24 @@ public class CreateGroupPanel extends Panel {
 						.add(new AttributeModifier("value", "imap.gmail.com")));
 */	
 		form.add(new TextField<String>("Alert.User", 
-				new StringGroupSettingsModel(ldGroupModel, "Alert.User"))
+				new StringGroupSettingsModel(groupModel, "Alert.User"))
 				.add(EmailAddressValidator.getInstance()));
 		
 		form.add(new TextField<String>("Alert.Password", 
-				new StringGroupSettingsModel(ldGroupModel, "Alert.Password"))
+				new StringGroupSettingsModel(groupModel, "Alert.Password"))
 						.setRequired(true));
 
 		form.add(new TextField<String>("Alert.Period", 
-				new StringGroupSettingsModel(ldGroupModel, "Alert.Period"))
+				new StringGroupSettingsModel(groupModel, "Alert.Period"))
 						.setRequired(true));
 
 		form.add(new TextField<String>("Alert.Delay", 
-				new StringGroupSettingsModel(ldGroupModel, "Alert.Delay"))
+				new StringGroupSettingsModel(groupModel, "Alert.Delay"))
 						.setRequired(true));
 		
 		List<String> frequencies = Arrays.asList(EvolveAccess.getEvolveService().getEvolveFrequencies());
 		form.add(new DropDownChoice<String>("Evolve.Frequency", 
-				new StringGroupSettingsModel(ldGroupModel, "Evolve.Frequency"), 
+				new StringGroupSettingsModel(groupModel, "Evolve.Frequency"), 
 				frequencies));
 
 		List<String> evaluators;
@@ -69,64 +70,72 @@ public class CreateGroupPanel extends Panel {
 			evaluators = Arrays.asList(new String[0]);
 		}
 		form.add(new DropDownChoice<String>("Eval.Strategy", 
-				new StringGroupSettingsModel(ldGroupModel, "Eval.Strategy"), 
+				new StringGroupSettingsModel(groupModel, "Eval.Strategy"), 
 				evaluators));
 
 		List<String> tradeStrategies = Arrays.
 					asList(StrategyAccess.getTradeStrategyService().availableTradeStrategies());
 		form.add(new DropDownChoice<String>("Trade.Strategy", 
-				new StringGroupSettingsModel(ldGroupModel, "Trade.Strategy"), 
+				new StringGroupSettingsModel(groupModel, "Trade.Strategy"), 
 				tradeStrategies));
 
 
 		form.add(new TextField<Integer>("Evolve.Size", 
-				new IntegerGroupSettingsModel(ldGroupModel, "Evolve.Size"))
-						.setRequired(true));
+				new IntegerGroupSettingsModel(groupModel, "Evolve.Size"))
+					.setType(Integer.class)
+					.setRequired(true));
 		
 		form.add(new TextField<Integer>("Evolve.EliteCount", 
-				new IntegerGroupSettingsModel(ldGroupModel, "Evolve.EliteCount"))
-						.setRequired(true));
+				new IntegerGroupSettingsModel(groupModel, "Evolve.EliteCount"))
+					.setType(Integer.class)
+					.setRequired(true));
 		
 		form.add(new TextField<Integer>("Evolve.GeneUpperValue", 
-				new IntegerGroupSettingsModel(ldGroupModel, "Evolve.GeneUpperValue"))
-						.setRequired(true)
-						.add(new AttributeModifier("value", "100")));
+				new IntegerGroupSettingsModel(groupModel, "Evolve.GeneUpperValue"))
+					.setType(Integer.class)
+					.setRequired(true)
+					.add(new AttributeModifier("value", "100")));
 
 		form.add(new TextField<Double>("Evolve.MutationFactor", 
-				new DoubleGroupSettingsModel(ldGroupModel, "Evolve.MutationFactor"))
-						.setRequired(true)
-						.add(new AttributeModifier("value", "0.1")));
+				new DoubleGroupSettingsModel(groupModel, "Evolve.MutationFactor"))
+					.setType(Double.class)
+					.setRequired(true)
+					.add(new AttributeModifier("value", "0.1")));
 
 		form.add(new CheckBox("Trade.AllowShorting", 
-				new BooleanGroupSettingsModel(ldGroupModel, "Trade.AllowShorting")));
+				new BooleanGroupSettingsModel(groupModel, "Trade.AllowShorting")));
 		
 		
 		form.add(new TextField<Integer>("Express.NumberOfScreens", 
-				new IntegerGroupSettingsModel(ldGroupModel, "Express.NumberOfScreens"))
-						.setRequired(true)
-						.add(new AttributeModifier("value", "2")));
+				new IntegerGroupSettingsModel(groupModel, "Express.NumberOfScreens"))
+					.setType(Integer.class)
+					.setRequired(true)
+					.add(new AttributeModifier("value", "2")));
 		
 		form.add(new TextField<Integer>("Express.MaxSymbolsPerScreen", 
-				new IntegerGroupSettingsModel(ldGroupModel, "Express.MaxSymbolsPerScreen"))
-						.setRequired(true)
-						.add(new AttributeModifier("value", "10")));
+				new IntegerGroupSettingsModel(groupModel, "Express.MaxSymbolsPerScreen"))
+					.setType(Integer.class)
+					.setRequired(true)
+					.add(new AttributeModifier("value", "10")));
 		
 		form.add(new TextField<Integer>("Express.AlertsPerSymbol", 
-				new IntegerGroupSettingsModel(ldGroupModel, "Express.AlertsPerSymbol"))
-						.setRequired(true)
-						.add(new AttributeModifier("value", "2")));
+				new IntegerGroupSettingsModel(groupModel, "Express.AlertsPerSymbol"))
+					.setType(Integer.class)
+					.setRequired(true)
+					.add(new AttributeModifier("value", "2")));
 		
 		form.add(new TextField<Double>("Express.StartingCash", 
-				new DoubleGroupSettingsModel(ldGroupModel, "Express.StartingCashr"))
-						.setRequired(true)
-						.add(new AttributeModifier("value", "10000.00")));
+				new DoubleGroupSettingsModel(groupModel, "Express.StartingCashr"))
+					.setType(Double.class)
+					.setRequired(true)
+					.add(new AttributeModifier("value", "10000.00")));
 
 		form.add(new CheckBox("Evolve.Active", 
-				new BooleanGroupSettingsModel(ldGroupModel, "Evolve.Active")));
+				new BooleanGroupSettingsModel(groupModel, "Evolve.Active")));
 		
 		form.add(new Button("create") {
             public void onSubmit() {
-            	Group group = (Group)ldGroupModel.getObject();
+            	Group group = (Group)groupModel.getObject();
          	    group.setString("Alert.ReceiverType", "EMAIL");
          	    group.setString("Alert.Host", "imap.gmail.com");
          	    AdaptAccess.getDAO().saveGroup(group);

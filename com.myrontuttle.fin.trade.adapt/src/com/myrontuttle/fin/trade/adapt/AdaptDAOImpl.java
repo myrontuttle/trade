@@ -32,6 +32,7 @@ public class AdaptDAOImpl implements AdaptDAO {
 	}
 	
 	public Group updateGroup(Group group) {
+    	group.setLong("Evolve.UpdatedTime", System.currentTimeMillis());
 		return em.merge(group);
 	}
 	

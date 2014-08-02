@@ -1,29 +1,21 @@
 package com.myrontuttle.fin.trade.web.panels;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 
 import com.myrontuttle.fin.trade.adapt.Candidate;
 import com.myrontuttle.fin.trade.adapt.Group;
-import com.myrontuttle.fin.trade.api.AlertReceiverService;
 import com.myrontuttle.fin.trade.web.models.BooleanGroupSettingsModel;
 import com.myrontuttle.fin.trade.web.models.DoubleGroupSettingsModel;
 import com.myrontuttle.fin.trade.web.models.IntegerGroupSettingsModel;
 import com.myrontuttle.fin.trade.web.models.LDGroupModel;
 import com.myrontuttle.fin.trade.web.models.StringGroupSettingsModel;
 import com.myrontuttle.fin.trade.web.service.AdaptAccess;
-import com.myrontuttle.fin.trade.web.service.AlertReceiverAccess;
 import com.myrontuttle.fin.trade.web.service.EvolveAccess;
 
 public class UpdateGroupPanel extends Panel {
@@ -109,7 +101,7 @@ public class UpdateGroupPanel extends Panel {
             }
         });
 		form.add(new Button("update") {
-            public void onSubmit() {            	
+            public void onSubmit() {      	
             	AdaptAccess.getDAO().updateGroup(ldGroupModel.getObject());
             }
         });

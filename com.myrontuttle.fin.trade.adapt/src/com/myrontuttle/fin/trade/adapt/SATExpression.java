@@ -431,6 +431,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
         	alertReceiverService.setReceiverParameter(receiverId, "Period", group.getString("Alert.Period"));
         	alertReceiverService.setReceiverParameter(receiverId, "Initial Delay", group.getString("Alert.Delay"));
         	alertReceiverService.setReceiverActive(receiverId, true);
+        	adaptDAO.updateGroup(group);
 		}
 		
 		alertReceiverService.startReceiving(receiverId);

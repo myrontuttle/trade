@@ -95,6 +95,7 @@ public class Evolver implements EvolveService {
 
 			// Increment generation
 			group.setInteger("Evolve.Generation", data.getGenerationNumber());
+			adaptDAO.updateGroup(group);
 			
 			// Use data to update group
 			adaptDAO.updateGroupStats(data);
@@ -174,6 +175,7 @@ public class Evolver implements EvolveService {
 
     	Group group = adaptDAO.findGroup(groupId);
     	group.setLong("Evolve.StartTime", System.currentTimeMillis());
+    	adaptDAO.updateGroup(group);
 
 		ExpressionStrategy<int[]> expressionStrategy = new SATExpression<int[]>();
 		int genomeLength = expressionStrategy.getGenomeLength(groupId);

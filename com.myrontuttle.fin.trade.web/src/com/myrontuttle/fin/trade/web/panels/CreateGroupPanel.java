@@ -125,7 +125,7 @@ public class CreateGroupPanel extends Panel {
 					.add(new AttributeModifier("value", "2")));
 		
 		form.add(new TextField<Double>("Express.StartingCash", 
-				new DoubleGroupSettingsModel(groupModel, "Express.StartingCashr"))
+				new DoubleGroupSettingsModel(groupModel, "Express.StartingCash"))
 					.setType(Double.class)
 					.setRequired(true)
 					.add(new AttributeModifier("value", "10000.00")));

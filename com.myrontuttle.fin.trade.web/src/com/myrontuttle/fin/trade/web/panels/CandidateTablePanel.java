@@ -5,9 +5,12 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
@@ -39,7 +42,7 @@ public class CandidateTablePanel extends Panel {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private static final DecimalFormat df = new DecimalFormat("#,##0.00"); 
+	private static final NumberFormat dollarFormatter = NumberFormat.getCurrencyInstance(Locale.US);
 
 	@SuppressWarnings({ "rawtypes" })
 	public CandidateTablePanel(String id, long groupId) {
@@ -85,7 +88,7 @@ public class CandidateTablePanel extends Panel {
 					if (candidate != null && candidate.getPortfolioId() != null) {
 						double value = PortfolioAccess.getPortfolioService().
 								getAvailableBalance(candidate.getCandidateId(), candidate.getPortfolioId());
-						cellItem.add(new Label(componentId, "$" + df.format(value)));
+						cellItem.add(new Label(componentId, dollarFormatter.format(value)));
 					} else {
 						cellItem.add(new Label(componentId, ""));
 					}
@@ -106,7 +109,7 @@ public class CandidateTablePanel extends Panel {
 						double value = PortfolioAccess.getPortfolioService().
 							analyze(candidate.getCandidateId(), candidate.getPortfolioId(), 
 									"Unrealized Gain (Absolute)");
-						cellItem.add(new Label(componentId, "$" + df.format(value)));
+						cellItem.add(new Label(componentId, dollarFormatter.format(value)));
 					} else {
 						cellItem.add(new Label(componentId, ""));
 					}

@@ -32,7 +32,6 @@ public class GroupTablePanel extends Panel {
 	
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static final String doubleFormat = "%1$,.2f";
-	private static final String integerFormat = "%01d";
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public GroupTablePanel(String id) {
@@ -121,9 +120,9 @@ public class GroupTablePanel extends Panel {
 					String componentId, IModel<Group> groupModel) {
 				if (groupModel.getObject().getIntegerSettings().containsKey("Evolve.EliteCount")) {
 					cellItem.add(
-							new Label(componentId,
-								String.format(integerFormat,
-									groupModel.getObject().getInteger("Evolve.EliteCount"))));
+						new Label(componentId,
+							String.valueOf(
+								groupModel.getObject().getInteger("Evolve.EliteCount"))));
 				} else {
 					cellItem.add(new Label(componentId, ""));
 				}
@@ -147,9 +146,9 @@ public class GroupTablePanel extends Panel {
 					String componentId, IModel<Group> groupModel) {
 				if (groupModel.getObject().getIntegerSettings().containsKey("Evolve.Generation")) {
 					cellItem.add(
-							new Label(componentId, 
-								String.format(integerFormat,
-									groupModel.getObject().getInteger("Evolve.Generation"))));
+						new Label(componentId, 
+							String.valueOf(
+								groupModel.getObject().getInteger("Evolve.Generation"))));
 				} else {
 					cellItem.add(new Label(componentId, ""));
 				}

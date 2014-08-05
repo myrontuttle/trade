@@ -186,10 +186,10 @@ public class AdaptDAOImpl implements AdaptDAO {
 	}
 
 	@Override
-	public void addTradeParamter(TradeParameter instruction,
+	public void addTradeParamter(TradeParameter p,
 			long traderId) {
 		Trader trader = em.find(Trader.class, traderId);
-		trader.addTradeInstruction(instruction);
+		trader.addTradeParameter(p);
 	}
 
 	@Override
@@ -215,7 +215,7 @@ public class AdaptDAOImpl implements AdaptDAO {
 	@Override
 	public List<TradeParameter> findParametersForTrader(long traderId) {
 		return em.createQuery(
-				"SELECT t FROM TRADE_INSTRUCTIONS t WHERE t.traderId = :traderId", 
+				"SELECT t FROM TRADE_PARAMETERS t WHERE t.traderId = :traderId", 
 				TradeParameter.class).setParameter("traderId", traderId).getResultList();
 	}
 

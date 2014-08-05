@@ -61,7 +61,7 @@ public class Trader implements Serializable {
 
 	@OneToMany(mappedBy = "trader", targetEntity = TradeParameter.class,
 				fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	private Collection<TradeParameter> tradeInstructions;
+	private Collection<TradeParameter> tradeParameters;
 	
 	public Trader() {}
 	
@@ -103,16 +103,16 @@ public class Trader implements Serializable {
 		}
 	}
 	
-	public void addTradeInstruction(TradeParameter t) {
-		this.tradeInstructions.add(t);
+	public void addTradeParameter(TradeParameter t) {
+		this.tradeParameters.add(t);
 		if (t.getTrader() != this) {
 			t.setTrader(this);
 		}
 	}
 	
-	public void removeTradeInstruction(TradeParameter t) {
-		if (tradeInstructions.contains(t)) {
-			tradeInstructions.remove(t);
+	public void removeTradeParameter(TradeParameter t) {
+		if (tradeParameters.contains(t)) {
+			tradeParameters.remove(t);
 			t.setTrader(null);
 		}
 	}
@@ -173,12 +173,12 @@ public class Trader implements Serializable {
 		this.savedAlerts = savedAlerts;
 	}
 
-	public Collection<TradeParameter> getTradeInstructions() {
-		return tradeInstructions;
+	public Collection<TradeParameter> getTradeParameters() {
+		return tradeParameters;
 	}
 
-	public void setTradeInstructions(Collection<TradeParameter> tradeInstructions) {
-		this.tradeInstructions = tradeInstructions;
+	public void setTradeParameters(Collection<TradeParameter> tradeParameters) {
+		this.tradeParameters = tradeParameters;
 	}
 	
 }

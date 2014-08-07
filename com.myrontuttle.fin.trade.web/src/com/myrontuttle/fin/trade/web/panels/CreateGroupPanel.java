@@ -20,6 +20,7 @@ import com.myrontuttle.fin.trade.web.models.IntegerGroupSettingsModel;
 import com.myrontuttle.fin.trade.web.models.StringGroupSettingsModel;
 import com.myrontuttle.fin.trade.web.models.LDGroupModel;
 import com.myrontuttle.fin.trade.web.service.AdaptAccess;
+import com.myrontuttle.fin.trade.web.service.AlertReceiverAccess;
 import com.myrontuttle.fin.trade.web.service.EvolveAccess;
 import com.myrontuttle.fin.trade.web.service.PortfolioAccess;
 import com.myrontuttle.fin.trade.web.service.StrategyAccess;
@@ -42,20 +43,19 @@ public class CreateGroupPanel extends Panel {
 						.setRequired(true)
 						.add(new AttributeModifier("value", "imap.gmail.com")));
 */	
+		
+		List<String> alertPeriods = Arrays.
+				asList(AlertReceiverAccess.getAlertReceiverService().getAvailableParameterOptions("EMAIL", "Period"));
+		form.add(new DropDownChoice<String>("Alert.Period", 
+				new StringGroupSettingsModel(groupModel, "Alert.Period"),
+				alertPeriods));
+		
 		form.add(new TextField<String>("Alert.User", 
 				new StringGroupSettingsModel(groupModel, "Alert.User"))
 				.add(EmailAddressValidator.getInstance()));
 		
 		form.add(new TextField<String>("Alert.Password", 
 				new StringGroupSettingsModel(groupModel, "Alert.Password"))
-						.setRequired(true));
-
-		form.add(new TextField<String>("Alert.Period", 
-				new StringGroupSettingsModel(groupModel, "Alert.Period"))
-						.setRequired(true));
-
-		form.add(new TextField<String>("Alert.Delay", 
-				new StringGroupSettingsModel(groupModel, "Alert.Delay"))
 						.setRequired(true));
 		
 		List<String> frequencies = Arrays.asList(EvolveAccess.getEvolveService().getEvolveFrequencies());

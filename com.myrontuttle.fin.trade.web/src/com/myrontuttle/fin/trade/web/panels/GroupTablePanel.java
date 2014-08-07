@@ -64,18 +64,6 @@ public class GroupTablePanel extends Panel {
 				}
 			}
 		});
-		columns.add(new AbstractColumn<Group, String>(new Model<String>("Alert Initial Delay")) {
-			@Override
-			public void populateItem(Item<ICellPopulator<Group>> cellItem,
-					String componentId, IModel<Group> groupModel) {
-				if (groupModel.getObject().getStringSettings().containsKey("Alert.Delay")) {
-					cellItem.add(
-						new Label(componentId, groupModel.getObject().getString("Alert.Delay")));
-				} else {
-					cellItem.add(new Label(componentId, ""));
-				}
-			}
-		});
 		columns.add(new AbstractColumn<Group, String>(new Model<String>("Evolve Frequency")) {
 			@Override
 			public void populateItem(Item<ICellPopulator<Group>> cellItem,

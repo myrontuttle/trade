@@ -88,6 +88,16 @@ public class ReceiverService implements AlertReceiverService {
 	}
 
 	@Override
+	public String[] getAvailableParameterOptions(String receiverType,
+			String parameter) {
+		// Make sure additional receiver types are handled here
+		if (receiverType.equals(EmailAlertReceiver.DELIVERY_TYPE)) {
+			return EmailAlertReceiver.getAvailableParameterOptions(parameter);
+		}
+		return null;
+	}
+
+	@Override
 	public long addReceiver(long userId, String receiverType) {
 		AlertReceiver r = new AlertReceiver(userId, receiverType);
 		receiverDAO.saveReceiver(r);

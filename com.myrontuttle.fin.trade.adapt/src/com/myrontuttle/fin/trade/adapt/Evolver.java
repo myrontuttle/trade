@@ -32,9 +32,9 @@ public class Evolver implements EvolveService {
 	private final static int NUM_THREADS = 1;
 	private final static int MINUTES_IN_HOUR = 60;
 
-	public static final String HOURLY = "HOURLY";
-	public static final String DAILY = "DAILY";
-	public static final String WEEKLY = "WEEKLY";
+	public static final String HOURLY = "Hourly";
+	public static final String DAILY = "Daily";
+	public static final String WEEKLY = "Weekly";
 	
 	final String EVOLVE_ACTIVE = "evolve_active";
 	final String EVOLVE_HOUR = "evolve_hour";

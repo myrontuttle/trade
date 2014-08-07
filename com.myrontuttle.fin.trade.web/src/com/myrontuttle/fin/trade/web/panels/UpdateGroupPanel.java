@@ -36,17 +36,13 @@ public class UpdateGroupPanel extends Panel {
 						.setRequired(true)
 						.add(new AttributeModifier("value", "imap.gmail.com")));
 */
+		form.add(new Label("Alert.Period", 
+				new StringGroupSettingsModel(ldGroupModel, "Alert.Period")));
 		form.add(new TextField<String>("Alert.User", 
 				new StringGroupSettingsModel(ldGroupModel, "Alert.User"))
 					.add(EmailAddressValidator.getInstance()));
 		form.add(new TextField<String>("Alert.Password", 
 				new StringGroupSettingsModel(ldGroupModel, "Alert.Password"))
-						.setRequired(true));
-		form.add(new TextField<String>("Alert.Period", 
-				new StringGroupSettingsModel(ldGroupModel, "Alert.Period"))
-						.setRequired(true));
-		form.add(new TextField<String>("Alert.Delay", 
-				new StringGroupSettingsModel(ldGroupModel, "Alert.Delay"))
 						.setRequired(true));
 		
 		form.add(new Label("Evolve.Frequency", 

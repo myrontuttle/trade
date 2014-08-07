@@ -22,6 +22,14 @@ public interface AlertReceiverService {
 	public Map<String, String> getAvailableParameters(String receiverType);
 	
 	/**
+	 * Indicates the options that are available for a specific alert receiver parameter
+	 * @param receiverType One of the types returned from {@link #availableReceiverTypes() availableReceiverTypes}
+	 * @param parameter Parameter name from {@link #getAvailableParameters() getAvailableParameters}
+	 * @return Array of parameter options
+	 */
+	public String[] getAvailableParameterOptions(String receiverType, String parameter);
+	
+	/**
 	 * Adds a new receiver for a user to receive alerts from
 	 * @param userId Identifies user that receives the alerts
 	 * @param receiverType One of the types returned from {@link #availableReceiverTypes() availableReceiverTypes}

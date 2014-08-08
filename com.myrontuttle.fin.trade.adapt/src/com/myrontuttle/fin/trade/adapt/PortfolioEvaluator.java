@@ -47,10 +47,15 @@ public class PortfolioEvaluator implements ExpressedFitnessEvaluator<int[]> {
 		}
 
 		Group group = adaptDAO.findGroup(tradeCandidate.getGroupId());
+		String evalStrategy = group.getString("Eval.Strategy");
 		try {
+			if (evalStrategy.equals("Realized Gain")) {
+				portfolioService.closeAllPositions(
+					tradeCandidate.getCandidateId(), tradeCandidate.getPortfolioId());
+			}
 			double analysis = portfolioService.analyze(
 					tradeCandidate.getCandidateId(), 
-					tradeCandidate.getPortfolioId(), group.getString("Eval.Strategy"));
+					tradeCandidate.getPortfolioId(), evalStrategy);
 			if (analysis > fitness) {
 				fitness = analysis;
 			}

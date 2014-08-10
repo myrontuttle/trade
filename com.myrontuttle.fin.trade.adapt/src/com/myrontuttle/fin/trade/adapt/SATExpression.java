@@ -398,7 +398,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 													actionType, alert.getAlertId());
 				
 				for (TradeParameter p : trades.get(alert.getSymbol())) {
-					tradeStrategyService.setTradeParameter(p.getTradeId(), 
+					tradeStrategyService.setTradeParameter(tradeId, 
 							p.getName(), p.getValue());
 				}
 

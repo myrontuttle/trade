@@ -116,18 +116,6 @@ public class GroupTablePanel extends Panel {
 				}
 			}
 		});
-		columns.add(new AbstractColumn<Group, String>(new Model<String>("Created On"), "startTime") {
-			@Override
-			public void populateItem(Item<ICellPopulator<Group>> cellItem,
-					String componentId, IModel<Group> groupModel) {
-				if (groupModel.getObject().getLongSettings().containsKey("Evolve.StartTime")) {
-					Date date = new Date(groupModel.getObject().getLong("Evolve.StartTime"));
-					cellItem.add(new Label(componentId, sdf.format(date)));
-				} else {
-					cellItem.add(new Label(componentId, ""));
-				}
-			}
-		});
 		columns.add(new AbstractColumn<Group, String>(new Model<String>("Generation"), "generation") {
 			@Override
 			public void populateItem(Item<ICellPopulator<Group>> cellItem,
@@ -137,18 +125,6 @@ public class GroupTablePanel extends Panel {
 						new Label(componentId, 
 							String.valueOf(
 								groupModel.getObject().getInteger("Evolve.Generation"))));
-				} else {
-					cellItem.add(new Label(componentId, ""));
-				}
-			}
-		});
-		columns.add(new AbstractColumn<Group, String>(new Model<String>("Last Updated"), "updatedTime") {
-			@Override
-			public void populateItem(Item<ICellPopulator<Group>> cellItem,
-					String componentId, IModel<Group> groupModel) {
-				if (groupModel.getObject().getLongSettings().containsKey("Evolve.UpdatedTime")) {
-					Date date = new Date(groupModel.getObject().getLong("Evolve.UpdatedTime"));
-					cellItem.add(new Label(componentId, sdf.format(date)));
 				} else {
 					cellItem.add(new Label(componentId, ""));
 				}
@@ -168,6 +144,42 @@ public class GroupTablePanel extends Panel {
 				}
 			}
 		});
+		columns.add(new AbstractColumn<Group, String>(new Model<String>("Created On"), "startTime") {
+			@Override
+			public void populateItem(Item<ICellPopulator<Group>> cellItem,
+					String componentId, IModel<Group> groupModel) {
+				if (groupModel.getObject().getLongSettings().containsKey("Evolve.StartTime")) {
+					Date date = new Date(groupModel.getObject().getLong("Evolve.StartTime"));
+					cellItem.add(new Label(componentId, sdf.format(date)));
+				} else {
+					cellItem.add(new Label(componentId, ""));
+				}
+			}
+		});
+		columns.add(new AbstractColumn<Group, String>(new Model<String>("Last Updated"), "updatedTime") {
+			@Override
+			public void populateItem(Item<ICellPopulator<Group>> cellItem,
+					String componentId, IModel<Group> groupModel) {
+				if (groupModel.getObject().getLongSettings().containsKey("Evolve.UpdatedTime")) {
+					Date date = new Date(groupModel.getObject().getLong("Evolve.UpdatedTime"));
+					cellItem.add(new Label(componentId, sdf.format(date)));
+				} else {
+					cellItem.add(new Label(componentId, ""));
+				}
+			}
+		});
+		columns.add(new AbstractColumn<Group, String>(new Model<String>("Status")) {
+			@Override
+			public void populateItem(Item<ICellPopulator<Group>> cellItem,
+					String componentId, IModel<Group> groupModel) {
+				if (groupModel.getObject().getStringSettings().containsKey("Evolve.Status")) {
+					cellItem.add(
+						new Label(componentId, groupModel.getObject().getString("Evolve.Status")));
+				} else {
+					cellItem.add(new Label(componentId, ""));
+				}
+			}
+		});
 
 		columns.add(new AbstractColumn<Group, String>(new Model<String>("Details")) {
 			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
@@ -176,17 +188,17 @@ public class GroupTablePanel extends Panel {
 			}
 		});
 
-		columns.add(new AbstractColumn<Group, String>(new Model<String>("Evolve")) {
-			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
-				IModel<Group> model) {
-				cellItem.add(new EvolveGroupPanel(componentId, model.getObject().getGroupId()));
-			}
-		});
-
 		columns.add(new AbstractColumn<Group, String>(new Model<String>("Best Trader")) {
 			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
 				IModel<Group> model) {
 				cellItem.add(new BestTraderPanel(componentId, model.getObject().getGroupId()));
+			}
+		});
+
+		columns.add(new AbstractColumn<Group, String>(new Model<String>("Evolve")) {
+			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
+				IModel<Group> model) {
+				cellItem.add(new EvolveGroupPanel(componentId, model.getObject().getGroupId()));
 			}
 		});
 

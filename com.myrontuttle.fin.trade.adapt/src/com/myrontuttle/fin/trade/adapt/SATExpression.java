@@ -431,9 +431,10 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
         	alertReceiverService.setReceiverParameter(receiverId, "Period", group.getString("Alert.Period"));
         	alertReceiverService.setReceiverParameter(receiverId, "Initial Delay", group.getString("Alert.Delay"));
         	alertReceiverService.setReceiverActive(receiverId, true);
-        	adaptDAO.updateGroup(group);
 		}
-		
+
+		group.setString("Evolve.Status", "Expressing");
+    	adaptDAO.updateGroup(group);
 		alertReceiverService.startReceiving(receiverId);
 	}
 
@@ -552,7 +553,8 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		}
 		
 		double meanHammingDistance = hammingSum / hammingPairings;
-		
+
+		group.setString("Evolve.Status", "Trading");
 		group.setDouble("Express.Variability", meanHammingDistance);
 		adaptDAO.updateGroup(group);
 		

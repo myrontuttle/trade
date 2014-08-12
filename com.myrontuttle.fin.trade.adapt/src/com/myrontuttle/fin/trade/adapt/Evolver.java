@@ -107,6 +107,9 @@ public class Evolver implements EvolveService {
 	private ScheduledFuture<?> sf;
 	
 	public Evolver() {
+
+        this.ses = Executors.newScheduledThreadPool(NUM_THREADS);
+        
 		if (prefs.getBoolean(EVOLVE_ACTIVE, false)) {
 			evolveActiveAt(
 					new DateTime().
@@ -171,55 +174,71 @@ public class Evolver implements EvolveService {
 	 * Creates the first candidates for this group
 	 * @param groupId
 	 */
-	public void setupGroup(long groupId) {
+	public void setupGroup(final long groupId) {
 
     	Group group = adaptDAO.findGroup(groupId);
     	group.setLong("Evolve.StartTime", System.currentTimeMillis());
+    	group.setString("Evolve.Status", "Populating");
     	adaptDAO.updateGroup(group);
+    	
+    	final int guv = group.getInteger("Evolve.GeneUpperValue");
+    	final double mut = group.getDouble("Evolve.MutationFactor");
+    	final int size = group.getInteger("Evolve.Size");
 
-		ExpressionStrategy<int[]> expressionStrategy = new SATExpression<int[]>();
-		int genomeLength = expressionStrategy.getGenomeLength(groupId);
-		
-		ExpressedFitnessEvaluator<int[]> evaluator = new PortfolioEvaluator();
-		
-		EvolutionEngine<int[]> engine = createEngine(genomeLength, 
-														group.getInteger("Evolve.GeneUpperValue"), 
-														group.getDouble("Evolve.MutationFactor"),
-														expressionStrategy, evaluator);
-		
-		engine.expressInitialPopulation(groupId, group.getInteger("Evolve.Size"));
+    	ses.schedule(new Runnable() {
+
+			@Override
+			public void run() {
+				ExpressionStrategy<int[]> expressionStrategy = new SATExpression<int[]>();
+				int genomeLength = expressionStrategy.getGenomeLength(groupId);
+				ExpressedFitnessEvaluator<int[]> evaluator = new PortfolioEvaluator();
+				EvolutionEngine<int[]> engine = createEngine(genomeLength, 
+																guv, 
+																mut,
+																expressionStrategy, evaluator);
+				engine.expressInitialPopulation(groupId, size);
+			}
+    	}, 0, TimeUnit.SECONDS);
 	}
 	
 	/*
 	 * Evolve one group right now
 	 */
-	public void evolveNow(long groupId) {
-		
-		List<Candidate> tradeCandidates = adaptDAO.findCandidatesInGroup(groupId);
-		List<ExpressedCandidate<int[]>> candidates = new ArrayList<ExpressedCandidate<int[]>>(tradeCandidates.size());
-		
-		for (Candidate c : tradeCandidates) {
-			c.setGenome(Candidate.parseGenomeString(c.getGenomeString()));
-			candidates.add(c);
-		}
-		
-		Group group = adaptDAO.findGroup(groupId);
-		
-		int size = group.getInteger("Evolve.Size");
-		int eliteCount = group.getInteger("Evolve.EliteCount");
+	public void evolveNow(final long groupId) {
 
-		ExpressionStrategy<int[]> expressionStrategy = new SATExpression<int[]>();
-		int genomeLength = expressionStrategy.getGenomeLength(groupId);
+		Group group = adaptDAO.findGroup(groupId);
+		group.setString("Evolve.Status", "Evolving");
+		adaptDAO.updateGroup(group);
+
+		final int size = group.getInteger("Evolve.Size");
+		final int eliteCount = group.getInteger("Evolve.EliteCount");
+    	final int guv = group.getInteger("Evolve.GeneUpperValue");
+    	final double mut = group.getDouble("Evolve.MutationFactor");
+    	final int gen = group.getInteger("Evolve.Generation");
 		
-		ExpressedFitnessEvaluator<int[]> evaluator = new PortfolioEvaluator();
-		
-		EvolutionEngine<int[]> engine = createEngine(genomeLength, 
-											group.getInteger("Evolve.GeneUpperValue"), 
-											group.getDouble("Evolve.MutationFactor"),
-											expressionStrategy, evaluator);
-		
-		engine.evolveToExpression(candidates, groupId, size, 
-				group.getInteger("Evolve.Generation"), eliteCount, terminationConditions);
+    	ses.schedule(new Runnable() {
+
+			@Override
+			public void run() {
+				List<Candidate> tradeCandidates = adaptDAO.findCandidatesInGroup(groupId);
+				List<ExpressedCandidate<int[]>> candidates = new ArrayList<ExpressedCandidate<int[]>>(tradeCandidates.size());
+				
+				for (Candidate c : tradeCandidates) {
+					c.setGenome(Candidate.parseGenomeString(c.getGenomeString()));
+					candidates.add(c);
+				}
+
+				ExpressionStrategy<int[]> expressionStrategy = new SATExpression<int[]>();
+				int genomeLength = expressionStrategy.getGenomeLength(groupId);
+				ExpressedFitnessEvaluator<int[]> evaluator = new PortfolioEvaluator();
+				EvolutionEngine<int[]> engine = createEngine(genomeLength, 
+													guv, 
+													mut,
+													expressionStrategy, evaluator);	
+				engine.evolveToExpression(candidates, groupId, size, 
+						gen, eliteCount, terminationConditions);
+			}
+    	}, 0, TimeUnit.SECONDS);
 	}
 	
 	/*
@@ -243,8 +262,6 @@ public class Evolver implements EvolveService {
 						withMinuteOfHour(date.getMinuteOfHour());
 			logger.info("Date to evolve is before now.  Setting to evolve at same time tomorrow: ", date);
 		}
-
-        this.ses = Executors.newScheduledThreadPool(NUM_THREADS);
         
 		this.sf = ses.scheduleAtFixedRate(new Runnable () {
 			@Override

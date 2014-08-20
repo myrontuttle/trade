@@ -631,6 +631,8 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 
 		SavedScreen[] screenCriteria = expressScreenerGenes(candidate, group);
 		if (screenCriteria.length == 0) {
+			logger.warn("Best Trader: {} in group: {} has no saved screens", 
+					trader.getTraderId(), group.getGroupId());
 			return trader;
 		}
 		for (SavedScreen criteria : screenCriteria) {
@@ -639,6 +641,8 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		
 		String[] symbols = getScreenSymbols(candidate, group, screenCriteria);
 		if (symbols == null || symbols.length == 0) {
+			logger.warn("Best Trader: {} in group: {} has no symbols", 
+					trader.getTraderId(), group.getGroupId());
 			return trader;
 		}
 		for (String symbol : symbols) {
@@ -647,6 +651,8 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		
 		SavedAlert[] alerts = expressAlertGenes(candidate, group, symbols);
 		if (alerts.length == 0) {
+			logger.warn("Best Trader: {} in group: {} has no alerts", 
+					trader.getTraderId(), group.getGroupId());
 			return trader;
 		}
 		for (SavedAlert alert : alerts) {

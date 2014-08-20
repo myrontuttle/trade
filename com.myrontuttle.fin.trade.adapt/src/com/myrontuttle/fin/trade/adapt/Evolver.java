@@ -81,11 +81,10 @@ public class Evolver implements EvolveService {
 										Arrays.toString(data.getBestCandidate()), e1);
 			}
 			
-			SATExpression<int[]> expression = new SATExpression<int[]>();
-
 			// Express Trader
 			if (trader != null && bestCandidate != null) {
 				try {
+					SATExpression<int[]> expression = new SATExpression<int[]>();
 					expression.setupTrader(bestCandidate, group, trader);
 				} catch (Exception e) {
 					logger.warn("Unable to setup trader {}.", 

@@ -15,6 +15,8 @@ public class Application extends WebApplication {
 	 */
 	@Override
 	protected void init() {
+		super.init();
+		getResourceSettings().setResourcePollFrequency(null);
 		//getDebugSettings().setDevelopmentUtilitiesEnabled(true);
 
 		//getRequestCycleSettings().addResponseFilter(new ServerAndClientTimeFilter());

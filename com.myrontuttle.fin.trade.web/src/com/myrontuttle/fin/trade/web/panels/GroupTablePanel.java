@@ -188,10 +188,10 @@ public class GroupTablePanel extends Panel {
 			}
 		});
 
-		columns.add(new AbstractColumn<Group, String>(new Model<String>("Best Trader")) {
+		columns.add(new AbstractColumn<Group, String>(new Model<String>("Best Candidate")) {
 			public void populateItem(Item<ICellPopulator<Group>> cellItem, String componentId,
 				IModel<Group> model) {
-				cellItem.add(new BestTraderPanel(componentId, model.getObject().getGroupId()));
+				cellItem.add(new BestCandidatePanel(componentId, model.getObject().getGroupId()));
 			}
 		});
 

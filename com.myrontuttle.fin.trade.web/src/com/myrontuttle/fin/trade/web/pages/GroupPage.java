@@ -4,7 +4,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 
 import com.myrontuttle.fin.trade.web.models.LDGroupModel;
-import com.myrontuttle.fin.trade.web.panels.BestTraderPanel;
+import com.myrontuttle.fin.trade.web.panels.BestCandidatePanel;
 import com.myrontuttle.fin.trade.web.panels.CandidateTablePanel;
 import com.myrontuttle.fin.trade.web.panels.EvolveGroupPanel;
 import com.myrontuttle.fin.trade.web.panels.GroupStatsTablePanel;
@@ -25,7 +25,7 @@ public class GroupPage extends WebPage {
 		add(new UploadCandidatePanel("uploadCandidatePanel", groupId));
 		add(new EvolveGroupPanel("evolveGroupPanel", groupId));
 		add(new GroupStatsTablePanel("groupStatsTablePanel", groupId));
-		add(new BestTraderPanel("bestTraderPanel", groupId));
+		add(new BestCandidatePanel("bestCandidatePanel", groupId));
 		add(new Label("currentVariability", ldGroupModel.getObject().getDouble("Express.Variability")));
 		add(new CandidateTablePanel("candidateTablePanel", groupId));
 	}

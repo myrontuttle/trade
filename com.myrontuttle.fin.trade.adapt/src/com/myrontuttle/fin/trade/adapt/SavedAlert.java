@@ -24,12 +24,12 @@ public class SavedAlert implements Serializable, SelectedAlert {
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private long savedAlertId;
 
-	@Column(name = "TRADER_ID")
-	private long traderId;
+	@Column(name = "CANDIDATE_ID")
+	private long candidateId;
 	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "TRADER_ID", referencedColumnName = "TRADER_ID")
-	private Trader trader;
+	@JoinColumn(name = "CANDIDATE_ID", referencedColumnName = "CANDIDATE_ID")
+	private Candidate candidate;
 
 	@Column(name = "ALERT_TYPE")
 	private int alertType;
@@ -51,8 +51,8 @@ public class SavedAlert implements Serializable, SelectedAlert {
 	
 	public SavedAlert() {}
 
-	public SavedAlert(long traderId, int alertType, String condition, String symbol, double... params) {
-		this.traderId = traderId;
+	public SavedAlert(long candidateId, int alertType, String condition, String symbol, double... params) {
+		this.candidateId = candidateId;
 		this.alertType = alertType;
 		this.condition = condition;
 		this.symbol = symbol;
@@ -91,20 +91,20 @@ public class SavedAlert implements Serializable, SelectedAlert {
 		this.savedAlertId = savedAlertId;
 	}
 
-	public long getTraderId() {
-		return traderId;
+	public long getCandidateId() {
+		return candidateId;
 	}
 
-	public void setTraderId(long traderId) {
-		this.traderId = traderId;
+	public void setCandidateId(long candidateId) {
+		this.candidateId = candidateId;
 	}
 
-	public Trader getTrader() {
-		return trader;
+	public Candidate getCandidate() {
+		return candidate;
 	}
 
-	public void setTrader(Trader trader) {
-		this.trader = trader;
+	public void setCandidate(Candidate candidate) {
+		this.candidate = candidate;
 	}
 
 	public int getAlertType() {

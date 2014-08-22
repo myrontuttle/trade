@@ -133,90 +133,73 @@ public class AdaptDAOImpl implements AdaptDAO {
 	}
 	
 	@Override
-	public void setBestTrader(Trader trader, long groupId) {
+	public void setBestCandidate(long candidateId, long groupId) {
 		Group group = em.find(Group.class, groupId);		
-		group.setBestTrader(trader);		
+		group.setBestCandidateId(candidateId);		
 	}
 
 	@Override
-	public Trader updateTrader(Trader trader) {
-		return em.merge(trader);
-	}
-
-	// Get the trader based on its traderId
-	public Trader findTrader(long traderId) {
-		return em.find(Trader.class, traderId);
-	}
-
-	@Override
-	public Trader getBestTrader(long groupId) {
+	public Candidate getBestCandidate(long groupId) {
+		Group group = em.find(Group.class, groupId);
 		try {
 			return em.createQuery(
-					"SELECT t FROM TRADERS t WHERE t.groupId = :groupId", 
-					Trader.class).setParameter("groupId", groupId).getSingleResult();
+					"SELECT c FROM CANDIDATES c WHERE c.candidateId = :bestId", 
+					Candidate.class).setParameter("bestId", group.getBestCandidateId()).getSingleResult();
 		} catch (NoResultException nre) {
 			return null;
 		}
 	}
 
 	@Override
-	public void removeTrader(long traderId) {
-		Trader trader = em.find(Trader.class, traderId);
-		Group group = em.find(Group.class, trader.getGroupId());
-		group.removeBestTrader(trader);
-		em.remove(trader);
+	public void addSavedScreen(SavedScreen screen, long candidateId) {
+		Candidate candidate = em.find(Candidate.class, candidateId);
+		candidate.addScreen(screen);
 	}
 
 	@Override
-	public void addSavedScreen(SavedScreen screen, long traderId) {
-		Trader trader = em.find(Trader.class, traderId);
-		trader.addScreen(screen);
+	public void addSymbol(String symbol, long candidateId) {
+		Candidate candidate = em.find(Candidate.class, candidateId);
+		candidate.addSymbol(symbol);
 	}
 
 	@Override
-	public void addSymbol(String symbol, long traderId) {
-		Trader trader = em.find(Trader.class, traderId);
-		trader.addSymbol(symbol);
-	}
-
-	@Override
-	public void addSavedAlert(SavedAlert alert, long traderId) {
-		Trader trader = em.find(Trader.class, traderId);
-		trader.addAlert(alert);
+	public void addSavedAlert(SavedAlert alert, long candidateId) {
+		Candidate candidate = em.find(Candidate.class, candidateId);
+		candidate.addAlert(alert);
 	}
 
 	@Override
 	public void addTradeParamter(TradeParameter p,
-			long traderId) {
-		Trader trader = em.find(Trader.class, traderId);
-		trader.addTradeParameter(p);
+			long candidateId) {
+		Candidate candidate = em.find(Candidate.class, candidateId);
+		candidate.addTradeParameter(p);
 	}
 
 	@Override
-	public List<SavedScreen> findScreensForTrader(long traderId) {
+	public List<SavedScreen> findScreensForCandidate(long candidateId) {
 		return em.createQuery(
-				"SELECT s FROM SAVED_SCREENS s WHERE s.traderId = :traderId", 
-				SavedScreen.class).setParameter("traderId", traderId).getResultList();
+				"SELECT s FROM SAVED_SCREENS s WHERE s.candidateId = :candidateId", 
+				SavedScreen.class).setParameter("candidateId", candidateId).getResultList();
 	}
 
 	@Override
-	public List<String> findSymbolsForTrader(long traderId) {
-		Trader trader = em.find(Trader.class, traderId);
-		return trader.getSymbols();
+	public List<String> findSymbolsForCandidate(long candidateId) {
+		Candidate candidate = em.find(Candidate.class, candidateId);
+		return candidate.getSymbols();
 	}
 
 	@Override
-	public List<SavedAlert> findAlertsForTrader(long traderId) {
+	public List<SavedAlert> findAlertsForCandidate(long candidateId) {
 		return em.createQuery(
-				"SELECT a FROM SAVED_ALERTS a WHERE a.traderId = :traderId", 
-				SavedAlert.class).setParameter("traderId", traderId).getResultList();
+				"SELECT a FROM SAVED_ALERTS a WHERE a.candidateId = :candidateId", 
+				SavedAlert.class).setParameter("candidateId", candidateId).getResultList();
 	}
 
 	@Override
-	public List<TradeParameter> findParametersForTrader(long traderId) {
+	public List<TradeParameter> findParametersForCandidate(long candidateId) {
 		return em.createQuery(
-				"SELECT t FROM TRADE_PARAMETERS t WHERE t.traderId = :traderId", 
-				TradeParameter.class).setParameter("traderId", traderId).getResultList();
+				"SELECT t FROM TRADE_PARAMETERS t WHERE t.candidateId = :candidateId", 
+				TradeParameter.class).setParameter("candidateId", candidateId).getResultList();
 	}
 
 	@Override

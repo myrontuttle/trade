@@ -9,7 +9,6 @@
         <class>com.myrontuttle.fin.trade.adapt.Group</class>
         <class>com.myrontuttle.fin.trade.adapt.Candidate</class>
         <class>com.myrontuttle.fin.trade.adapt.GroupStats</class>
-        <class>com.myrontuttle.fin.trade.adapt.Trader</class>
         <class>com.myrontuttle.fin.trade.adapt.SavedAlert</class>
         <class>com.myrontuttle.fin.trade.adapt.SavedScreen</class>
         <class>com.myrontuttle.fin.trade.adapt.TradeParameter</class>

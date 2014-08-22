@@ -22,14 +22,14 @@ public class TradeParameter implements Serializable, SelectedStrategyParameter {
 	@Id
 	@Column(name = "TRADE_PARAMETER_ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
-	private long tradeInstructionId;
+	private long tradeParameterId;
 
-	@Column(name = "TRADER_ID")
-	private long traderId;
+	@Column(name = "CANDIDATE_ID")
+	private long candidateId;
 	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "TRADER_ID", referencedColumnName = "TRADER_ID")
-	private Trader trader;
+	@JoinColumn(name = "CANDIDATE_ID", referencedColumnName = "CANDIDATE_ID")
+	private Candidate candidate;
 
 	@Column(name = "TRADE_ID")
 	private long tradeId;
@@ -45,39 +45,39 @@ public class TradeParameter implements Serializable, SelectedStrategyParameter {
 	
 	public TradeParameter() {}
 	
-	public TradeParameter(long traderId, String symbol, String name, int value) {
-		this.traderId = traderId;
+	public TradeParameter(long candidateId, String symbol, String name, int value) {
+		this.candidateId = candidateId;
 		this.symbol = symbol;
 		this.name = name;
 		this.value = value;
 	}
 
-	public static String generateInstruction(String symbol, String name, int value) {
+	public String getParameter() {
 		return symbol + SEPARATOR + name + ASSIGN + value;
 	}
 
-	public long getTradeInstructionId() {
-		return tradeInstructionId;
+	public long getTradeParameterId() {
+		return tradeParameterId;
 	}
 
-	public void setTradeInstructionId(long tradeInstructionId) {
-		this.tradeInstructionId = tradeInstructionId;
+	public void setTradeParameterId(long tradeParameterId) {
+		this.tradeParameterId = tradeParameterId;
 	}
 
-	public long getTraderId() {
-		return traderId;
+	public long getCandidateId() {
+		return candidateId;
 	}
 
-	public void setTraderId(long traderId) {
-		this.traderId = traderId;
+	public void setCandidateId(long candidateId) {
+		this.candidateId = candidateId;
 	}
 
-	public Trader getTrader() {
-		return trader;
+	public Candidate getCandidate() {
+		return candidate;
 	}
 
-	public void setTrader(Trader trader) {
-		this.trader = trader;
+	public void setCandidate(Candidate candidate) {
+		this.candidate = candidate;
 	}
 
 	public long getTradeId() {

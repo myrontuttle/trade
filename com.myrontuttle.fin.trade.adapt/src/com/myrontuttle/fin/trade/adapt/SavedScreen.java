@@ -22,12 +22,12 @@ public class SavedScreen implements Serializable, SelectedScreenCriteria {
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private long savedScreenId;
 
-	@Column(name = "TRADER_ID")
-	private long traderId;
+	@Column(name = "CANDIDATE_ID")
+	private long candidateId;
 	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "TRADER_ID", referencedColumnName = "TRADER_ID")
-	private Trader trader;
+	@JoinColumn(name = "CANDIDATE_ID", referencedColumnName = "CANDIDATE_ID")
+	private Candidate candidate;
 	
 	@Column(name = "NAME")
 	private String name;
@@ -40,8 +40,8 @@ public class SavedScreen implements Serializable, SelectedScreenCriteria {
 	
 	public SavedScreen() {}
 	
-	public SavedScreen(long traderId, String name, String value, String argsOperator) {
-		this.traderId = traderId;
+	public SavedScreen(long candidateId, String name, String value, String argsOperator) {
+		this.candidateId = candidateId;
 		this.name = name;
 		this.value = value;
 		this.argsOperator = argsOperator;
@@ -55,20 +55,20 @@ public class SavedScreen implements Serializable, SelectedScreenCriteria {
 		this.savedScreenId = savedScreenId;
 	}
 
-	public long getTraderId() {
-		return traderId;
+	public long getCandidateId() {
+		return candidateId;
 	}
 
-	public void setTraderId(long traderId) {
-		this.traderId = traderId;
+	public void setCandidateId(long candidateId) {
+		this.candidateId = candidateId;
 	}
 
-	public Trader getTrader() {
-		return trader;
+	public Candidate getCandidate() {
+		return candidate;
 	}
 
-	public void setTrader(Trader trader) {
-		this.trader = trader;
+	public void setCandidate(Candidate candidate) {
+		this.candidate = candidate;
 	}
 
 	public String getName() {

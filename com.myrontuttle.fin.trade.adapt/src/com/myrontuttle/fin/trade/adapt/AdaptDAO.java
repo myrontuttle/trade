@@ -40,35 +40,29 @@ public interface AdaptDAO {
 	
 	public void removeAllStats(long groupId);
 	
-	public void setBestTrader(Trader trader, long groupId);
+	public void setBestCandidate(long candidateId, long groupId);
 	
-	public Trader updateTrader(Trader trader);
-	
-	public Trader findTrader(long traderId);
-	
-	public Trader getBestTrader(long groupId);
-	
-	public void removeTrader(long traderId);
+	public Candidate getBestCandidate(long groupId);
 
-	public void addSavedScreen(SavedScreen screen, long traderId);
+	public void addSavedScreen(SavedScreen screen, long candidateId);
 	
-	public List<SavedScreen> findScreensForTrader(long traderId);
+	public List<SavedScreen> findScreensForCandidate(long candidateId);
 	
 	public SavedScreen findScreen(long savedScreenId);
 
-	public void addSymbol(String symbol, long traderId);
+	public void addSymbol(String symbol, long candidateId);
 	
-	public List<String> findSymbolsForTrader(long traderId);
+	public List<String> findSymbolsForCandidate(long candidateId);
 	
-	public List<SavedAlert> findAlertsForTrader(long traderId);
+	public List<SavedAlert> findAlertsForCandidate(long candidateId);
 	
 	public SavedAlert findAlert(long savedAlertId);
 	
-	public List<TradeParameter> findParametersForTrader(long traderId);
+	public List<TradeParameter> findParametersForCandidate(long candidateId);
 	
 	public TradeParameter findTradeParameter(long tradeParameterId);
 
-	public void addSavedAlert(SavedAlert alert, long traderId);
+	public void addSavedAlert(SavedAlert alert, long candidateId);
 	
-	public void addTradeParamter(TradeParameter parameter, long traderId);
+	public void addTradeParamter(TradeParameter parameter, long candidateId);
 }

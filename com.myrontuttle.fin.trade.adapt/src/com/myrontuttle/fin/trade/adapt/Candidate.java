@@ -2,6 +2,8 @@ package com.myrontuttle.fin.trade.adapt;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.*;
 
@@ -48,6 +50,26 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	
 	@Column(name = "LAST_EXRESSED_GEN")
 	private int lastExpressedGen;
+	
+	@OneToMany(mappedBy = "candidate", targetEntity = SavedScreen.class,
+				fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private Collection<SavedScreen> savedScreens;
+	
+	@ElementCollection
+	@CollectionTable(
+			name="SYMBOLS",
+			joinColumns=@JoinColumn(name="CANDIDATE_ID")
+	)
+	@Column(name="SYMBOL")
+	private List<String> symbols;
+	
+	@OneToMany(mappedBy = "candidate", targetEntity = SavedAlert.class,
+				fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private Collection<SavedAlert> savedAlerts;
+
+	@OneToMany(mappedBy = "candidate", targetEntity = TradeParameter.class,
+				fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private Collection<TradeParameter> tradeParameters;
 	
 	public Candidate(){ }
 	
@@ -136,6 +158,90 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 
 	public void setLastExpressedGen(int lastExpressedGen) {
 		this.lastExpressedGen = lastExpressedGen;
+	}
+
+	public Collection<SavedScreen> getSavedScreens() {
+		return savedScreens;
+	}
+
+	public void setSavedScreens(Collection<SavedScreen> savedScreens) {
+		this.savedScreens = savedScreens;
+	}
+
+	public List<String> getSymbols() {
+		return symbols;
+	}
+
+	public void setSymbols(List<String> symbols) {
+		this.symbols = symbols;
+	}
+
+	public Collection<SavedAlert> getSavedAlerts() {
+		return savedAlerts;
+	}
+
+	public void setSavedAlerts(Collection<SavedAlert> savedAlerts) {
+		this.savedAlerts = savedAlerts;
+	}
+
+	public Collection<TradeParameter> getTradeParameters() {
+		return tradeParameters;
+	}
+
+	public void setTradeParameters(Collection<TradeParameter> tradeParameters) {
+		this.tradeParameters = tradeParameters;
+	}
+
+	public void addScreen(SavedScreen s) {
+		this.savedScreens.add(s);
+		if (s.getCandidate() != this) {
+			s.setCandidate(this);
+		}
+	}
+	
+	public void removeScreen(SavedScreen s) {
+		if (savedScreens.contains(s)) {
+			savedScreens.remove(s);
+			s.setCandidate(null);
+		}
+	}
+
+	public void addSymbol(String s) {
+		this.symbols.add(s);
+	}
+	
+	public void removeSymbol(String s) {
+		if (symbols.contains(s)) {
+			symbols.remove(s);
+		}
+	}
+	
+	public void addAlert(SavedAlert a) {
+		this.savedAlerts.add(a);
+		if (a.getCandidate() != this) {
+			a.setCandidate(this);
+		}
+	}
+	
+	public void removeAlert(SavedAlert a) {
+		if (savedAlerts.contains(a)) {
+			savedAlerts.remove(a);
+			a.setCandidate(null);
+		}
+	}
+	
+	public void addTradeParameter(TradeParameter t) {
+		this.tradeParameters.add(t);
+		if (t.getCandidate() != this) {
+			t.setCandidate(this);
+		}
+	}
+	
+	public void removeTradeParameter(TradeParameter t) {
+		if (tradeParameters.contains(t)) {
+			tradeParameters.remove(t);
+			t.setCandidate(null);
+		}
 	}
 	
 	public static int[] parseGenomeString(String genomeString) {

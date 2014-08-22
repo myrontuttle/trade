@@ -155,6 +155,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		ArrayList<SavedScreen> selected = new ArrayList<SavedScreen>();
 		int screens = group.getInteger("Express.NumberOfScreens");
 		int geneUpperValue = group.getInteger("Evolve.GeneUpperValue");
+		SavedScreen savedScreen;
 		for (int i=0; i<screens; i++) {
 
 			int criteriaIndex = transpose(genome[position], geneUpperValue, 
@@ -164,7 +165,10 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 							availableScreenCriteria[criteriaIndex].getAcceptedValues().length - 1);
 			String value = availableScreenCriteria[criteriaIndex].getAcceptedValue(valueIndex);
 			String argOp = availableScreenCriteria[criteriaIndex].getArgsOperator();
-			selected.add(new SavedScreen(candidateId, name, value, argOp));
+			savedScreen = new SavedScreen(candidateId, name, value, argOp);
+			
+			selected.add(savedScreen);
+			adaptDAO.addSavedScreen(savedScreen, candidateId);
 			
 			position += SCREEN_GENE_LENGTH;
 		}
@@ -296,6 +300,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 																		params);
 				selected[s] = new SavedAlert(candidateId, alertId, selectedCondition, 
 													symbols[i], params);
+				adaptDAO.addSavedAlert(selected[s], candidateId);
 				s++;
 				position += ALERT_GENE_LENGTH;
 			}
@@ -349,18 +354,21 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		HashMap<String, ArrayList<TradeParameter>> trades = 
 					new HashMap<String, ArrayList<TradeParameter>>();
 		ArrayList<TradeParameter> tradeParams;
+		TradeParameter tradeP;
 		for (int i=0; i<symbols.length; i++) {
 			
 			tradeParams = new ArrayList<TradeParameter>(availableParameters.length);
 			for (int j=0; j<availableParameters.length; j++) {
-				tradeParams.add(new TradeParameter(
+				tradeP = new TradeParameter(
 						candidateId,
 						symbols[i], 
 						availableParameters[j].getName(),
 						transpose(genome[position + j],
 								group.getInteger("Evolve.GeneUpperValue"),
 								availableParameters[j].getLower(), 
-								availableParameters[j].getUpper())));
+								availableParameters[j].getUpper()));
+				tradeParams.add(tradeP);
+				adaptDAO.addTradeParamter(tradeP, candidateId);
 			}
 			
 			trades.put(symbols[i], tradeParams);
@@ -466,7 +474,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 
 		try {
 			// Get criteria to screen against
-			SelectedScreenCriteria[] screenCriteria = expressScreenerGenes(candidate, group);
+			SavedScreen[] screenCriteria = expressScreenerGenes(candidate, group);
 
 			if (screenCriteria.length == 0) {
 				// All of the screen symbols are turned off and we won't get any symbols from screening
@@ -476,6 +484,9 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			
 			// Get a list of symbols from the Screener Service
 			String[] symbols = getScreenSymbols(candidate, group, screenCriteria);
+			for (String symbol : symbols) {
+				adaptDAO.addSymbol(symbol, candidate.getCandidateId());
+			}
 			
 			// If the screener didn't produce any symbols there's no point using the other services
 			if (symbols.length == 0) {
@@ -501,6 +512,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			// Create (symbols*alertsPerSymbol) alerts for stocks
 			SavedAlert[] openAlerts = expressAlertGenes(candidate, group, symbols);
 			openAlerts = setupAlerts(group, openAlerts);
+			candidate.setSavedAlerts(Arrays.asList(openAlerts));
 			
 			// Create (symbol*alertsPerSymbol) trades to be made when alerts are triggered
 			HashMap<String, ArrayList<TradeParameter>> trades = expressTradeGenes(candidate, group, symbols);
@@ -584,6 +596,8 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 				watchlistService.delete(c.getCandidateId(), c.getWatchlistId());
 			}
 			
+			c = null;
+			
 		} catch (Exception e) {
 			logger.warn("Unable to destroy candidate with genome: {}.", Arrays.toString(genome), e);
 		}		
@@ -624,48 +638,5 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		} else {
 			return targetLower + ((double)geneValue / geneUpperValue) * (targetUpper - targetLower);
 		}
-	}
-	
-	public Trader setupTrader(Candidate candidate, Group group, Trader trader) 
-			throws Exception {
-
-		SavedScreen[] screenCriteria = expressScreenerGenes(candidate, group);
-		if (screenCriteria.length == 0) {
-			logger.warn("Best Trader: {} in group: {} has no saved screens", 
-					trader.getTraderId(), group.getGroupId());
-			return trader;
-		}
-		for (SavedScreen criteria : screenCriteria) {
-			adaptDAO.addSavedScreen(criteria, trader.getTraderId());
-		}
-		
-		String[] symbols = getScreenSymbols(candidate, group, screenCriteria);
-		if (symbols == null || symbols.length == 0) {
-			logger.warn("Best Trader: {} in group: {} has no symbols", 
-					trader.getTraderId(), group.getGroupId());
-			return trader;
-		}
-		for (String symbol : symbols) {
-			adaptDAO.addSymbol(symbol, trader.getTraderId());
-		}
-		
-		SavedAlert[] alerts = expressAlertGenes(candidate, group, symbols);
-		if (alerts.length == 0) {
-			logger.warn("Best Trader: {} in group: {} has no alerts", 
-					trader.getTraderId(), group.getGroupId());
-			return trader;
-		}
-		for (SavedAlert alert : alerts) {
-			adaptDAO.addSavedAlert(alert, trader.getTraderId());
-		}
-
-		HashMap<String, ArrayList<TradeParameter>> trades = expressTradeGenes(candidate, group, symbols);
-		for (String key : trades.keySet()) {
-			ArrayList<TradeParameter> params = trades.get(key);
-			for (TradeParameter p : params) {
-				adaptDAO.addTradeParamter(p, trader.getTraderId());
-			}
-		}
-		return trader;
 	}
 }

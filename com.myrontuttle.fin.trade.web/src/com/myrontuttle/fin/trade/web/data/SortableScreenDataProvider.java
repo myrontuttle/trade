@@ -35,14 +35,14 @@ public class SortableScreenDataProvider extends SortableDataProvider<SavedScreen
 
 	private static final long serialVersionUID = 1L;
 	
-	long traderId;
+	long candidateId;
 
 	/**
 	 * constructor
 	 */
-	public SortableScreenDataProvider(long traderId) {
+	public SortableScreenDataProvider(long candidateId) {
 		
-		this.traderId = traderId;
+		this.candidateId = candidateId;
 		
 		// set default sort
 		setSort("savedScreenId", SortOrder.ASCENDING);
@@ -58,14 +58,14 @@ public class SortableScreenDataProvider extends SortableDataProvider<SavedScreen
 	public Iterator<SavedScreen> iterator(long first, long count) {
 		// Consider finding a subset of all groups to StrategyDAO:
 		// return getDAO().findGroups(first, count, new SortParam("groupId", true)).iterator();
-		return getDAO().findScreensForTrader(traderId).iterator();
+		return getDAO().findScreensForCandidate(candidateId).iterator();
 	}
 
 	/**
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#size()
 	 */
 	public long size() {
-		return getDAO().findScreensForTrader(traderId).size();
+		return getDAO().findScreensForCandidate(candidateId).size();
 	}
 
 	/**

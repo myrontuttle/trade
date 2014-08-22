@@ -35,14 +35,14 @@ public class SortableAlertDataProvider extends SortableDataProvider<SavedAlert, 
 
 	private static final long serialVersionUID = 1L;
 	
-	long traderId;
+	long candidateId;
 
 	/**
 	 * constructor
 	 */
-	public SortableAlertDataProvider(long traderId) {
+	public SortableAlertDataProvider(long candidateId) {
 		
-		this.traderId = traderId;
+		this.candidateId = candidateId;
 		
 		// set default sort
 		setSort("savedAlertId", SortOrder.ASCENDING);
@@ -58,14 +58,14 @@ public class SortableAlertDataProvider extends SortableDataProvider<SavedAlert, 
 	public Iterator<SavedAlert> iterator(long first, long count) {
 		// Consider finding a subset of all groups to StrategyDAO:
 		// return getDAO().findGroups(first, count, new SortParam("groupId", true)).iterator();
-		return getDAO().findAlertsForTrader(traderId).iterator();
+		return getDAO().findAlertsForCandidate(candidateId).iterator();
 	}
 
 	/**
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#size()
 	 */
 	public long size() {
-		return getDAO().findAlertsForTrader(traderId).size();
+		return getDAO().findAlertsForCandidate(candidateId).size();
 	}
 
 	/**

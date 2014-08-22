@@ -60,36 +60,13 @@ public class Evolver implements EvolveService {
 			
 			// Find the best candidate from the group
 			Candidate bestCandidate = null;
-			Trader trader = null;
 			try {
 				bestCandidate = adaptDAO.findCandidateByGenome(data.getBestCandidate());
-				
-				// Remove the previous best trader (if one exists)
-				Trader existingBest = group.getBestTrader();
-				if (existingBest != null) {
-					adaptDAO.removeTrader(existingBest.getTraderId());
-				}
-				
-				// Save the best trader
-				trader = new Trader();
-				trader.setGroupId(group.getGroupId());
-				trader.setGenomeString(bestCandidate.getGenomeString());
-				adaptDAO.setBestTrader(trader, group.getGroupId());
+				adaptDAO.setBestCandidate(bestCandidate.getCandidateId(), group.getGroupId());
 				
 			} catch (Exception e1) {
 				logger.warn("Can't find best candidate with genome: {}.", 
 										Arrays.toString(data.getBestCandidate()), e1);
-			}
-			
-			// Express Trader
-			if (trader != null && bestCandidate != null) {
-				try {
-					SATExpression<int[]> expression = new SATExpression<int[]>();
-					expression.setupTrader(bestCandidate, group, trader);
-				} catch (Exception e) {
-					logger.warn("Unable to setup trader {}.", 
-							bestCandidate.getCandidateId(), e);
-				}
 			}
 
 			// Increment generation

@@ -13,22 +13,22 @@ import org.apache.wicket.model.Model;
 import com.myrontuttle.fin.trade.adapt.TradeParameter;
 import com.myrontuttle.fin.trade.web.data.SortableTradeParameterDataProvider;
 
-public class TraderParametersTablePanel extends Panel {
+public class TradeParametersTablePanel extends Panel {
 
 	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public TraderParametersTablePanel(String id, long traderId) {
+	public TradeParametersTablePanel(String id, long candidateId) {
 		super(id);
 
 		List<IColumn<TradeParameter, String>> columns = new ArrayList<IColumn<TradeParameter, String>>();
 
-		columns.add(new PropertyColumn<TradeParameter, String>(new Model<String>("ID"), "tradeInstructionId", 
-						"tradeInstructionId"));
-		columns.add(new PropertyColumn(new Model<String>("Instruction"), "instruction"));
+		columns.add(new PropertyColumn<TradeParameter, String>(new Model<String>("ID"), "tradeParameterId", 
+						"tradeParameterId"));
+		columns.add(new PropertyColumn(new Model<String>("Parameter"), "parameter"));
 
-		DataTable dataTable = new DefaultDataTable<TradeParameter, String>("traderInstructions", columns,
-				new SortableTradeParameterDataProvider(traderId), 20);
+		DataTable dataTable = new DefaultDataTable<TradeParameter, String>("tradeParameters", columns,
+				new SortableTradeParameterDataProvider(candidateId), 20);
 
 		add(dataTable);
 	}

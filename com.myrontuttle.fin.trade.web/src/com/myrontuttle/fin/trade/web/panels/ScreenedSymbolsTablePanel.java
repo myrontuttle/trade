@@ -9,14 +9,14 @@ import org.apache.wicket.markup.html.panel.Panel;
 
 import com.myrontuttle.fin.trade.web.service.AdaptAccess;
 
-public class TraderSymbolsTablePanel extends Panel {
+public class ScreenedSymbolsTablePanel extends Panel {
 
 	private static final long serialVersionUID = 1L;
 
-	public TraderSymbolsTablePanel(String id, long traderId) {
+	public ScreenedSymbolsTablePanel(String id, long candidateId) {
 		super(id);
 
-		List<String> symbols = AdaptAccess.getDAO().findSymbolsForTrader(traderId);
+		List<String> symbols = AdaptAccess.getDAO().findSymbolsForCandidate(candidateId);
 		
 		add(new ListView<String>("symbols", symbols) {
 			@Override

@@ -35,14 +35,14 @@ public class SortableTradeParameterDataProvider extends SortableDataProvider<Tra
 
 	private static final long serialVersionUID = 1L;
 	
-	long traderId;
+	long candidateId;
 
 	/**
 	 * constructor
 	 */
-	public SortableTradeParameterDataProvider(long traderId) {
+	public SortableTradeParameterDataProvider(long candidateId) {
 		
-		this.traderId = traderId;
+		this.candidateId = candidateId;
 		
 		// set default sort
 		setSort("tradeInstructionId", SortOrder.ASCENDING);
@@ -58,14 +58,14 @@ public class SortableTradeParameterDataProvider extends SortableDataProvider<Tra
 	public Iterator<TradeParameter> iterator(long first, long count) {
 		// Consider finding a subset of all groups to StrategyDAO:
 		// return getDAO().findGroups(first, count, new SortParam("groupId", true)).iterator();
-		return getDAO().findParametersForTrader(traderId).iterator();
+		return getDAO().findParametersForCandidate(candidateId).iterator();
 	}
 
 	/**
 	 * @see org.apache.wicket.markup.repeater.data.IDataProvider#size()
 	 */
 	public long size() {
-		return getDAO().findParametersForTrader(traderId).size();
+		return getDAO().findParametersForCandidate(candidateId).size();
 	}
 
 	/**

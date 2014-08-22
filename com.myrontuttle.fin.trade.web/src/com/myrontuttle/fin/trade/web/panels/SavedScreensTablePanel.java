@@ -13,22 +13,22 @@ import org.apache.wicket.model.Model;
 import com.myrontuttle.fin.trade.adapt.SavedScreen;
 import com.myrontuttle.fin.trade.web.data.SortableScreenDataProvider;
 
-public class TraderScreensTablePanel extends Panel {
+public class SavedScreensTablePanel extends Panel {
 
 	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public TraderScreensTablePanel(String id, long traderId) {
+	public SavedScreensTablePanel(String id, long traderId) {
 		super(id);
 
 		List<IColumn<SavedScreen, String>> columns = new ArrayList<IColumn<SavedScreen, String>>();
 
 		columns.add(new PropertyColumn<SavedScreen, String>(new Model<String>("ID"), "savedScreenId", "savedScreenId"));
 		columns.add(new PropertyColumn(new Model<String>("Name"), "name"));
-		columns.add(new PropertyColumn(new Model<String>("Value"), "screenValue"));
+		columns.add(new PropertyColumn(new Model<String>("Value"), "value"));
 		columns.add(new PropertyColumn(new Model<String>("Operator"), "argsOperator"));
 
-		DataTable dataTable = new DefaultDataTable<SavedScreen, String>("traderScreens", columns,
+		DataTable dataTable = new DefaultDataTable<SavedScreen, String>("savedScreens", columns,
 				new SortableScreenDataProvider(traderId), 20);
 
 		add(dataTable);

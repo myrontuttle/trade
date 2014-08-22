@@ -26,10 +26,8 @@ public class Group implements Serializable {
 			fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Collection<Candidate> candidates;
 	
-	@OneToOne(mappedBy = "group", targetEntity = Trader.class,
-			optional = true, fetch = FetchType.EAGER, 
-			cascade = CascadeType.ALL)
-	private Trader bestTrader;
+	@Column(name = "BEST_CANDIDATE_ID")
+	private long bestCandidateId;
 
 	@OneToMany(mappedBy = "group", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private ArrayList<GroupStats> stats;
@@ -185,17 +183,12 @@ public class Group implements Serializable {
 		}
 	}
 	
-	public Trader getBestTrader() {
-		return bestTrader;
+	public long getBestCandidateId() {
+		return bestCandidateId;
 	}
 
-	public void setBestTrader(Trader bestTrader) {
-		this.bestTrader = bestTrader;
-	}
-	
-	public void removeBestTrader(Trader trader) {
-		this.bestTrader = null;
-		trader.setGroup(null);
+	public void setBestCandidateId(long bestCandidateId) {
+		this.bestCandidateId = bestCandidateId;
 	}
 
 	public ArrayList<GroupStats> getStats() {

@@ -13,12 +13,12 @@ import org.apache.wicket.model.Model;
 import com.myrontuttle.fin.trade.adapt.SavedAlert;
 import com.myrontuttle.fin.trade.web.data.SortableAlertDataProvider;
 
-public class TraderAlertsTablePanel extends Panel {
+public class SavedAlertsTablePanel extends Panel {
 
 	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public TraderAlertsTablePanel(String id, long traderId) {
+	public SavedAlertsTablePanel(String id, long traderId) {
 		super(id);
 
 		List<IColumn<SavedAlert, String>> columns = new ArrayList<IColumn<SavedAlert, String>>();
@@ -28,7 +28,7 @@ public class TraderAlertsTablePanel extends Panel {
 		columns.add(new PropertyColumn(new Model<String>("Symbol"), "symbol"));
 		columns.add(new PropertyColumn(new Model<String>("Params"), "params"));
 
-		DataTable dataTable = new DefaultDataTable<SavedAlert, String>("traderAlerts", columns,
+		DataTable dataTable = new DefaultDataTable<SavedAlert, String>("savedAlerts", columns,
 				new SortableAlertDataProvider(traderId), 20);
 
 		add(dataTable);

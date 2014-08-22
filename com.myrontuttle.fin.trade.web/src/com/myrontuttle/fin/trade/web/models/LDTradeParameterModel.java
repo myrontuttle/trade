@@ -19,7 +19,7 @@ public class LDTradeParameterModel extends LoadableDetachableModel<TradeParamete
 	 * @param s
 	 */
 	public LDTradeParameterModel(TradeParameter t) {
-		this(t.getTradeInstructionId());
+		this(t.getTradeParameterId());
 	}
 
 	/**

@@ -26,7 +26,7 @@ public class SavedAlertsTablePanel extends Panel {
 		columns.add(new PropertyColumn<SavedAlert, String>(new Model<String>("ID"), "savedAlertId", "savedAlertId"));
 		columns.add(new PropertyColumn(new Model<String>("Condition"), "condition"));
 		columns.add(new PropertyColumn(new Model<String>("Symbol"), "symbol"));
-		columns.add(new PropertyColumn(new Model<String>("Params"), "params"));
+		columns.add(new PropertyColumn(new Model<String>("Params"), "paramString"));
 
 		DataTable dataTable = new DefaultDataTable<SavedAlert, String>("savedAlerts", columns,
 				new SortableAlertDataProvider(traderId), 20);

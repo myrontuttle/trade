@@ -163,7 +163,7 @@ public class BoundedWAdjustStrategy extends BoundedStrategy {
 		
 		try {
 			// Remove existing events since we're adding new ones
-			deleteTradeAlerts(trade, tradeStrategyService, alertService);
+			deleteTradeAlerts(trade, alertService);
 			tradeStrategyService.removeAllTradeEvents(trade.getTradeId());
 			
 			double currentPrice = quoteService.getLast(userId, symbol);

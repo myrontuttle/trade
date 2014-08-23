@@ -216,6 +216,8 @@ public class BoundedStrategy {
 			TradeStrategyService tradeStrategyService) throws Exception {
 		logger.trace("Closing trade: {}", trade.getTradeId());
 		if (tradeStrategyService.tradeExists(trade.getTradeId())) {
+
+			tradeStrategyService.removeTrade(trade.getTradeId());
 			
 			String closeOrderType = portfolioService.closeOrderTypesAvailable(
 										trade.getUserId())[trade.getParameter(OPEN_ORDER)];
@@ -223,26 +225,23 @@ public class BoundedStrategy {
 					trade.getPortfolioId(), trade.getSymbol(), 0, 
 					closeOrderType);
 			
-			deleteTradeAlerts(trade, tradeStrategyService, alertService);
+			deleteTradeAlerts(trade, alertService);
 			
-			tradeStrategyService.removeTrade(trade.getTradeId());
 		} else {
 			throw new Exception("Trade " + trade.getTradeId() + " already closed.");
 		}
 		logger.trace("Finished closing trade: {}", trade.getTradeId());
 	}
 	
-	protected static void deleteTradeAlerts(Trade trade, TradeStrategyService tradeStrategyService, 
-											AlertService alertService) throws Exception {
-
-		try {
-			for(Event e : trade.getEvents()) {
-				if (!e.getTrigger().equals(StrategyService.MOMENT_PASSED)) {
+	protected static void deleteTradeAlerts(Trade trade, AlertService alertService) {
+		for(Event e : trade.getEvents()) {
+			if (!e.getTrigger().equals(StrategyService.MOMENT_PASSED)) {
+				try {
 					alertService.removeAlert(trade.getAlertUserId(), e.getTrigger());
+				} catch (Exception e1) {
+					logger.warn("Unable to remove alert for alert user: {}", trade.getAlertUserId(), e1);
 				}
 			}
-		} catch (Exception e) {
-			throw new Exception("Unable to remove alerts for user: " + trade.getAlertUserId());
 		}
 	}
 	

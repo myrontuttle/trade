@@ -460,6 +460,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		Candidate candidate;
 		try {
 			candidate = adaptDAO.findCandidateByGenome(genome);
+			removeExpression(candidate);
 		} catch (Exception e1) {
 			logger.trace("Candidate not in database. Must be new.", e1);
 			candidate = new Candidate();
@@ -580,6 +581,18 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			
 			adaptDAO.removeCandidate(c.getCandidateId());
 
+			removeExpression(c);
+			
+			c = null;
+			
+		} catch (Exception e) {
+			logger.warn("Unable to destroy candidate with genome: {}.", Arrays.toString(genome), e);
+		}		
+	}
+	
+	private void removeExpression(Candidate c) {
+		try {
+
 			// Remove alert trade mapping
 			tradeStrategyService.removeAllTrades(c.getCandidateId());
 			
@@ -595,12 +608,9 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			if (c.getWatchlistId() != null) {
 				watchlistService.delete(c.getCandidateId(), c.getWatchlistId());
 			}
-			
-			c = null;
-			
 		} catch (Exception e) {
-			logger.warn("Unable to destroy candidate with genome: {}.", Arrays.toString(genome), e);
-		}		
+			logger.warn("Unable to remove expression for candidate: {}.", c.getCandidateId(), e);
+		}
 	}
 	
 	/**

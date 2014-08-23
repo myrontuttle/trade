@@ -4,11 +4,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.myrontuttle.sci.evolve.api.PopulationStats;
 
 public class AdaptDAOImpl implements AdaptDAO {
+
+	private static final Logger logger = LoggerFactory.getLogger(AdaptDAOImpl.class);
 
 	private EntityManager em;
 
@@ -145,7 +149,8 @@ public class AdaptDAOImpl implements AdaptDAO {
 			return em.createQuery(
 					"SELECT c FROM CANDIDATES c WHERE c.candidateId = :bestId", 
 					Candidate.class).setParameter("bestId", group.getBestCandidateId()).getSingleResult();
-		} catch (NoResultException nre) {
+		} catch (Exception nre) {
+			logger.warn("Can't get best candidate for group: {}", groupId, nre);
 			return null;
 		}
 	}

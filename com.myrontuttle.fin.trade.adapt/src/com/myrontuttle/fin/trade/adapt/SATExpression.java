@@ -368,7 +368,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 								availableParameters[j].getLower(), 
 								availableParameters[j].getUpper()));
 				tradeParams.add(tradeP);
-				adaptDAO.addTradeParamter(tradeP, candidateId);
+				adaptDAO.addTradeParameter(tradeP, candidateId);
 			}
 			
 			trades.put(symbols[i], tradeParams);
@@ -460,6 +460,11 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		Candidate candidate;
 		try {
 			candidate = adaptDAO.findCandidateByGenome(genome);
+			long candidateId = candidate.getCandidateId();
+			adaptDAO.removeSavedScreens(candidateId);
+			adaptDAO.removeSymbols(candidateId);
+			adaptDAO.removeSavedAlerts(candidateId);
+			adaptDAO.removeTradeParameters(candidateId);
 			removeExpression(candidate);
 		} catch (Exception e1) {
 			logger.trace("Candidate not in database. Must be new.", e1);

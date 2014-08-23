@@ -49,20 +49,28 @@ public interface AdaptDAO {
 	public List<SavedScreen> findScreensForCandidate(long candidateId);
 	
 	public SavedScreen findScreen(long savedScreenId);
+	
+	public void removeSavedScreens(long candidateId);
 
 	public void addSymbol(String symbol, long candidateId);
 	
 	public List<String> findSymbolsForCandidate(long candidateId);
 	
+	public void removeSymbols(long candidateId);
+
+	public void addSavedAlert(SavedAlert alert, long candidateId);
+	
 	public List<SavedAlert> findAlertsForCandidate(long candidateId);
 	
 	public SavedAlert findAlert(long savedAlertId);
 	
+	public void removeSavedAlerts(long candidateId);
+	
+	public void addTradeParameter(TradeParameter parameter, long candidateId);
+	
 	public List<TradeParameter> findParametersForCandidate(long candidateId);
 	
 	public TradeParameter findTradeParameter(long tradeParameterId);
-
-	public void addSavedAlert(SavedAlert alert, long candidateId);
 	
-	public void addTradeParamter(TradeParameter parameter, long candidateId);
+	public void removeTradeParameters(long candidateId);
 }

@@ -24,5 +24,5 @@ public interface EvolveService {
 	
 	public void deleteCandidateExpression(long groupId, int[] candidateGenome);
 
-	public void deleteGroupExpression(long groupId);
+	public void deleteGroup(long groupId);
 }

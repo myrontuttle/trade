@@ -169,7 +169,7 @@ public class AdaptDAOImpl implements AdaptDAO {
 	}
 
 	@Override
-	public void addTradeParamter(TradeParameter p,
+	public void addTradeParameter(TradeParameter p,
 			long candidateId) {
 		Candidate candidate = em.find(Candidate.class, candidateId);
 		candidate.addTradeParameter(p);
@@ -215,5 +215,41 @@ public class AdaptDAOImpl implements AdaptDAO {
 	@Override
 	public TradeParameter findTradeParameter(long tradeParameterId) {
 		return em.find(TradeParameter.class, tradeParameterId);
+	}
+
+	@Override
+	public void removeSavedScreens(long candidateId) {
+		Candidate candidate = em.find(Candidate.class, candidateId);
+		for (SavedScreen ss : candidate.getSavedScreens()) {
+			em.remove(ss);
+		}
+		candidate.getSavedScreens().clear();
+	}
+
+	@Override
+	public void removeSymbols(long candidateId) {
+		Candidate candidate = em.find(Candidate.class, candidateId);
+		for (String symbol : candidate.getSymbols()) {
+			em.remove(symbol);
+		}
+		candidate.getSymbols().clear();
+	}
+
+	@Override
+	public void removeSavedAlerts(long candidateId) {
+		Candidate candidate = em.find(Candidate.class, candidateId);
+		for (SavedAlert sa : candidate.getSavedAlerts()) {
+			em.remove(sa);
+		}
+		candidate.getSavedAlerts().clear();
+	}
+
+	@Override
+	public void removeTradeParameters(long candidateId) {
+		Candidate candidate = em.find(Candidate.class, candidateId);
+		for (TradeParameter tp : candidate.getTradeParameters()) {
+			em.remove(tp);
+		}
+		candidate.getTradeParameters().clear();
 	}
 }

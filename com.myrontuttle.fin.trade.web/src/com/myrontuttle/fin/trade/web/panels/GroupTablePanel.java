@@ -243,8 +243,7 @@ public class GroupTablePanel extends Panel {
 			final Form<Group> form = new Form<Group>("deleteGroupForm");
 			form.add(new Button("delete") {
 				public void onSubmit() {
-					EvolveAccess.getEvolveService().deleteGroupExpression(groupId);
-					AdaptAccess.getDAO().removeGroup(groupId);
+					EvolveAccess.getEvolveService().deleteGroup(groupId);
 				}
 			});
 			add(form);

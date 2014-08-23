@@ -306,17 +306,31 @@ public class Evolver implements EvolveService {
 	}
 
 	@Override
-	public void deleteGroupExpression(long groupId) {
+	public void deleteGroup(final long groupId) {
 
 		Group group = adaptDAO.findGroup(groupId);
+		group.setString("Evolve.Status", "Deleting");
+		adaptDAO.updateGroup(group);
+		
+		final long alertReceiverId = group.getLong("Alert.ReceiverId");
 
-		SATExpression<int[]> expression = new SATExpression<int[]>();
-		
-		SATExpression.getAlertReceiverService().removeReceiver(group.getLong("Alert.ReceiverId"));
-		
-		List<Candidate> oldCandidates = adaptDAO.findCandidatesInGroup(groupId);
-		for (Candidate c : oldCandidates) {
-			expression.destroy(c.getGenome(), groupId);
-		}
+    	ses.schedule(new Runnable() {
+
+			@Override
+			public void run() {
+
+				SATExpression<int[]> expression = new SATExpression<int[]>();
+				
+				SATExpression.getAlertReceiverService().removeReceiver(alertReceiverId);
+				
+				List<Candidate> oldCandidates = adaptDAO.findCandidatesInGroup(groupId);
+				for (Candidate c : oldCandidates) {
+					expression.destroy(c.getGenome(), groupId);
+				}
+				
+				adaptDAO.removeGroup(groupId);
+			}
+    	}, 0, TimeUnit.SECONDS);
+			
 	}
 }

@@ -134,8 +134,6 @@ public class CandidateTablePanel extends Panel {
 				cellItem.add(new DeleteCandidatePanel(componentId, model));
 			}
 		});
-		
-		//columns.add(new PropertyColumn(new Model<String>("Genome"), "genomeString"));
 
 		DataTable dataTable = new DefaultDataTable<Candidate, String>("candidates", columns,
 				new SortableCandidateDataProvider(groupId), 20);

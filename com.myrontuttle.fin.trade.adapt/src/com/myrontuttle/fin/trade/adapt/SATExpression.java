@@ -457,24 +457,25 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		// Find the group
 		Group group = adaptDAO.findGroup(groupId);
 		
-		Candidate candidate;
-		try {
-			candidate = adaptDAO.findCandidateByGenome(genome);
-			long candidateId = candidate.getCandidateId();
-			adaptDAO.removeSavedScreens(candidateId);
-			adaptDAO.removeSymbols(candidateId);
-			adaptDAO.removeSavedAlerts(candidateId);
-			adaptDAO.removeTradeParameters(candidateId);
-			removeExpression(candidate);
-		} catch (Exception e1) {
-			logger.trace("Candidate not in database. Must be new.", e1);
+		Candidate candidate = adaptDAO.findCandidateByGenome(genome);
+		if (candidate == null) {
+			//Candidate not in database. Must be new.
 			candidate = new Candidate();
 			candidate.setGenome(genome);
 			candidate.setGroupId(groupId);
 			candidate.setBornInGen(group.getInteger("Evolve.Generation"));
 			
 			adaptDAO.addCandidate(candidate, groupId);
+		} else {
+			// Candidate in DB, must be from a previous generation
+			long candidateId = candidate.getCandidateId();
+			adaptDAO.removeSymbols(candidateId);
+			adaptDAO.removeSavedScreens(candidateId);
+			adaptDAO.removeSavedAlerts(candidateId);
+			adaptDAO.removeTradeParameters(candidateId);
+			removeExpression(candidate);
 		}
+
 		candidate.setLastExpressedGen(group.getInteger("Evolve.Generation"));
 		
 
@@ -544,8 +545,10 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		// Remove old candidates
 		List<Candidate> oldCandidates = adaptDAO.findCandidatesInGroup(populationId);
 		for (Candidate c : oldCandidates) {
-			if (c.getLastExpressedGen() < currentGeneration) {
-				destroy(c.getGenome(), populationId);
+			if (c.getLastExpressedGen() < currentGeneration && c.isBestInGroup() == false) {
+				adaptDAO.removeCandidate(c.getCandidateId());
+				removeExpression(c);
+				c = null;
 			}
 		}
 		
@@ -580,24 +583,21 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 
 	@Override
 	public void destroy(int[] genome, long populationId) {
-		
-		try {
-			Candidate c = adaptDAO.findCandidateByGenome(genome);
-			
-			adaptDAO.removeCandidate(c.getCandidateId());
 
+		Candidate c = adaptDAO.findCandidateByGenome(genome);
+		
+		if (c != null) {
+			adaptDAO.removeCandidate(c.getCandidateId());
 			removeExpression(c);
-			
 			c = null;
-			
-		} catch (Exception e) {
-			logger.warn("Unable to destroy candidate with genome: {}.", Arrays.toString(genome), e);
-		}		
+		} else {
+			logger.warn("No candidate found with genome: " + Arrays.toString(genome));
+		}
 	}
 	
 	private void removeExpression(Candidate c) {
+		
 		try {
-
 			// Remove alert trade mapping
 			tradeStrategyService.removeAllTrades(c.getCandidateId());
 			

@@ -1,18 +1,12 @@
 package com.myrontuttle.fin.trade.adapt;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.myrontuttle.sci.evolve.api.PopulationStats;
 
 public class AdaptDAOImpl implements AdaptDAO {
-
-	private static final Logger logger = LoggerFactory.getLogger(AdaptDAOImpl.class);
 
 	private EntityManager em;
 
@@ -61,7 +55,7 @@ public class AdaptDAOImpl implements AdaptDAO {
 				Candidate.class).setParameter("groupId", groupId).getResultList();
 	}
 	
-	public Candidate findCandidateByGenome(int[] genome) throws Exception {
+	public Candidate findCandidateByGenome(int[] genome) {
 		List<Candidate> candidates = em.createQuery(
 				"SELECT c FROM CANDIDATES c WHERE c.genomeString = :genomeString", 
 					Candidate.class).
@@ -72,7 +66,7 @@ public class AdaptDAOImpl implements AdaptDAO {
 			c.setGenome(genome);
 			return c;
 		} else {
-			throw new Exception("No candidate found with genome: " + Arrays.toString(genome));
+			return null;
 		}
 	}
 	
@@ -138,21 +132,24 @@ public class AdaptDAOImpl implements AdaptDAO {
 	
 	@Override
 	public void setBestCandidate(long candidateId, long groupId) {
-		Group group = em.find(Group.class, groupId);		
-		group.setBestCandidateId(candidateId);		
+		Group group = em.find(Group.class, groupId);
+		if (group.getBestCandidateId() == candidateId) {
+			// Best candidate already set, nothing to do
+			return;
+		}
+		if (group.getBestCandidateId() != 0) {
+			Candidate previousBest = findCandidate(group.getBestCandidateId());
+			previousBest.setBestInGroup(false);
+		}
+		Candidate newBest = findCandidate(candidateId);
+		newBest.setBestInGroup(true);
+		group.setBestCandidateId(candidateId);
 	}
 
 	@Override
-	public Candidate getBestCandidate(long groupId) {
+	public long getBestCandidate(long groupId) {
 		Group group = em.find(Group.class, groupId);
-		try {
-			return em.createQuery(
-					"SELECT c FROM CANDIDATES c WHERE c.candidateId = :bestId", 
-					Candidate.class).setParameter("bestId", group.getBestCandidateId()).getSingleResult();
-		} catch (Exception nre) {
-			logger.warn("Can't get best candidate for group: {}", groupId, nre);
-			return null;
-		}
+		return group.getBestCandidateId();
 	}
 
 	@Override

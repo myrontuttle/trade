@@ -2,6 +2,7 @@ package com.myrontuttle.fin.trade.web.panels;
 
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.html.basic.Label;
 
 import com.myrontuttle.fin.trade.web.pages.CandidatePage;
 import com.myrontuttle.fin.trade.web.service.AdaptAccess;
@@ -16,20 +17,27 @@ public class BestCandidatePanel extends Panel {
 	 */
 	public BestCandidatePanel(String id, final long groupId) {
 		super(id);
-		add(new Link("bestCandidate") {
+		
+		final long candidateId = AdaptAccess.getDAO().getBestCandidate(groupId);
+		
+		Link link = new Link("bestCandidate") {
 			
 			@Override
 			public void onClick() {
-				long candidateId = AdaptAccess.getDAO().getBestCandidate(groupId).getCandidateId();
-				CandidatePage cp = new CandidatePage(candidateId);
-				setResponsePage(cp);
+				if (candidateId != 0) {
+					CandidatePage cp = new CandidatePage(candidateId);
+					setResponsePage(cp);
+				}
 			}
 			
 			@Override
 			public boolean isVisible() {
 				// Make visible only if there is an actual Best Trader
-				return (AdaptAccess.getDAO().getBestCandidate(groupId) != null);
+				return (candidateId != 0);
 			}
-		});
+		};
+		
+		link.add(new Label("bestCandidateId", candidateId));
+		add(link);
 	}
 }

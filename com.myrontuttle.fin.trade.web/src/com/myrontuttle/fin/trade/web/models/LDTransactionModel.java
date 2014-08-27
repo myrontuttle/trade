@@ -38,7 +38,7 @@ public class LDTransactionModel extends
 	 */
 	@Override
 	public int hashCode() {
-		return Long.valueOf(transactionId).hashCode();
+		return transactionId.hashCode();
 	}
 
 	/**

@@ -59,23 +59,19 @@ public class Evolver implements EvolveService {
 			Group group = adaptDAO.findGroup(data.getPopulationId());
 			
 			// Find the best candidate from the group
-			Candidate bestCandidate = null;
-			try {
-				bestCandidate = adaptDAO.findCandidateByGenome(data.getBestCandidate());
+			Candidate bestCandidate = adaptDAO.findCandidateByGenome(data.getBestCandidate());
+			if (bestCandidate != null) {
 				adaptDAO.setBestCandidate(bestCandidate.getCandidateId(), group.getGroupId());
-				
-			} catch (Exception e1) {
-				logger.warn("Can't find best candidate with genome: {}.", 
-										Arrays.toString(data.getBestCandidate()), e1);
+			} else {
+				logger.warn("No candidate found with genome: " + Arrays.toString(data.getBestCandidate()));
 			}
-
-			// Increment generation
-			group.setInteger("Evolve.Generation", data.getGenerationNumber());
-			adaptDAO.updateGroup(group);
 			
 			// Use data to update group
 			adaptDAO.updateGroupStats(data);
 
+			// Increment generation
+			group.setInteger("Evolve.Generation", data.getGenerationNumber());
+			adaptDAO.updateGroup(group);
 		}
 	};
 	

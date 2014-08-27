@@ -51,6 +51,9 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 	@Column(name = "LAST_EXRESSED_GEN")
 	private int lastExpressedGen;
 	
+	@Column(name = "BEST_IN_GROUP")
+	private boolean bestInGroup;
+	
 	@OneToMany(mappedBy = "candidate", targetEntity = SavedScreen.class,
 				fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Collection<SavedScreen> savedScreens;
@@ -158,6 +161,14 @@ public class Candidate implements ExpressedCandidate<int[]>, Serializable {
 
 	public void setLastExpressedGen(int lastExpressedGen) {
 		this.lastExpressedGen = lastExpressedGen;
+	}
+
+	public boolean isBestInGroup() {
+		return bestInGroup;
+	}
+
+	public void setBestInGroup(boolean bestInGroup) {
+		this.bestInGroup = bestInGroup;
 	}
 
 	public Collection<SavedScreen> getSavedScreens() {

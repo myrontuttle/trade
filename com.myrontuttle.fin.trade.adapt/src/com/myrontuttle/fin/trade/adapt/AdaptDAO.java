@@ -20,7 +20,7 @@ public interface AdaptDAO {
 	
 	public List<Candidate> findCandidatesInGroup(long groupId);
 	
-	public Candidate findCandidateByGenome(int[] genome) throws Exception;
+	public Candidate findCandidateByGenome(int[] genome);
 	
 	public Candidate findCandidate(long candidateId);
 	
@@ -42,7 +42,7 @@ public interface AdaptDAO {
 	
 	public void setBestCandidate(long candidateId, long groupId);
 	
-	public Candidate getBestCandidate(long groupId);
+	public long getBestCandidate(long groupId);
 
 	public void addSavedScreen(SavedScreen screen, long candidateId);
 	

@@ -202,9 +202,10 @@ public class BoundedStrategy {
 			createStopTrade(trade, currentPrice, false, alertService, tradeStrategyService);
 			
 		} else {
-			throw new Exception("Not enough allocated to trade " + trade.getSymbol() +
-					". Current Price(" + currentPrice + ") > Max Allowed Trade Amount (" + 
-					maxTradeAmount + ")");
+			logger.warn("User: {} doesn't have enough allocated to trade {}. Current " +
+					"Price({}) > Max Allowed Trade Amount ({})", 
+					new Object[]{trade.getUserId(), trade.getSymbol(), 
+					currentPrice, maxTradeAmount});
 			
 		}
 		logger.trace("Finished opening trade: {}", trade.getTradeId());

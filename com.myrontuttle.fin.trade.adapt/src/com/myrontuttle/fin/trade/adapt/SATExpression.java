@@ -309,15 +309,16 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		return selected;
 	}
 	
-	SavedAlert[] setupAlerts(Group group, SavedAlert[] openAlerts) throws Exception {
+	SavedAlert[] setupAlerts(Candidate candidate, Group group, 
+			SavedAlert[] openAlerts) throws Exception {
 
-		alertService.addAlertDestination(group.getGroupId(), 
+		alertService.addAlertDestination(candidate.getCandidateId(), 
 										group.getString("Alert.User"), 
 										group.getString("Alert.ReceiverType"));
 
 		for (SavedAlert alert : openAlerts) {
 			alert.setAlertId(
-				alertService.setupAlert(group.getGroupId(), alert.getAlertType(), 
+				alertService.setupAlert(candidate.getCandidateId(), alert.getAlertType(), 
 						alert.getCondition(), alert.getSymbol(), alert.getParams()));
 		}
 		return openAlerts;
@@ -518,7 +519,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 
 			// Create (symbols*alertsPerSymbol) alerts for stocks
 			SavedAlert[] openAlerts = expressAlertGenes(candidate, group, symbols);
-			openAlerts = setupAlerts(group, openAlerts);
+			openAlerts = setupAlerts(candidate, group, openAlerts);
 			candidate.setSavedAlerts(Arrays.asList(openAlerts));
 			
 			// Create (symbol*alertsPerSymbol) trades to be made when alerts are triggered
@@ -602,7 +603,7 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 			tradeStrategyService.removeAllTrades(c.getCandidateId());
 			
 			// Remove Alerts
-			alertService.removeAllAlerts(c.getGroupId());
+			alertService.removeAllAlerts(c.getCandidateId());
 
 			// Remove Portfolio
 			if (c.getPortfolioId() != null) {

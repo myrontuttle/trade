@@ -280,7 +280,7 @@ public class SATExpressionTest {
 	
 	@Test
 	public void testSetupAlerts() throws Exception {
-		expression.setupAlerts(group1, selectedAlerts);
+		expression.setupAlerts(candidateA, group1, selectedAlerts);
 	}
 	
 	@Test

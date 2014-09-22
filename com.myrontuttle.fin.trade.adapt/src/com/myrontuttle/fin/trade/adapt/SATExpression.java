@@ -470,16 +470,20 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 		} else {
 			// Candidate in DB, must be from a previous generation
 			long candidateId = candidate.getCandidateId();
-			adaptDAO.removeSymbols(candidateId);
-			adaptDAO.removeSavedScreens(candidateId);
-			adaptDAO.removeSavedAlerts(candidateId);
-			adaptDAO.removeTradeParameters(candidateId);
+			try {
+				adaptDAO.removeSymbols(candidateId);
+				adaptDAO.removeSavedScreens(candidateId);
+				adaptDAO.removeSavedAlerts(candidateId);
+				adaptDAO.removeTradeParameters(candidateId);
+			} catch (Exception e) {
+				logger.warn("Unable to remove data for candidate: {}", candidateId, e);
+			}
+
 			removeExpression(candidate);
 		}
 
 		candidate.setLastExpressedGen(group.getInteger("Evolve.Generation"));
 		
-
 		try {
 			// Get criteria to screen against
 			SavedScreen[] screenCriteria = expressScreenerGenes(candidate, group);

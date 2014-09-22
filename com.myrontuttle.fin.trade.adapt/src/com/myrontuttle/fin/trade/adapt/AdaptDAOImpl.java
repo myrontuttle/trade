@@ -231,9 +231,6 @@ public class AdaptDAOImpl implements AdaptDAO {
 	@Override
 	public void removeSymbols(long candidateId) {
 		Candidate candidate = em.find(Candidate.class, candidateId);
-		for (String symbol : candidate.getSymbols()) {
-			em.remove(symbol);
-		}
 		candidate.getSymbols().clear();
 	}
 

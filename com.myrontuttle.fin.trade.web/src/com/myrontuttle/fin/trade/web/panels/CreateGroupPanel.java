@@ -110,13 +110,13 @@ public class CreateGroupPanel extends Panel {
 				new IntegerGroupSettingsModel(groupModel, "Express.NumberOfScreens"))
 					.setType(Integer.class)
 					.setRequired(true)
-					.add(new AttributeModifier("value", "2")));
+					.add(new AttributeModifier("value", "1")));
 		
 		form.add(new TextField<Integer>("Express.MaxSymbolsPerScreen", 
 				new IntegerGroupSettingsModel(groupModel, "Express.MaxSymbolsPerScreen"))
 					.setType(Integer.class)
 					.setRequired(true)
-					.add(new AttributeModifier("value", "10")));
+					.add(new AttributeModifier("value", "5")));
 		
 		form.add(new TextField<Integer>("Express.AlertsPerSymbol", 
 				new IntegerGroupSettingsModel(groupModel, "Express.AlertsPerSymbol"))

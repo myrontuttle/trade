@@ -300,7 +300,12 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 																		params);
 				selected[s] = new SavedAlert(candidateId, alertId, selectedCondition, 
 													symbols[i], params);
-				adaptDAO.addSavedAlert(selected[s], candidateId);
+				try {
+					adaptDAO.addSavedAlert(selected[s], candidateId);
+				} catch (NullPointerException npe) {
+					logger.warn("Unable to add alert id:{} to candidate:{} with symbol:{}", 
+							new Object[]{alertId, candidateId, symbols[i]}, npe);
+				}
 				s++;
 				position += ALERT_GENE_LENGTH;
 			}
@@ -369,7 +374,15 @@ public class SATExpression<T> implements ExpressionStrategy<int[]> {
 								availableParameters[j].getLower(), 
 								availableParameters[j].getUpper()));
 				tradeParams.add(tradeP);
-				adaptDAO.addTradeParameter(tradeP, candidateId);
+
+				try {
+					adaptDAO.addTradeParameter(tradeP, candidateId);
+				} catch (NullPointerException npe) {
+					logger.warn("Unable to add trade parameter name:{} to candidate:{} " +
+							"with symbol:{}", 
+							new Object[]{availableParameters[j].getName(), candidateId, 
+											symbols[i]}, npe);
+				}
 			}
 			
 			trades.put(symbols[i], tradeParams);
